@@ -1,13 +1,19 @@
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import Test from './pages/Test';
 import Getsettings from "./pages/Settings"
+import LoginPage from "./pages/Login"
 import { isProduct } from './utils/settings';
+
 
 function App() {
   return (
     <Router>
       <nav>
         <Link to="/">Главная</Link>
+        {
+          // TODO: сделай здесь логику, что бы только незареганным пользователям была страница
+        }
+        <Link to="/login">Войти</Link>
       </nav>
 
       <Routes>
@@ -16,6 +22,7 @@ function App() {
         <>
           <Route path="/test/test" element={<Test />} />
           <Route path='/test/settings' element={<Getsettings />}/>
+          <Route path='/login' element={<LoginPage />}/>
         </>
       )}
 
