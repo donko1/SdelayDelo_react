@@ -3,6 +3,7 @@ import Test from './pages/Test';
 import Getsettings from "./pages/Settings"
 import LoginPage from "./pages/Login"
 import { isProduct } from './utils/settings';
+import { WhoamI } from './pages/Whoami';
 
 
 function App() {
@@ -22,6 +23,7 @@ function App() {
         <>
           <Route path="/test/test" element={<Test />} />
           <Route path='/test/settings' element={<Getsettings />}/>
+          <Route path="/test/whoami" element={<WhoamI />} />
           <Route path='/login' element={<LoginPage />}/>
         </>
       )}

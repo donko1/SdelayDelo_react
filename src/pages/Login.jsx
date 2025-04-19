@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { isParallel } from '../utils/settings';
+import { setUser } from '../utils/auth';
 
 function LoginForm() {
   const [username, setUsername] = useState('');
@@ -26,8 +27,8 @@ function LoginForm() {
     }
 
     console.log("Вошли успешно!")
-    response.json().then(data => console.log(data))
-      
+    response.json().then(data => setUser(data.access_token))
+
     } catch (error) {
         setErrorMessage("Произошла неизвестная ошибка. Мы уже работаем над исправлением!")
     }
