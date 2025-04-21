@@ -1,11 +1,14 @@
 import React, { useState } from 'react';
 import { isParallel } from '../utils/settings';
 import { setUser } from '../utils/auth';
+import { useNavigate } from "react-router-dom";
 
 function LoginForm() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
+  const navigate = useNavigate();
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -26,8 +29,8 @@ function LoginForm() {
         setErrorMessage("Что-то пошло не так. Проверьте свои данные")
     }
 
-    console.log("Вошли успешно!")
     response.json().then(data => setUser(data.access_token))
+    navigate("/")
 
     } catch (error) {
         setErrorMessage("Произошла неизвестная ошибка. Мы уже работаем над исправлением!")
@@ -84,5 +87,5 @@ function LoginForm() {
 }
 
 export default function LoginPage() {
-    return <LoginForm/>
+    return <LoginForm />
 }

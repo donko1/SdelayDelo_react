@@ -37,6 +37,9 @@ export function WhoamI() {
     return <div className="text-center p-4 text-gray-600">Loading...</div>;
   }
 
+  if (error == "HTTP error! status: 401") {
+    return <div className="text-center p-4 text-red-500">U arent login</div>;
+  }
   if (error) {
     return <div className="text-center p-4 text-red-500">Error: {error}</div>;
   }
