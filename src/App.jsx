@@ -6,18 +6,23 @@ import { isProduct } from './utils/settings';
 import { WhoamI } from './pages/Whoami';
 import { removeUser } from './utils/auth';
 import { getUser } from './utils/auth';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 function App() {
-  const [reboot_data, reboot_func] = useState(0)
+  const [isAuthenticated, setIsAuthenticated] = useState(getUser() != null);
+
   return (
     <Router>
       <nav>
         <Link to="/">Главная</Link>
         
-        {getUser() == undefined && (<Link to="/login">Войти</Link>)}
-        {getUser() != undefined && (<button onClick={() => {
-          removeUser();reboot_func(1)}}>Выйти</button>)}
+        {!isAuthenticated && (<Link to="/login">Войти</Link>)}
+        {isAuthenticated && (
+          <button onClick={() => {
+            removeUser();
+            setIsAuthenticated(false); 
+          }}>Выйти</button>
+        )}
       </nav>
 
       <Routes>
@@ -27,7 +32,7 @@ function App() {
           <Route path="/test/test" element={<Test />} />
           <Route path='/test/settings' element={<Getsettings />}/>
           <Route path="/test/whoami" element={<WhoamI />} />
-          <Route path='/login' element={<LoginPage/>}/>
+          <Route path='/login' element={<LoginPage onLogin={() => setIsAuthenticated(true)} />}/>
         </>
       )}
 
