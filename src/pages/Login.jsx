@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { isParallel } from '../utils/settings';
-import { setUser } from '../utils/auth';
+import { check_if_email_registered, setUser } from '../utils/auth';
 import { useNavigate } from "react-router-dom";
 
 function LoginForm({onLogin}) {
@@ -8,7 +8,6 @@ function LoginForm({onLogin}) {
   const [password, setPassword] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
   const navigate = useNavigate();
-
 
   const handleSubmit = async (e) => {
     e.preventDefault();
