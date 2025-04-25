@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { isParallel } from '../utils/settings';
 import { check_if_email_registered, setUser } from '../utils/auth';
 import { useNavigate } from "react-router-dom";
+import { toHtml } from '@fortawesome/fontawesome-svg-core';
 
 function AuthFlow({ onLogin }) {
   const [email, setEmail] = useState('');
@@ -107,10 +108,20 @@ function AuthFlow({ onLogin }) {
           token: token 
         })
       });
-      // TODO: СДЕЛАЙ РАЗНЫЕ СООБЩЕНИЯ ДЛЯ РАЗНЫХ ОШИБОК
-      if(!response.ok) throw new Error('Ошибка регистрации');
-      
+
       const data = await response.json();
+
+      if(!response.ok) {
+        switch (data.detail){ 
+        case "password_8_symbols":
+          throw new Error("В пароле должно быть минимум 8 символов")
+        case "username_isnt_uniq":
+          throw new Error("Придумайте уникальный username")
+        }
+  
+        throw new Error('Ошибка регистрации')
+      };
+      
       setUser(data.access_token);
       onLogin();
       navigate("/");
