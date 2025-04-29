@@ -13,6 +13,7 @@ function AuthFlow({ onLogin }) {
   const [step, setStep] = useState('email');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [secretEmail, setSecretEmail] = useState("")
   const navigate = useNavigate();
 
   const handleEmailSubmit = async (e) => {
@@ -129,13 +130,14 @@ function AuthFlow({ onLogin }) {
 
       if(!response.ok) throw new Error('Неверные данные');
       console.log(response.status)
+      const data = await response.json();
       if (response.status === 202) {
         setError('');
         setIsLoading(false)
+        setSecretEmail(data.email)
         setStep("FA2")
         return;
       }
-      const data = await response.json();
       setUser(data.access_token);
       onLogin();
       navigate("/");
@@ -211,7 +213,9 @@ function AuthFlow({ onLogin }) {
       </form>
 
       {error && <div className="p-2 text-red-600 bg-red-100 rounded">{error}</div>}
-
+      {step === "FA2" &&(
+        <div className='p-2 text-yellow-600 bg-red-100 rounded'>Для входа введите код, отправленный на {secretEmail}</div>
+      )}
       
       {(step === 'login' || step === "FA2") && (
         <form onSubmit={handleLogin} className="space-y-4">
