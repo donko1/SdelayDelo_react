@@ -186,7 +186,7 @@ function AuthFlow({ onLogin }) {
       setIsLoading(false);
     }
   };
-
+  // Сделай вход по username
   return (
     <div className="max-w-md mx-auto p-4 space-y-6">
       <form onSubmit={handleEmailSubmit} className="space-y-4">
