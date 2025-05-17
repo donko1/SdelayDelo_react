@@ -11,40 +11,69 @@ function AuthFlow({ onLogin }) {
   const [code, setCode] = useState('');
   const [token, setToken] = useState('');
   const [step, setStep] = useState('email');
+  const [identifier, setIdentifier] = useState('');
+  const isEmail = (input) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(input);
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [secretEmail, setSecretEmail] = useState("")
   const navigate = useNavigate();
 
+  const fetchEmailByUsername = async (username) => {
+    const baseUrl = isParallel() ? "/api/get_email_by_username" : "http://localhost:8000/api/get_email_by_username";
+    const url = new URL(baseUrl, window.location.origin);
+    url.searchParams.append("username", username);
+
+    const response = await fetch(url.toString(), {
+      method: "GET",
+    });
+
+    if (!response.ok) throw new Error('Пользователь не найден');
+    const data = await response.json();
+    return data.email;
+  };
+
+
+
   const handleEmailSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
     try {
-      const isRegistered = await check_if_email_registered(email);
-      
-      if(isRegistered) {
+      let resolvedEmail = '';
+      if (isEmail(identifier)) {
+        resolvedEmail = identifier;
+      } else {
+        resolvedEmail = await fetchEmailByUsername(identifier);
+      }
+
+      setEmail(resolvedEmail); 
+      const isRegistered = await check_if_email_registered(resolvedEmail);
+
+      if (isRegistered) {
         setStep('login');
       } else {
-        await sendVerificationCode();
+        await sendVerificationCode(resolvedEmail);
         setStep('send_code');
       }
+
       setError('');
-    } catch(err) {
+    } catch (err) {
       setError(err.message);
     } finally {
       setIsLoading(false);
     }
   };
 
-  const sendVerificationCode = async () => {
+
+  const sendVerificationCode = async (targetEmail) => {
     const url = isParallel() ? "/api/send_code/" : "http://localhost:8000/api/send_code/";
     const response = await fetch(url, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email })
+      body: JSON.stringify({ email: targetEmail })
     });
-    if(!response.ok) throw new Error('Ошибка отправки кода');
+    if (!response.ok) throw new Error('Ошибка отправки кода');
   };
+
 
   const handleFA2Submit = async (e) => {
     let tkn;
@@ -186,22 +215,22 @@ function AuthFlow({ onLogin }) {
       setIsLoading(false);
     }
   };
-  // Сделай вход по username
   return (
     <div className="max-w-md mx-auto p-4 space-y-6">
       <form onSubmit={handleEmailSubmit} className="space-y-4">
         <div className="flex gap-2">
           <input
-            type="email"
-            value={email}
+            type="text"
+            value={identifier}
             onChange={(e) => {
-              setEmail(e.target.value);
-              if(step !== 'email') setStep('email');
+              setIdentifier(e.target.value);
+              if (step !== 'email') setStep('email');
             }}
-            placeholder="Ваш email"
+            placeholder="Email или username"
             className="flex-1 p-2 border rounded"
             required
           />
+
           <button 
             type="submit" 
             disabled={isLoading}
