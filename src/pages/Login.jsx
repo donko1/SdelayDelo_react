@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { isParallel } from '../utils/settings';
-import { check_if_email_registered, setUser } from '../utils/auth';
+import { check_if_email_registered, setUser, generateHeaders } from '../utils/auth';
 import { useNavigate } from "react-router-dom";
 import { toHtml } from '@fortawesome/fontawesome-svg-core';
+import { getUserLocaleInfo } from '../utils/locale';
 
 function AuthFlow({ onLogin }) {
   const [email, setEmail] = useState('');
@@ -181,7 +182,7 @@ function AuthFlow({ onLogin }) {
     e.preventDefault();
     setIsLoading(true);
     try {
-      const url = isParallel() ? "/api/register/" : "http://localhost:8000/api/register/";
+      let url = isParallel() ? "/api/register/" : "http://localhost:8000/api/register/";
       const response = await fetch(url, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -205,10 +206,30 @@ function AuthFlow({ onLogin }) {
   
         throw new Error('Ошибка регистрации')
       };
-      
-      setUser(data.access_token);
-      onLogin();
-      navigate("/");
+
+      try {
+
+        url = isParallel() ? "api/change-userinfo/" : "http://localhost:8000/api/change-userinfo/";
+        const { language, timeZone }  = getUserLocaleInfo(); 
+        const response = await fetch(url, {
+          method: "PATCH",
+          headers: generateHeaders(data.access_token),
+          body: JSON.stringify({
+            "language":language,
+            "timezone":timeZone
+          })
+        })
+      }
+      catch(err) {
+        console.log(err)
+        setError(err.message);
+      } finally {
+        setIsLoading(false);
+        setUser(data.access_token);
+        onLogin();
+        navigate("/");
+      }
+
     } catch(err) {
       setError(err.message);
     } finally {

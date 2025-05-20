@@ -42,7 +42,8 @@ export async function check_if_email_registered(email) {
 
 export function generateHeaders(token) {
     return {
-        "Authorization": `Token ${token}`
+        "Authorization": `Token ${token}`,
+        'Content-Type': 'application/json'
     }
 }
 
