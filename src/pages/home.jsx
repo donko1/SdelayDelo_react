@@ -1,11 +1,19 @@
 import { getUser } from "../utils/auth";
 
+function Header() {
+    return (
+        <div>
+            <h1>Привет!</h1>
+        </div>
+    )
+}
+
 function Home() {
     const isRegistered = getUser()
     return (
         <div>
             {isRegistered ? (
-                <h1>Вы зарегистрированы</h1>
+                <Header/>
             ):(
                 <h1>Вы не зарегистрированы</h1>
             )}

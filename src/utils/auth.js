@@ -1,8 +1,8 @@
 import Cookies from 'js-cookie';
-import { isParallel } from './settings';
+import { get_COOKIE_EXPIRES_DAYS, isParallel } from './settings';
 
 const USER_TOKEN_KEY = 'user-token';
-const COOKIE_EXPIRES_DAYS = 7;
+const COOKIE_EXPIRES_DAYS = get_COOKIE_EXPIRES_DAYS()
 
 export function getUser() {
     return Cookies.get(USER_TOKEN_KEY);
