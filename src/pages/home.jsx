@@ -1,9 +1,10 @@
 import { getUser } from "../utils/auth";
+import { generateGreetingByTime } from "../utils/interface";
 
 function Header() {
     return (
         <div>
-            <h1>Привет!</h1>
+            <h1>{generateGreetingByTime()}</h1>
         </div>
     )
 }

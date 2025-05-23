@@ -3,7 +3,7 @@ import { isParallel } from '../utils/settings';
 import { check_if_email_registered, setUser, generateHeaders } from '../utils/auth';
 import { useNavigate } from "react-router-dom";
 import { toHtml } from '@fortawesome/fontawesome-svg-core';
-import { getUserLocaleInfo } from '../utils/locale';
+import { getUserLocaleInfo, setUTC } from '../utils/locale';
 
 function AuthFlow({ onLogin }) {
   const [email, setEmail] = useState('');
@@ -207,6 +207,8 @@ function AuthFlow({ onLogin }) {
         throw new Error('Ошибка регистрации')
       };
 
+      setUTC(timeZone) 
+      
       try {
 
         url = isParallel() ? "api/change-userinfo/" : "http://localhost:8000/api/change-userinfo/";

@@ -1,4 +1,5 @@
 import { get_COOKIE_EXPIRES_DAYS } from "./settings";
+import Cookies from 'js-cookie';
 
 const COOKIE_EXPIRES_DAYS = get_COOKIE_EXPIRES_DAYS()
 
@@ -18,5 +19,10 @@ export function setUTC(UTC) {
 }
 
 export function getUTC() {
-  return Cookies.get("UTC")
+  let UTC = Cookies.get("UTC")
+  if (UTC === undefined) {
+    UTC = Intl.DateTimeFormat().resolvedOptions().timeZone
+    setUTC(UTC)
+  }
+  return UTC
 }
