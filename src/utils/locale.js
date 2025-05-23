@@ -10,19 +10,15 @@ export function getUserLocaleInfo() {
   return { language, timeZone };
 }
 
-export function setUTC(UTC) {
-  Cookies.set("UTC", UTC, {
-    expires: COOKIE_EXPIRES_DAYS,
-      path: '/',
-      sameSite: 'strict'
-  })
-}
-
-export function getUTC() {
+export function getOrSetUTC() {
   let UTC = Cookies.get("UTC")
   if (UTC === undefined) {
     UTC = Intl.DateTimeFormat().resolvedOptions().timeZone
-    setUTC(UTC)
+    Cookies.set("UTC", UTC, {
+      expires: COOKIE_EXPIRES_DAYS,
+        path: '/',
+        sameSite: 'strict'
+    })
   }
   return UTC
 }
