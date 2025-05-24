@@ -1,5 +1,6 @@
 import { getUser } from "../utils/auth";
 import { generateGreetingByTime } from "../utils/interface";
+import { chooseTextByLang } from "../utils/locale";
 
 function Header() {
     return (
@@ -12,7 +13,7 @@ function ContentNotes() {
     return (
         <div>
             <h1>{generateGreetingByTime()}</h1>
-            <h1></h1>
+            <h1>{chooseTextByLang("Организовывайте свою жизнь с нами.", "Organise your life with us.")}</h1>
         </div>
     )
 }

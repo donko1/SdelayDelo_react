@@ -10,6 +10,16 @@ export function getUserLocaleInfo() {
   return { language, timeZone };
 }
 
+export function chooseTextByLang(ruText, enText, lang=getOrSetLang()) {
+  if (lang.startsWith("ru")) {
+    return ruText;
+  } else if (lang.startsWith("en")) {
+    return enText;
+  } else {
+    return enText; // Default to English if no match
+  }
+}
+
 export function getOrSetLang(langIn="") {
   if (langIn !== "") {
     Cookies.set("Lang", langIn, {
