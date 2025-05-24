@@ -4,7 +4,15 @@ import { generateGreetingByTime } from "../utils/interface";
 function Header() {
     return (
         <div>
+        </div>
+    )
+}
+
+function ContentNotes() {
+    return (
+        <div>
             <h1>{generateGreetingByTime()}</h1>
+            <h1></h1>
         </div>
     )
 }
@@ -14,7 +22,10 @@ function Home() {
     return (
         <div>
             {isRegistered ? (
-                <Header/>
+                <>
+                    <Header/>
+                    <ContentNotes/>
+                </>
             ):(
                 <h1>Вы не зарегистрированы</h1>
             )}

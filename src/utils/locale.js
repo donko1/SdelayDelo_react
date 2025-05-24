@@ -10,7 +10,36 @@ export function getUserLocaleInfo() {
   return { language, timeZone };
 }
 
-export function getOrSetUTC() {
+export function getOrSetLang(langIn="") {
+  if (langIn !== "") {
+    Cookies.set("Lang", langIn, {
+      expires: COOKIE_EXPIRES_DAYS,
+        path: '/',
+        sameSite: 'strict'
+    })
+    return langIn
+  }
+  let lang = Cookies.get("Lang")
+  if (lang === undefined) {
+    
+    lang = navigator.language || navigator.userLanguage;
+    Cookies.set("Lang", lang, {
+      expires: COOKIE_EXPIRES_DAYS,
+        path: '/',
+        sameSite: 'strict'
+    })
+  }
+  return lang
+}
+
+export function getOrSetUTC(UTCIn="") {
+  if (UTCIn !== "") {
+    Cookies.set("UTC", UTCIn, {
+      expires: COOKIE_EXPIRES_DAYS,
+      path: '/',
+      sameSite: 'strict'})
+    return UTCIn
+  }
   let UTC = Cookies.get("UTC")
   if (UTC === undefined) {
     UTC = Intl.DateTimeFormat().resolvedOptions().timeZone
