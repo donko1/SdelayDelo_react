@@ -10,7 +10,7 @@ export function getUserLocaleInfo() {
   return { language, timeZone };
 }
 
-export function chooseTextByLang(ruText, enText, lang=getOrSetLang()) {
+export function chooseTextByLang(ruText, enText, lang) {
   if (lang.startsWith("ru")) {
     return ruText;
   } else if (lang.startsWith("en")) {
