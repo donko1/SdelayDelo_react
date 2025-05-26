@@ -147,6 +147,46 @@ function AuthFlow({ onLogin }) {
     }
   };
 
+  const handleChangePassword = async (e) => {
+    let tkn
+    e.preventDefault()
+    setIsLoading(true)
+    try {
+      const url = isParallel() ? "/api/check_code/" : "http://localhost:8000/api/check_code/";
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, code })
+      });
+
+      if(!response.ok) throw new Error('Неверный код');
+      
+      const data = await response.json();
+      tkn = data.token
+      setError('');
+    } catch(err) {
+      setError(err.message);
+      setIsLoading(false)
+      return;
+    } 
+
+    try {
+      const url = isParallel() ? "api/reset_password" : "http://localhost:8000/api/reset_password"
+      const response = await fetch(url, {
+        method:"POST",
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ token: tkn, new_password:password })
+      })
+      if(!response.ok) throw new Error('Неверный код');
+    }catch(err) {
+      setError(err.message);
+      setIsLoading(false)
+      return;
+    } 
+    setStep("")
+    setIsLoading(false)
+    
+  }
   const handleLogin = async (e) => {
     e.preventDefault();
     setIsLoading(true);
@@ -277,7 +317,7 @@ function AuthFlow({ onLogin }) {
             className="w-full p-2 border rounded"
             required
           />
-          {step === "login" && (
+          {step === "login" && (<>
             <button
             type="submit"
             disabled={isLoading}
@@ -285,9 +325,52 @@ function AuthFlow({ onLogin }) {
           >
             Войти
           </button>
+          <button
+            onClick={() => {
+              setStep("change_password")
+              if (!email) {
+                setEmail(fetchEmailByUsername(username))
+              }
+              sendVerificationCode(email)
+            }}
+            disabled={isLoading}
+            className="w-full p-2 bg-yellow-500 text-white rounded disabled:opacity-50"
+          >
+            Сбросить пароль
+          </button></>
           )}
           
         </form>
+      )}
+
+      {step === "change_password" && (
+              <form onSubmit={handleChangePassword} className="space-y-4">
+                <input
+                  type="text"
+                  value={code}
+                  onChange={(e) => setCode(e.target.value)}
+                  placeholder="Код из письма"
+                  className="w-full p-2 border rounded"
+                  required
+                />
+                <input
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="Новый пароль"
+                  className="w-full p-2 border rounded"
+                  required
+                />
+                <button
+                  type="submit"
+                  disabled={isLoading}
+                  className="w-full p-2 bg-purple-500 text-white rounded disabled:opacity-50"
+                >
+                  Сбросить пароль
+                </button>
+
+              </form>
+
       )}
 
       {step === "FA2" && (
