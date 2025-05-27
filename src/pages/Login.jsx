@@ -177,7 +177,7 @@ function AuthFlow({ onLogin }) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ token: tkn, new_password:password })
       })
-      if(!response.ok) throw new Error('Неверный код');
+      if(!response.ok) throw new Error('Пароль слишком простой');
     }catch(err) {
       setError(err.message);
       setIsLoading(false)
