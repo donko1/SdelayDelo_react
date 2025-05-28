@@ -15,21 +15,45 @@ function Header() {
 function ContentNotes() {
     const lang = getOrSetLang()
     const headers = generateHeaders(getUser())
-    const [notes, setNotes] = useState([]);
+    const [notes, setNotes] = useState({ results: [], next: null });
     const [tags, setTags] = useState([])
     
     useEffect(() => {
-        const fetchNotes = async () => {
-            try {
-                const result = await getAllNotesByUser(headers);
-                setNotes(result);
-            } catch (error) {
-                console.error('Ошибка при загрузке заметок:', error);
-            }
-        };
-        
+    const fetchNotes = async () => {
+        try {
+            const result = await getAllNotesByUser(headers);
+            setNotes(result);
+        } catch (error) {
+            console.error('Ошибка при загрузке заметок:', error);
+        }
+    };
         fetchNotes();
     }, []);
+
+    useEffect(() => {
+    const handleScroll = async () => {
+        if (
+            window.innerHeight + window.scrollY >= document.body.offsetHeight - 300 &&
+            notes.next
+        ) {
+            try {
+                const response = await fetch(notes.next, { headers });
+                const newNotes = await response.json();
+                setNotes(prev => ({
+                    results: [...prev.results, ...newNotes.results],
+                    next: newNotes.next,
+                }));
+            } catch (err) {
+                console.error("Ошибка при загрузке следующей страницы:", err);
+            }
+        }
+    };
+
+            window.addEventListener('scroll', handleScroll);
+            return () => window.removeEventListener('scroll', handleScroll);
+        }, [notes, headers]);
+
+
 
     useEffect(() => {
         const fetchTags = async() => {
