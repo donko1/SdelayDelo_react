@@ -135,20 +135,24 @@ function AddNote({ tags, onNoteCreated }) {
         </div>
     );
 }
-
 function ContentNotes({ notes, tags }) {
     return (
-        <div className="flex flex-wrap gap-4">
+        <div className="flex flex-wrap gap-5">
             {notes?.results?.map((note, index) => (
-                <div key={index} className="w-64 p-4 border rounded-xl shadow-sm">
-                    <h1 className="text-lg font-semibold mb-2">{note.title}</h1>
-                    <div className="flex flex-wrap gap-2">
+                <div 
+                    key={index}
+                    className="w-72 p-4 border-2 border-gray-300 rounded-lg"
+                >
+                    <h1 className="text-lg font-semibold mb-3 pb-2 border-b border-gray-200">
+                        {note.title}
+                    </h1>
+                    <div className="flex flex-wrap gap-2 mt-2">
                         {note.tags?.map((tagId, tagIndex) => {
                             const tag = tags.find(t => t.id === tagId);
                             return tag ? (
                                 <span
                                     key={tagIndex}
-                                    className="px-3 py-1 rounded-full text-sm text-white"
+                                    className="px-3 py-1 rounded text-xs text-white"
                                     style={{ backgroundColor: tag.colour }}
                                 >
                                     #{tag.title}
@@ -160,9 +164,7 @@ function ContentNotes({ notes, tags }) {
             ))}
         </div>
     );
-}
-
-function Home() {
+}function Home() {
     const isRegistered = getUser();
     const lang = getOrSetLang();
     const headers = generateHeaders(getUser());
