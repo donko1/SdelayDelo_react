@@ -9,17 +9,17 @@ import { isParallel } from "../utils/settings";
 function Header() {
 }
 
-function AddNote({ tags, onNoteCreated }) {
-    const [isOpen, setIsOpen] = useState(false);
-    const [title, setTitle] = useState("");
-    const [description, setDescription] = useState("");
-    const [selectedTags, setSelectedTags] = useState([]);
+function NoteForm({ note, tags, onClose, onSubmitSuccess }) {
+    const [title, setTitle] = useState(note?.title || "");
+    const [description, setDescription] = useState(note?.description || "");
+    const [selectedTags, setSelectedTags] = useState(note?.tags || []);
 
-    const toggleForm = () => {
-        setIsOpen(!isOpen);
-        setTitle("");
-        setDescription("");
-        setSelectedTags([]);
+    const handleTagToggle = (tagId) => {
+        setSelectedTags(prev =>
+            prev.includes(tagId)
+                ? prev.filter(id => id !== tagId)
+                : [...prev, tagId]
+        );
     };
 
     const handleSubmit = async (e) => {
@@ -33,9 +33,15 @@ function AddNote({ tags, onNoteCreated }) {
 
         try {
             const headers = generateHeaders(getUser());
-            let url = isParallel() ? "/api/v3/note/" : "http://localhost:8000/api/v3/note/";
+            const baseUrl = isParallel()
+                ? "/api/v3/note/"
+                : "http://localhost:8000/api/v3/note/";
+
+            const url = note?.id ? `${baseUrl}${note.id}/` : baseUrl;
+            const method = note?.id ? "PUT" : "POST";
+
             const response = await fetch(url, {
-                method: "POST",
+                method,
                 headers: {
                     ...headers,
                     "Content-Type": "application/json",
@@ -43,105 +49,84 @@ function AddNote({ tags, onNoteCreated }) {
                 body: JSON.stringify(content),
             });
 
-            if (!response.ok) {
-                throw new Error("Ошибка при создании заметки");
-            }
+            if (!response.ok) throw new Error("Ошибка при отправке заметки");
 
-            const createdNote = await response.json();
-            onNoteCreated(createdNote); 
-            toggleForm();
+            const updatedNote = await response.json();
+            onSubmitSuccess(updatedNote);
+            onClose();
         } catch (error) {
             console.error("Ошибка отправки заметки:", error);
         }
     };
 
-    const handleTagToggle = (tagId) => {
-        setSelectedTags(prev =>
-            prev.includes(tagId)
-                ? prev.filter(id => id !== tagId)
-                : [...prev, tagId]
-        );
-    };
-
     return (
-        <div className="mb-6">
-            <button
-                className="px-4 py-2 bg-black text-white rounded"
-                onClick={toggleForm}
-            >
-                {isOpen ? "Закрыть" : "Добавить заметку"}
-            </button>
+        <form
+            onSubmit={handleSubmit}
+            className="mt-4 w-full max-w-md p-4 border border-gray-300 rounded-lg bg-white space-y-4"
+        >
+            <input
+                type="text"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                placeholder="Заголовок"
+                required
+                className="w-full p-2 border border-gray-300 rounded"
+            />
 
+            <textarea
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                placeholder="Описание"
+                rows={3}
+                required
+                className="w-full p-2 border border-gray-300 rounded"
+            />
 
-            {isOpen && (
-    <form
-        onSubmit={handleSubmit}
-        className="mt-4 w-full max-w-md p-4 border border-gray-300 rounded-lg bg-white space-y-4"
-    >
-        <input
-            type="text"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            placeholder="Заголовок"
-            required
-            className="w-full p-2 border border-gray-300 rounded"
-        />
+            <div className="flex flex-wrap gap-2">
+                {tags.map(tag => (
+                    <button
+                        key={tag.id}
+                        type="button"
+                        onClick={() => handleTagToggle(tag.id)}
+                        className={`px-3 py-1 rounded-full text-sm text-white ${
+                            selectedTags.includes(tag.id)
+                                ? "ring-2 ring-blue-600"
+                                : ""
+                        }`}
+                        style={{ backgroundColor: tag.colour }}
+                    >
+                        #{tag.title}
+                    </button>
+                ))}
+            </div>
 
-        <textarea
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            placeholder="Описание"
-            rows={3}
-            required
-            className="w-full p-2 border border-gray-300 rounded"
-        />
-
-        <div className="flex flex-wrap gap-2">
-            {tags.map(tag => (
+            <div className="flex justify-end gap-2">
                 <button
-                    key={tag.id}
                     type="button"
-                    onClick={() => handleTagToggle(tag.id)}
-                    className={`px-3 py-1 rounded-full text-sm text-white ${
-                        selectedTags.includes(tag.id)
-                            ? "ring-2 ring-blue-600"
-                            : ""
-                    }`}
-                    style={{ backgroundColor: tag.colour }}
+                    onClick={onClose}
+                    className="px-4 py-2 border border-gray-400 rounded"
                 >
-                    #{tag.title}
+                    Отмена
                 </button>
-            ))}
-        </div>
-
-        <div className="flex justify-end gap-2">
-            <button
-                type="button"
-                onClick={toggleForm}
-                className="px-4 py-2 border border-gray-400 rounded"
-            >
-                Отмена
-            </button>
-            <button
-                type="submit"
-                className="px-4 py-2 bg-black text-white rounded"
-            >
-                Создать
-            </button>
-        </div>
-    </form>
-)}
-
-        </div>
+                <button
+                    type="submit"
+                    className="px-4 py-2 bg-black text-white rounded"
+                >
+                    {note ? "Сохранить" : "Создать"}
+                </button>
+            </div>
+        </form>
     );
 }
-function ContentNotes({ notes, tags }) {
+
+function ContentNotes({ notes, tags, onEdit }) {
     return (
         <div className="flex flex-wrap gap-5">
             {notes?.results?.map((note, index) => (
-                <div 
+                <div
                     key={index}
-                    className="w-72 p-4 border-2 border-gray-300 rounded-lg"
+                    className="w-72 p-4 border-2 border-gray-300 rounded-lg cursor-pointer hover:shadow-md"
+                    onClick={() => onEdit(note)}
                 >
                     <h1 className="text-lg font-semibold mb-3 pb-2 border-b border-gray-200">
                         {note.title}
@@ -164,12 +149,16 @@ function ContentNotes({ notes, tags }) {
             ))}
         </div>
     );
-}function Home() {
+}
+
+function Home() {
     const isRegistered = getUser();
     const lang = getOrSetLang();
     const headers = generateHeaders(getUser());
 
     const [notes, setNotes] = useState({ results: [], next: null });
+    const [editingNote, setEditingNote] = useState(null);
+    const [isFormOpen, setIsFormOpen] = useState(false);
     const [tags, setTags] = useState([]);
 
     useEffect(() => {
@@ -235,14 +224,49 @@ function ContentNotes({ notes, tags }) {
                     lang
                 )}
             </h2>
-            <AddNote tags={tags} onNoteCreated={(newNote) => {
-                setNotes(prev => ({
-                    ...prev,
-                    results: [newNote, ...prev.results]
-                }));
-            }} />
+            <button
+                    className="px-4 py-2 bg-black text-white rounded"
+                    onClick={() => {
+                        setEditingNote(null);
+                        setIsFormOpen(true);
+                    }}
+                >
+                    {isFormOpen ? "Закрыть" : "Добавить заметку"}
+                </button>
 
-            <ContentNotes notes={notes} tags={tags} />
+                {isFormOpen && (
+                    <NoteForm
+                        note={editingNote}
+                        tags={tags}
+                        onClose={() => setIsFormOpen(false)}
+                        onSubmitSuccess={(updatedNote) => {
+                            setNotes(prev => {
+                                const existing = prev.results.find(n => n.id === updatedNote.id);
+                                if (existing) {
+                                    return {
+                                        ...prev,
+                                        results: prev.results.map(n =>
+                                            n.id === updatedNote.id ? updatedNote : n
+                                        )
+                                    };
+                                } else {
+                                    return {
+                                        ...prev,
+                                        results: [updatedNote, ...prev.results],
+                                    };
+                                }
+                            });
+                        }}
+                    />
+                )}
+            <ContentNotes
+                notes={notes}
+                tags={tags}
+                onEdit={(note) => {
+                    setEditingNote(note);
+                    setIsFormOpen(true);
+                }}
+            />
         </div>
     );
 }
