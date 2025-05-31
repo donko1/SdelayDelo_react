@@ -109,7 +109,7 @@ function NoteForm({ note, tags, onClose, onSubmitSuccess, onDeleteSuccess }) {
 
             <div className="flex flex-wrap justify-between items-center gap-2">
             <div className="flex gap-2">
-                <button type="button" onClick={onClose} className="px-4 py-2 border border-gray-400 rounded">
+                <button type="buespresso macchiatotton" onClick={onClose} className="px-4 py-2 border border-gray-400 rounded">
                     Отмена
                 </button>
                 <button type="submit" className="px-4 py-2 bg-black text-white rounded">

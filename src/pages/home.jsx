@@ -69,76 +69,78 @@ function Home() {
     }
 
     return (
-        <div className="p-6 space-y-6">
-            <Header />
-            <h1 className="text-3xl font-bold">{generateGreetingByTime()}</h1>
-            <h2 className="text-xl text-gray-600">
-                {chooseTextByLang(
-                    "Организовывайте свою жизнь с нами.",
-                    "Organise your life with us.",
-                    lang
-                )}
-            </h2>
-
-            <div className="mb-6">
-                <button
-                    className={`px-4 py-2 text-white rounded ${
-                        editingNote ? "bg-gray-400 cursor-not-allowed" : "bg-black"
-                    }`}
-                    onClick={() => !editingNote && setEditingNote({})}
-                    disabled={!!editingNote}
-                >
-                    Добавить заметку
-                </button>
+        <div className="relative">
+            <div className="fixed left-0 top-0 bottom-0 w-64 bg-[#6a6a6a] text-white p-4 overflow-y-auto">
+                <Header />
             </div>
+                <div className="ml-64 p-4">
+                    <h1 className="text-3xl font-bold">{generateGreetingByTime()}</h1>
+                    <h2 className="text-xl text-gray-600">
+                        {chooseTextByLang(
+                            "Организовывайте свою жизнь с нами.",
+                            "Organise your life with us.",
+                            lang
+                        )}
+                    </h2>
 
-            {/* Показываем форму только для новой заметки */}
-            {editingNote && !editingNote.id && (
-                <NoteForm
-                    note={null}
-                    tags={tags}
-                    onClose={() => setEditingNote(null)}
-                    onSubmitSuccess={(newNote) => {
+                    <div className="mb-6">
+                        <button
+                            className={`px-4 py-2 text-white rounded ${
+                                editingNote ? "bg-gray-400 cursor-not-allowed" : "bg-black"
+                            }`}
+                            onClick={() => !editingNote && setEditingNote({})}
+                            disabled={!!editingNote}
+                        >
+                            Добавить заметку
+                        </button>
+                    </div>
+
+                    {editingNote && !editingNote.id && (
+                        <NoteForm
+                            note={null}
+                            tags={tags}
+                            onClose={() => setEditingNote(null)}
+                            onSubmitSuccess={(newNote) => {
+                                setNotes(prev => ({
+                                    ...prev,
+                                    results: [newNote, ...prev.results],
+                                }));
+                                setEditingNote(null);
+                            }}
+                            onDeleteSuccess={() => {
+                                setEditingNote(null);
+                            }}
+                        />
+                    )}
+
+                    <ContentNotes
+                        notes={notes}
+                        tags={tags}
+                        editingNote={editingNote}
+                        onEdit={(note) => setEditingNote(note)}
+                        onCloseEdit={() => setEditingNote(null)}
+                        onSubmitSuccess={(updatedNote) => {
+                            setNotes(prev => ({
+                                ...prev,
+                                results: prev.results.map(n =>
+                                    n.id === updatedNote.id ? updatedNote : n
+                                ),
+                            }));
+                            setEditingNote(null);
+                        }}
+                        onDelete={(deletedId) => {
                         setNotes(prev => ({
                             ...prev,
-                            results: [newNote, ...prev.results],
+                            results: prev.results.filter(n => n.id !== deletedId),
                         }));
-                        setEditingNote(null);
+                        if (editingNote?.id === deletedId) {
+                            setEditingNote(null);
+                        }
                     }}
-                    onDeleteSuccess={() => {
-                        // ничего делать не надо, т.к. она не сохранена
-                        setEditingNote(null);
-                    }}
-                />
-            )}
 
-            <ContentNotes
-                notes={notes}
-                tags={tags}
-                editingNote={editingNote}
-                onEdit={(note) => setEditingNote(note)}
-                onCloseEdit={() => setEditingNote(null)}
-                onSubmitSuccess={(updatedNote) => {
-                    setNotes(prev => ({
-                        ...prev,
-                        results: prev.results.map(n =>
-                            n.id === updatedNote.id ? updatedNote : n
-                        ),
-                    }));
-                    setEditingNote(null);
-                }}
-                onDelete={(deletedId) => {
-                setNotes(prev => ({
-                    ...prev,
-                    results: prev.results.filter(n => n.id !== deletedId),
-                }));
-                if (editingNote?.id === deletedId) {
-                    setEditingNote(null);
-                }
-            }}
-
-            />
-        </div>
+                    />
+                    </div>
+                </div>
     );
 }
 
