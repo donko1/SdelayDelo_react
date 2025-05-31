@@ -2,7 +2,8 @@ import { useState } from "react";
 import { generateHeaders, getUser } from "../utils/auth";
 import { isParallel } from "../utils/settings";
 
-function NoteForm({ note, tags, onClose, onSubmitSuccess }) {
+
+function NoteForm({ note, tags, onClose, onSubmitSuccess, onDeleteSuccess }) {
     const [title, setTitle] = useState(note?.title || "");
     const [description, setDescription] = useState(note?.description || "");
     const [selectedTags, setSelectedTags] = useState(note?.tags || []);
@@ -24,6 +25,7 @@ function NoteForm({ note, tags, onClose, onSubmitSuccess }) {
             const baseUrl = isParallel()
                 ? "/api/v3/note/"
                 : "http://localhost:8000/api/v3/note/";
+
             const url = note?.id ? `${baseUrl}${note.id}/` : baseUrl;
             const method = note?.id ? "PUT" : "POST";
 
@@ -46,11 +48,31 @@ function NoteForm({ note, tags, onClose, onSubmitSuccess }) {
         }
     };
 
+    const handleDelete = async () => {
+        if (!note?.id) return;
+
+        try {
+            const headers = generateHeaders(getUser());
+            const baseUrl = isParallel()
+                ? "/api/v3/note/"
+                : "http://localhost:8000/api/v3/note/";
+            const url = `${baseUrl}${note.id}/`;
+
+            const response = await fetch(url, {
+                method: "DELETE",
+                headers,
+            });
+
+            if (!response.ok) throw new Error("Ошибка при удалении");
+            console.log("Заметка успешно удалена");
+            onDeleteSuccess(note.id);
+        } catch (error) {
+            console.error("Ошибка удаления заметки:", error);
+        }
+    };
+
     return (
-        <form
-            onSubmit={handleSubmit}
-            className="mt-4 w-full max-w-md p-4 border border-gray-300 rounded-lg bg-white space-y-4"
-        >
+        <form onSubmit={handleSubmit} className=" mt-4 w-full max-w-md p-4 border border-gray-300 rounded-lg bg-white space-y-4">
             <input
                 type="text"
                 value={title}
@@ -74,7 +96,9 @@ function NoteForm({ note, tags, onClose, onSubmitSuccess }) {
                         type="button"
                         onClick={() => handleTagToggle(tag.id)}
                         className={`px-3 py-1 rounded-full text-sm text-white ${
-                            selectedTags.includes(tag.id) ? "ring-2 ring-blue-600" : ""
+                            selectedTags.includes(tag.id)
+                                ? "ring-2 ring-blue-600"
+                                : ""
                         }`}
                         style={{ backgroundColor: tag.colour }}
                     >
@@ -82,23 +106,31 @@ function NoteForm({ note, tags, onClose, onSubmitSuccess }) {
                     </button>
                 ))}
             </div>
-            <div className="flex justify-end gap-2">
-                <button
-                    type="button"
-                    onClick={onClose}
-                    className="px-4 py-2 border border-gray-400 rounded"
-                >
+
+            <div className="flex flex-wrap justify-between items-center gap-2">
+            <div className="flex gap-2">
+                <button type="button" onClick={onClose} className="px-4 py-2 border border-gray-400 rounded">
                     Отмена
                 </button>
-                <button
-                    type="submit"
-                    className="px-4 py-2 bg-black text-white rounded"
-                >
-                    {note ? "Сохранить" : "Создать"}
+                <button type="submit" className="px-4 py-2 bg-black text-white rounded">
+                    {note?.id ? "Сохранить" : "Создать"}
                 </button>
             </div>
+            {note?.id && (
+                <div className="flex justify-end w-full sm:w-auto">
+                    <button
+                        type="button"
+                        onClick={handleDelete}
+                        className="px-4 py-2 bg-red-600 text-white rounded"
+                    >
+                        Удалить
+                    </button>
+                </div>
+            )}
+        </div>
         </form>
     );
 }
+
 
 export default NoteForm;

@@ -1,6 +1,6 @@
 import NoteForm from "./NoteForm";
 
-function ContentNotes({ notes, tags, editingNote, onEdit, onCloseEdit, onSubmitSuccess }) {
+function ContentNotes({ notes, tags, editingNote, onEdit, onCloseEdit, onSubmitSuccess, onDelete }) {
     return (
         <div className="flex flex-wrap gap-5">
             {notes?.results?.map((note) => (
@@ -14,6 +14,9 @@ function ContentNotes({ notes, tags, editingNote, onEdit, onCloseEdit, onSubmitS
                             tags={tags}
                             onClose={onCloseEdit}
                             onSubmitSuccess={onSubmitSuccess}
+                            onDeleteSuccess={(deletedId) => {
+                                onDelete(deletedId); 
+                            }}
                         />
                     ) : (
                         <div onClick={() => onEdit(note)} className="cursor-pointer">

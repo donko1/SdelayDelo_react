@@ -30,6 +30,18 @@ function Home() {
     }, []);
 
     useEffect(() => {
+        const fetchTags = async () => {
+            try {
+                const result = await getAllTagsByUser(headers);
+                setTags(result);
+            } catch (error) {
+                console.log("Ошибка при загрузке тэгов: ", error);
+            }
+        };
+        fetchTags();
+    }, []);
+
+    useEffect(() => {
         const handleScroll = async () => {
             if (
                 window.innerHeight + window.scrollY >= document.body.offsetHeight - 300 &&
@@ -52,19 +64,6 @@ function Home() {
         return () => window.removeEventListener("scroll", handleScroll);
     }, [notes, headers]);
 
-    useEffect(() => {
-        const fetchTags = async () => {
-            try {
-                const result = await getAllTagsByUser(headers);
-                setTags(result);
-            } catch (error) {
-                console.log("Ошибка при загрузке тэгов: ", error);
-            }
-        };
-
-        fetchTags();
-    }, []);
-
     if (!isRegistered) {
         return <h1>Вы не зарегистрированы</h1>;
     }
@@ -81,17 +80,19 @@ function Home() {
                 )}
             </h2>
 
-            {editingNote === null && (
-                <div className="mb-6">
-                    <button
-                        className="px-4 py-2 bg-black text-white rounded"
-                        onClick={() => setEditingNote({})} // пустой объект означает создание
-                    >
-                        Добавить заметку
-                    </button>
-                </div>
-            )}
+            <div className="mb-6">
+                <button
+                    className={`px-4 py-2 text-white rounded ${
+                        editingNote ? "bg-gray-400 cursor-not-allowed" : "bg-black"
+                    }`}
+                    onClick={() => !editingNote && setEditingNote({})}
+                    disabled={!!editingNote}
+                >
+                    Добавить заметку
+                </button>
+            </div>
 
+            {/* Показываем форму только для новой заметки */}
             {editingNote && !editingNote.id && (
                 <NoteForm
                     note={null}
@@ -102,6 +103,10 @@ function Home() {
                             ...prev,
                             results: [newNote, ...prev.results],
                         }));
+                        setEditingNote(null);
+                    }}
+                    onDeleteSuccess={() => {
+                        // ничего делать не надо, т.к. она не сохранена
                         setEditingNote(null);
                     }}
                 />
@@ -122,11 +127,20 @@ function Home() {
                     }));
                     setEditingNote(null);
                 }}
+                onDelete={(deletedId) => {
+                setNotes(prev => ({
+                    ...prev,
+                    results: prev.results.filter(n => n.id !== deletedId),
+                }));
+                if (editingNote?.id === deletedId) {
+                    setEditingNote(null);
+                }
+            }}
+
             />
         </div>
     );
 }
-
 
 export default function HomePage() {
     return <Home />;
