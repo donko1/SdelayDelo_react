@@ -119,37 +119,48 @@ function NoteForm({ note, tags, onClose, onSubmitSuccess }) {
     );
 }
 
-function ContentNotes({ notes, tags, onEdit }) {
+function ContentNotes({ notes, tags, editingNote, onEdit, onCloseEdit, onSubmitSuccess }) {
     return (
         <div className="flex flex-wrap gap-5">
             {notes?.results?.map((note, index) => (
                 <div
-                    key={index}
-                    className="w-72 p-4 border-2 border-gray-300 rounded-lg cursor-pointer hover:shadow-md"
-                    onClick={() => onEdit(note)}
+                    key={note.id}
+                    className="w-72 p-4 border-2 border-gray-300 rounded-lg hover:shadow-md"
                 >
-                    <h1 className="text-lg font-semibold mb-3 pb-2 border-b border-gray-200">
-                        {note.title}
-                    </h1>
-                    <div className="flex flex-wrap gap-2 mt-2">
-                        {note.tags?.map((tagId, tagIndex) => {
-                            const tag = tags.find(t => t.id === tagId);
-                            return tag ? (
-                                <span
-                                    key={tagIndex}
-                                    className="px-3 py-1 rounded text-xs text-white"
-                                    style={{ backgroundColor: tag.colour }}
-                                >
-                                    #{tag.title}
-                                </span>
-                            ) : null;
-                        })}
-                    </div>
+                    {editingNote?.id === note.id ? (
+                        <NoteForm
+                            note={note}
+                            tags={tags}
+                            onClose={onCloseEdit}
+                            onSubmitSuccess={onSubmitSuccess}
+                        />
+                    ) : (
+                        <div onClick={() => onEdit(note)} className="cursor-pointer">
+                            <h1 className="text-lg font-semibold mb-3 pb-2 border-b border-gray-200">
+                                {note.title}
+                            </h1>
+                            <div className="flex flex-wrap gap-2 mt-2">
+                                {note.tags?.map((tagId, tagIndex) => {
+                                    const tag = tags.find(t => t.id === tagId);
+                                    return tag ? (
+                                        <span
+                                            key={tagIndex}
+                                            className="px-3 py-1 rounded text-xs text-white"
+                                            style={{ backgroundColor: tag.colour }}
+                                        >
+                                            #{tag.title}
+                                        </span>
+                                    ) : null;
+                                })}
+                            </div>
+                        </div>
+                    )}
                 </div>
             ))}
         </div>
     );
 }
+
 
 function Home() {
     const isRegistered = getUser();
@@ -158,7 +169,6 @@ function Home() {
 
     const [notes, setNotes] = useState({ results: [], next: null });
     const [editingNote, setEditingNote] = useState(null);
-    const [isFormOpen, setIsFormOpen] = useState(false);
     const [tags, setTags] = useState([]);
 
     useEffect(() => {
@@ -224,52 +234,53 @@ function Home() {
                     lang
                 )}
             </h2>
-            <button
-                    className="px-4 py-2 bg-black text-white rounded"
-                    onClick={() => {
-                        setEditingNote(null);
-                        setIsFormOpen(true);
-                    }}
-                >
-                    {isFormOpen ? "Закрыть" : "Добавить заметку"}
-                </button>
 
-                {isFormOpen && (
-                    <NoteForm
-                        note={editingNote}
-                        tags={tags}
-                        onClose={() => setIsFormOpen(false)}
-                        onSubmitSuccess={(updatedNote) => {
-                            setNotes(prev => {
-                                const existing = prev.results.find(n => n.id === updatedNote.id);
-                                if (existing) {
-                                    return {
-                                        ...prev,
-                                        results: prev.results.map(n =>
-                                            n.id === updatedNote.id ? updatedNote : n
-                                        )
-                                    };
-                                } else {
-                                    return {
-                                        ...prev,
-                                        results: [updatedNote, ...prev.results],
-                                    };
-                                }
-                            });
-                        }}
-                    />
-                )}
+            {editingNote === null && (
+                <div className="mb-6">
+                    <button
+                        className="px-4 py-2 bg-black text-white rounded"
+                        onClick={() => setEditingNote({})} // пустой объект означает создание
+                    >
+                        Добавить заметку
+                    </button>
+                </div>
+            )}
+
+            {editingNote && !editingNote.id && (
+                <NoteForm
+                    note={null}
+                    tags={tags}
+                    onClose={() => setEditingNote(null)}
+                    onSubmitSuccess={(newNote) => {
+                        setNotes(prev => ({
+                            ...prev,
+                            results: [newNote, ...prev.results],
+                        }));
+                        setEditingNote(null);
+                    }}
+                />
+            )}
+
             <ContentNotes
                 notes={notes}
                 tags={tags}
-                onEdit={(note) => {
-                    setEditingNote(note);
-                    setIsFormOpen(true);
+                editingNote={editingNote}
+                onEdit={(note) => setEditingNote(note)}
+                onCloseEdit={() => setEditingNote(null)}
+                onSubmitSuccess={(updatedNote) => {
+                    setNotes(prev => ({
+                        ...prev,
+                        results: prev.results.map(n =>
+                            n.id === updatedNote.id ? updatedNote : n
+                        ),
+                    }));
+                    setEditingNote(null);
                 }}
             />
         </div>
     );
 }
+
 
 export default function HomePage() {
     return <Home />;
