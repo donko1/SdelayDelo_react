@@ -12,9 +12,10 @@ export function UserProvider({ children }) {
     let url = isParallel() 
       ? '/api/whoami' 
       : 'http://localhost:8000/api/whoami';
+    let headers = generateHeaders(getUser())
     fetch(url, {
         method: 'GET',
-        headers: generateHeaders(getUser()),
+        headers: headers,
     })
       .then(res => {
         if (!res.ok) throw new Error('Ошибка запроса');
