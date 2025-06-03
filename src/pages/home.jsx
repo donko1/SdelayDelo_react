@@ -71,7 +71,7 @@ function Home() {
     return (
         <div className="relative">
             <div className="fixed left-0 top-0 bottom-0 w-64 bg-[#6a6a6a] text-white p-4 overflow-y-auto">
-                <Header />
+                <Header activeElem="myDay"/>
             </div>
                 <div className="ml-64 p-4">
                     <h1 className="text-3xl font-bold">{generateGreetingByTime()}</h1>
