@@ -16,6 +16,7 @@ function Home() {
     const [notes, setNotes] = useState({ results: [], next: null });
     const [editingNote, setEditingNote] = useState(null);
     const [tags, setTags] = useState([]);
+    const [actelem, setAct] = useState("myDay")
 
     useEffect(() => {
         const fetchNotes = async () => {
@@ -71,8 +72,10 @@ function Home() {
     return (
         <div className="relative">
             <div className="fixed left-0 top-0 bottom-0 w-64 bg-[#6a6a6a] text-white p-4 overflow-y-auto">
-                <Header activeElem="myDay"/>
+                <Header activeElem={actelem} setAct={setAct}/>
             </div>
+
+            {actelem === "myDay" && (
                 <div className="ml-64 p-4">
                     <h1 className="text-3xl font-bold">{generateGreetingByTime()}</h1>
                     <h2 className="text-xl text-gray-600">
@@ -140,7 +143,9 @@ function Home() {
 
                     />
                     </div>
-                </div>
+
+            )}
+        </div>
     );
 }
 
