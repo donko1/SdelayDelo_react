@@ -3,7 +3,7 @@
 import { useUser } from '../context/UserContext';
 import { chooseTextByLang, getOrSetLang } from '../utils/locale';
 
-function Header({ activeElem, setAct }) {
+function Header({ activeElem, setAct, addNoteFunc }) {
     const { username } = useUser();
     const lang = getOrSetLang();
 
@@ -43,8 +43,17 @@ function Header({ activeElem, setAct }) {
             <div className="h-24 flex items-center justify-center">
                 <h1 className="text-[25px]">{username}</h1>
             </div>
-            {dataForElems.map(item => (
-                <div key={item.id} className="h-24 flex items-center justify-center cursor-pointer" onClick={() => setAct(item.id)} >
+            {dataForElems.map(item => 
+            (
+                <div 
+                    key={item.id} 
+                    className="h-24 flex items-center justify-center cursor-pointer" 
+                    onClick={() => item.id === "addNote" 
+                        ? addNoteFunc() 
+                        : setAct(item.id)
+                    }
+                >
+
                     <span
                         className="text-[25px] text-center"
                         style={{ color: activeElem === item.id ? '#191212' : 'white' }}

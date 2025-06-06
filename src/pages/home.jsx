@@ -72,7 +72,7 @@ function Home() {
     return (
         <div className="relative">
             <div className="fixed left-0 top-0 bottom-0 w-64 bg-[#6a6a6a] text-white p-4 overflow-y-auto">
-                <Header activeElem={actelem} setAct={setAct}/>
+                <Header activeElem={actelem} setAct={setAct} addNoteFunc={() => !editingNote && setEditingNote({})}/>
             </div>
 
             {actelem === "myDay" && (
