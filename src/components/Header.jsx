@@ -3,7 +3,7 @@
 import { useUser } from '../context/UserContext';
 import { chooseTextByLang, getOrSetLang } from '../utils/locale';
 
-function Header({ activeElem, setAct, addNoteFunc }) {
+function Header({ activeElem, setAct, addNoteFunc, setOpenArchived }) {
     const { username } = useUser();
     const lang = getOrSetLang();
 
@@ -48,11 +48,17 @@ function Header({ activeElem, setAct, addNoteFunc }) {
                 <div 
                     key={item.id} 
                     className="h-24 flex items-center justify-center cursor-pointer" 
-                    onClick={() => item.id === "addNote" 
-                        ? addNoteFunc() 
-                        : setAct(item.id)
-                    }
+                    onClick={() => {
+                        if (item.id === "addNote") {
+                            addNoteFunc();
+                        } else if (item.id === "archive") {
+                            setOpenArchived(true);
+                        } else {
+                            setAct(item.id);
+                        }
+                    }}
                 >
+
 
                     <span
                         className="text-[25px] text-center"

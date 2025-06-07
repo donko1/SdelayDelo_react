@@ -7,6 +7,7 @@ import { getAllTagsByUser } from "../utils/tags";
 import Header from "../components/Header";
 import ContentNotes from "../components/ContentNotes";
 import NoteForm from "../components/NoteForm";
+import ArchivedNotes from "../components/ArchivedNotes";
 
 function Home() {
     const isRegistered = getUser();
@@ -14,6 +15,7 @@ function Home() {
     const headers = generateHeaders(getUser());
 
     const [notes, setNotes] = useState({ results: [], next: null });
+    const [openArchived, setOpenArchived] = useState(false)
     const [editingNote, setEditingNote] = useState(null);
     const [tags, setTags] = useState([]);
     const [actelem, setAct] = useState("myDay")
@@ -72,8 +74,14 @@ function Home() {
     return (
         <div className="relative">
             <div className="fixed left-0 top-0 bottom-0 w-64 bg-[#6a6a6a] text-white p-4 overflow-y-auto">
-                <Header activeElem={actelem} setAct={setAct} addNoteFunc={() => !editingNote && setEditingNote({})}/>
+                <Header activeElem={actelem} setAct={setAct} addNoteFunc={() => !editingNote && setEditingNote({})} setOpenArchived={setOpenArchived} />
             </div>
+            {openArchived && (
+                <ArchivedNotes 
+                    onClose={() => setOpenArchived(false)}
+                    lang={lang}
+                />
+            )}
 
             {actelem === "myDay" && (
                 <div className="ml-64 p-4">
