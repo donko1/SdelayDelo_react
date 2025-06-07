@@ -1,6 +1,28 @@
+import { useEffect, useState } from "react";
 import { chooseTextByLang } from "../utils/locale";
+import { getArchivedNotesByUser } from "../utils/notes";
 
-export default function ArchivedNotes({ onClose, lang }) {
+export default function ArchivedNotes({ onClose, lang, headers }) {
+    const [archivedNotes, setArchivedNotes] = useState({ results: [], next: null });
+
+    useEffect(() => {
+        const fetchArchivedNotes = async () => {
+            try {
+                const result = await getArchivedNotesByUser(headers);
+                if (result !== 1) {
+                    setArchivedNotes(result);
+                } else {
+                    console.error("Ошибка при загрузке архивных заметок");
+                }
+            }
+            catch (error) {
+                console.error("Ошибка при загрузке архивных заметок:", error);
+            }
+        }
+        fetchArchivedNotes();
+    }
+    , [headers]);
+    console.log(archivedNotes);
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
             <div 

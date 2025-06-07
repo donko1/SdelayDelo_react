@@ -80,6 +80,7 @@ function Home() {
                 <ArchivedNotes 
                     onClose={() => setOpenArchived(false)}
                     lang={lang}
+                    headers={headers}
                 />
             )}
 
