@@ -22,7 +22,6 @@ export default function ArchivedNotes({ onClose, lang, headers }) {
         fetchArchivedNotes();
     }
     , [headers]);
-    console.log(archivedNotes);
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
             <div 
@@ -47,14 +46,26 @@ export default function ArchivedNotes({ onClose, lang, headers }) {
                         </svg>
                     </button>
                 </div>
-                
-                <div className="p-4">
-                    {chooseTextByLang(
-                        "Здесь будут отображаться ваши архивные заметки...",
-                        "Your archived notes will appear here...",
-                        lang
-                    )}
+                <div className="p-4 max-w-2xl mx-auto">
+            {archivedNotes?.results?.map((note) => (
+                <div 
+                key={note.id}
+                className="flex items-center p-3 mb-2 bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow border border-gray-100"
+                >
+                <div className="flex items-center justify-center mr-3">
+                    <input 
+                    type="checkbox"
+                    className="h-4 w-4 text-indigo-600 rounded-full focus:ring-indigo-500 cursor-pointer"
+                    />
                 </div>
+                
+                <h1 className="text-gray-800 font-medium text-lg truncate">
+                    {note.title}
+                </h1>
+                </div>
+            ))}
+            </div>
+
             </div>
         </div>
     );
