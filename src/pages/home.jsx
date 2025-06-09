@@ -20,17 +20,19 @@ function Home() {
     const [tags, setTags] = useState([]);
     const [actelem, setAct] = useState("myDay")
 
+    const fetchNotes = async () => {
+    try {
+        const result = await getAllNotesByUser(headers);
+        setNotes(result);
+    } catch (error) {
+        console.error("Ошибка при загрузке заметок:", error);
+    }
+    };
+
     useEffect(() => {
-        const fetchNotes = async () => {
-            try {
-                const result = await getAllNotesByUser(headers);
-                setNotes(result);
-            } catch (error) {
-                console.error("Ошибка при загрузке заметок:", error);
-            }
-        };
         fetchNotes();
     }, []);
+
 
     useEffect(() => {
         const fetchTags = async () => {
@@ -81,6 +83,7 @@ function Home() {
                     onClose={() => setOpenArchived(false)}
                     lang={lang}
                     headers={headers}
+                    onRefresh={fetchNotes}
                 />
             )}
 

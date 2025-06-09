@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { chooseTextByLang } from "../utils/locale";
 import { getArchivedNotesByUser, removeFromArchive } from "../utils/notes";
 
-export default function ArchivedNotes({ onClose, lang, headers }) {
+export default function ArchivedNotes({ onClose, lang, headers, onRefresh }) {
     const [archivedNotes, setArchivedNotes] = useState({ results: [], next: null });
 
     useEffect(() => {
@@ -56,7 +56,19 @@ export default function ArchivedNotes({ onClose, lang, headers }) {
                     <input 
                     type="checkbox"
                     className="h-4 w-4 text-indigo-600 rounded-full focus:ring-indigo-500 cursor-pointer"
-                    onClick={() => removeFromArchive(note.id, headers)}
+                    onClick={
+                        async () => {
+                        try {
+                            await removeFromArchive(note.id, headers);
+                            onRefresh();
+                            setArchivedNotes(prev => ({
+                                ...prev,
+                                results: prev.results.filter(n => n.id !== note.id),
+                            }));
+                        } catch (error) {
+                            console.error("Ошибка при удалении из архива:", error);
+                        }
+                    }}
                     />
                 </div>
                 
