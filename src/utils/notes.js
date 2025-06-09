@@ -1,5 +1,34 @@
 import { isParallel } from "./settings";
 
+export async function removeFromArchive(id, headers) {
+    const baseUrl = isParallel()
+    ? "/api/v3/note/"
+    : "http://localhost:8000/api/v3/note/";
+    const url = id ? `${baseUrl}${id}/` : baseUrl;
+
+    try {
+        const resp = await fetch(url, {
+            method:"PATCH",
+            headers: {
+                    ...headers,
+                    "Content-Type": "application/json",
+                },
+            body: JSON.stringify({
+                is_archived: false
+            })
+        })
+        if (!resp.ok) {
+            console.log("Error on side of server")
+            return 1
+        }
+        const data = await resp.json()
+        return data;
+    }
+    catch (error) {
+        console.log(`Error! ${error}`)
+        return 1
+    }
+}
 export async function getAllNotesByUser(headers) {
     let url = isParallel() ? "/api/v3/note" : "http://127.0.0.1:8000/api/v3/note/"
     try {
@@ -14,9 +43,6 @@ export async function getAllNotesByUser(headers) {
     catch (error) {
         console.log(`Error! ${error}`)
         return 1;
-    }
-    finally {
-
     }
 }
 

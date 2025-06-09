@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { chooseTextByLang } from "../utils/locale";
-import { getArchivedNotesByUser } from "../utils/notes";
+import { getArchivedNotesByUser, removeFromArchive } from "../utils/notes";
 
 export default function ArchivedNotes({ onClose, lang, headers }) {
     const [archivedNotes, setArchivedNotes] = useState({ results: [], next: null });
@@ -56,6 +56,7 @@ export default function ArchivedNotes({ onClose, lang, headers }) {
                     <input 
                     type="checkbox"
                     className="h-4 w-4 text-indigo-600 rounded-full focus:ring-indigo-500 cursor-pointer"
+                    onClick={() => removeFromArchive(note.id, headers)}
                     />
                 </div>
                 
