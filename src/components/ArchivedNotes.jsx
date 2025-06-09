@@ -22,6 +22,20 @@ export default function ArchivedNotes({ onClose, lang, headers, onRefresh }) {
         fetchArchivedNotes();
     }
     , [headers]);
+    useEffect(() => {
+        const handleKeyDown = (e) => {
+            if (e.key === "Escape") {
+                onClose();
+            }
+        };
+
+        document.addEventListener("keydown", handleKeyDown);
+
+        return () => {
+            document.removeEventListener("keydown", handleKeyDown);
+        };
+    }, [onClose]);
+    
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
             <div 
