@@ -1,9 +1,10 @@
 import { useState } from "react";
 import { generateHeaders, getUser } from "../utils/auth";
 import { isParallel } from "../utils/settings";
+import { addNoteToArchive } from "../utils/notes";
 
 
-function NoteForm({ note, tags, onClose, onSubmitSuccess, onDeleteSuccess }) {
+function NoteForm({ note, tags, onClose, onSubmitSuccess, onDeleteSuccess, onArchivedSuccess }) {
     const [title, setTitle] = useState(note?.title || "");
     const [description, setDescription] = useState(note?.description || "");
     const [selectedTags, setSelectedTags] = useState(note?.tags || []);
@@ -47,6 +48,23 @@ function NoteForm({ note, tags, onClose, onSubmitSuccess, onDeleteSuccess }) {
             console.error("Ошибка отправки заметки:", error);
         }
     };
+    
+    const handleAddToArchive = async () => {
+        try {
+            const headers = generateHeaders(getUser());
+            await addNoteToArchive(note.id, headers); 
+            if (onArchivedSuccess) {
+                await onArchivedSuccess(); 
+            }
+
+            onClose();
+        } catch (error) {
+            console.error("Ошибка при архивировании:", error);
+        }
+    };
+
+
+
 
     const handleDelete = async () => {
         if (!note?.id) return;
@@ -117,15 +135,22 @@ function NoteForm({ note, tags, onClose, onSubmitSuccess, onDeleteSuccess }) {
                 </button>
             </div>
             {note?.id && (
-                <div className="flex justify-end w-full sm:w-auto">
-                    <button
-                        type="button"
-                        onClick={handleDelete}
-                        className="px-4 py-2 bg-red-600 text-white rounded"
-                    >
-                        Удалить
-                    </button>
-                </div>
+                <>
+                    <div className="flex justify-end w-full sm:w-auto">
+                        <button
+                            type="button"
+                            onClick={handleDelete}
+                            className="px-4 py-2 bg-red-600 text-white rounded"
+                        >
+                            Удалить
+                        </button>
+                    </div>
+                    <div className="flex justify-end w-full sm:w-auto">
+                        <button type="button" onClick={handleAddToArchive} className="px-4 py-2 bg-yellow-600 text-white rounded">
+                            Архивировать
+                        </button>
+                    </div>
+                </>
             )}
         </div>
         </form>

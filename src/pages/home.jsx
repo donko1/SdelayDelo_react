@@ -21,12 +21,12 @@ function Home() {
     const [actelem, setAct] = useState("myDay")
 
     const fetchNotes = async () => {
-    try {
-        const result = await getAllNotesByUser(headers);
-        setNotes(result);
-    } catch (error) {
-        console.error("Ошибка при загрузке заметок:", error);
-    }
+        try {
+            const result = await getAllNotesByUser(headers);
+            setNotes(result);
+        } catch (error) {
+            console.error("Ошибка при загрузке заметок:", error);
+        }
     };
 
     useEffect(() => {
@@ -134,6 +134,7 @@ function Home() {
                         editingNote={editingNote}
                         onEdit={(note) => setEditingNote(note)}
                         onCloseEdit={() => setEditingNote(null)}
+                        onArchivedSuccess={fetchNotes}
                         onSubmitSuccess={(updatedNote) => {
                             setNotes(prev => ({
                                 ...prev,
