@@ -1,5 +1,10 @@
 import { isParallel } from "./settings";
 
+export function getTagsForNote(note, tags) {
+    if (!note.tags?.length) return [];
+    return tags.filter(tag => note.tags.includes(tag.id));
+};
+
 export async function addNoteToArchive(id, headers) {
     const baseUrl = isParallel()
     ? "/api/v3/note/"

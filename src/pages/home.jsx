@@ -84,6 +84,7 @@ function Home() {
                     lang={lang}
                     headers={headers}
                     onRefresh={fetchNotes}
+                    tags={tags}
                 />
             )}
 

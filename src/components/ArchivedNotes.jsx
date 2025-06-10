@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
 import { chooseTextByLang } from "../utils/locale";
-import { getArchivedNotesByUser, removeFromArchive } from "../utils/notes";
+import { getArchivedNotesByUser, getTagsForNote, removeFromArchive } from "../utils/notes";
 
-export default function ArchivedNotes({ onClose, lang, headers, onRefresh }) {
+export default function ArchivedNotes({ onClose, lang, headers, onRefresh, tags }) {
     const [archivedNotes, setArchivedNotes] = useState({ results: [], next: null });
+    
 
     useEffect(() => {
         const fetchArchivedNotes = async () => {
@@ -63,33 +64,45 @@ export default function ArchivedNotes({ onClose, lang, headers, onRefresh }) {
                 <div className="p-4 max-w-2xl mx-auto">
             {archivedNotes?.results?.map((note) => (
                 <div 
-                key={note.id}
-                className="flex items-center p-3 mb-2 bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow border border-gray-100"
+                    key={note.id}
+                    className="relative group flex items-center p-3 mb-2 bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow border border-gray-100"
                 >
-                <div className="flex items-center justify-center mr-3">
-                    <input 
-                    type="checkbox"
-                    className="h-4 w-4 text-indigo-600 rounded-full focus:ring-indigo-500 cursor-pointer"
-                    onClick={
-                        async () => {
-                        try {
-                            await removeFromArchive(note.id, headers);
-                            onRefresh();
-                            setArchivedNotes(prev => ({
-                                ...prev,
-                                results: prev.results.filter(n => n.id !== note.id),
-                            }));
-                        } catch (error) {
-                            console.error("Ошибка при удалении из архива:", error);
-                        }
-                    }}
-                    />
+                    <div className="flex items-center justify-center mr-3">
+                        <input 
+                            type="checkbox"
+                            className="h-4 w-4 text-indigo-600 rounded-full focus:ring-indigo-500 cursor-pointer"
+                            onClick={async () => {
+                                try {
+                                    await removeFromArchive(note.id, headers);
+                                    onRefresh();
+                                    setArchivedNotes(prev => ({
+                                        ...prev,
+                                        results: prev.results.filter(n => n.id !== note.id),
+                                    }));
+                                } catch (error) {
+                                    console.error("Ошибка при удалении из архива:", error);
+                                }
+                            }}
+                        />
+                    </div>
+
+                    <h1 className="text-gray-800 font-medium text-lg truncate">
+                        {note.title}
+                    </h1>
+
+                    <div className="absolute right-3 top-1/2 transform -translate-y-1/2 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                        {getTagsForNote(note, tags).map(tag => (
+                            <span
+                                key={tag.id}
+                                className="text-sm px-2 py-1 rounded-full text-white whitespace-nowrap"
+                                style={{ backgroundColor: tag.colour }}
+                            >
+                                #{tag.title}
+                            </span>
+                        ))}
+                    </div>
                 </div>
-                
-                <h1 className="text-gray-800 font-medium text-lg truncate">
-                    {note.title}
-                </h1>
-                </div>
+
             ))}
             </div>
 
