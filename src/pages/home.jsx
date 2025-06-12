@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { generateHeaders, getUser } from "../utils/auth";
+import { generateHeaders, getUser, removeUser } from "../utils/auth";
 import { generateGreetingByTime } from "../utils/interface";
 import { chooseTextByLang, getOrSetLang } from "../utils/locale";
 import { getAllNotesByUser } from "../utils/notes";
@@ -8,12 +8,14 @@ import Header from "../components/Header";
 import ContentNotes from "../components/ContentNotes";
 import NoteForm from "../components/NoteForm";
 import ArchivedNotes from "../components/ArchivedNotes";
+import { Link } from "react-router-dom";
 
 function Home() {
     const isRegistered = getUser();
     const lang = getOrSetLang();
     const headers = generateHeaders(getUser());
 
+    const [isAuthenticated, setIsAuthenticated] = useState(getUser() != null);
     const [notes, setNotes] = useState({ results: [], next: null });
     const [openArchived, setOpenArchived] = useState(false)
     const [editingNote, setEditingNote] = useState(null);
@@ -70,7 +72,18 @@ function Home() {
     }, [notes, headers]);
 
     if (!isRegistered) {
-        return <h1>Вы не зарегистрированы</h1>;
+        return (
+        <nav>
+          <Link to="/">Главная</Link>
+          
+          {!isAuthenticated && (<Link to="/login">Войти</Link>)}
+          {isAuthenticated && (
+            <button onClick={() => {
+              removeUser();
+              setIsAuthenticated(false); 
+            }}>Выйти</button>
+          )}
+        </nav>);
     }
 
     return (
@@ -88,8 +101,21 @@ function Home() {
                 />
             )}
 
+
             {actelem === "myDay" && (
                 <div className="ml-64 p-4">
+
+                    <nav>
+                    <Link to="/">Главная</Link>
+                    
+                    {!isAuthenticated && (<Link to="/login">Войти</Link>)}
+                    {isAuthenticated && (
+                        <button onClick={() => {
+                        removeUser();
+                        setIsAuthenticated(false); 
+                        }}>Выйти</button>
+                    )}
+                    </nav>
                     <h1 className="text-3xl font-bold">{generateGreetingByTime()}</h1>
                     <h2 className="text-xl text-gray-600">
                         {chooseTextByLang(

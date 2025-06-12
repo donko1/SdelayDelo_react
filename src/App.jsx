@@ -17,17 +17,6 @@ function App() {
 
     <UserProvider>
       <Router>
-        <nav>
-          <Link to="/">Главная</Link>
-          
-          {!isAuthenticated && (<Link to="/login">Войти</Link>)}
-          {isAuthenticated && (
-            <button onClick={() => {
-              removeUser();
-              setIsAuthenticated(false); 
-            }}>Выйти</button>
-          )}
-        </nav>
           <Routes>
             <Route path="*" element={<h1>404: Страница не найдена</h1>} />
             {!isProduct() && (
