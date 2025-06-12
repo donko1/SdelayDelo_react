@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import { isParallel } from '../utils/settings';
 import { check_if_email_registered, setUser, generateHeaders } from '../utils/auth';
-import { useNavigate } from "react-router-dom";
 import { toHtml } from '@fortawesome/fontawesome-svg-core';
 import { getUserLocaleInfo } from '../utils/locale';
+import { useUser } from '../context/UserContext';
+import { useNavigate } from 'react-router-dom';
+
 
 function AuthFlow({ onLogin }) {
   const [email, setEmail] = useState('');
@@ -18,6 +20,7 @@ function AuthFlow({ onLogin }) {
   const [isLoading, setIsLoading] = useState(false);
   const [secretEmail, setSecretEmail] = useState("")
   const navigate = useNavigate();
+  const { refreshUser } = useUser();
 
   const fetchEmailByUsername = async (username) => {
     const baseUrl = isParallel() ? "/api/get_email_by_username" : "http://localhost:8000/api/get_email_by_username";
@@ -113,7 +116,8 @@ function AuthFlow({ onLogin }) {
           const data = await response.json();
           setUser(data.access_token);
           onLogin();
-          navigate("/");}
+          navigate("/");
+          refreshUser()}
           catch(err) {
             setError(err.message);
             setIsLoading(false)
