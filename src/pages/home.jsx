@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { generateHeaders, getUser, removeUser } from "../utils/auth";
 import { generateGreetingByTime } from "../utils/interface";
 import { chooseTextByLang, getOrSetLang } from "../utils/locale";
-import { getAllNotesByUser } from "../utils/notes";
+import { getAllNotesByUser, getMyDayByUser } from "../utils/notes";
 import { getAllTagsByUser } from "../utils/tags";
 import Header from "../components/Header";
 import ContentNotes from "../components/ContentNotes";
@@ -24,7 +24,7 @@ function Home() {
 
     const fetchNotes = async () => {
         try {
-            const result = await getAllNotesByUser(headers);
+            const result = await getMyDayByUser(headers);
             setNotes(result);
         } catch (error) {
             console.error("Ошибка при загрузке заметок:", error);
