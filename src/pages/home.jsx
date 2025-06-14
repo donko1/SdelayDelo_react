@@ -17,6 +17,7 @@ function Home() {
 
     const [isAuthenticated, setIsAuthenticated] = useState(getUser() != null);
     const [notes, setNotes] = useState({ results: [], next: null });
+    const [allNotes, setAllNotes] = useState({result: [], next: null})
     const [openArchived, setOpenArchived] = useState(false)
     const [editingNote, setEditingNote] = useState(null);
     const [tags, setTags] = useState([]);
@@ -27,12 +28,23 @@ function Home() {
             const result = await getMyDayByUser(headers);
             setNotes(result);
         } catch (error) {
-            console.error("Ошибка при загрузке заметок:", error);
+            console.error("Ошибка при загрузке заметок моего дня:", error);
         }
     };
 
+    const fetchAllNotes = async () => {
+        try {
+            const result = await getAllNotesByUser(headers);
+            setAllNotes(result)
+        }
+        catch (error) {
+            console.log("Ошибка при загрузке всех заметок:", error)
+        }
+    }
+
     useEffect(() => {
         fetchNotes();
+        fetchAllNotes()
     }, []);
 
 
@@ -101,7 +113,35 @@ function Home() {
                 />
             )}
 
-
+            {actelem === "allNotes" && (
+                <div className="ml-64 p-4">
+                    <ContentNotes
+                        notes={allNotes}
+                        tags={tags}
+                        editingNote={editingNote}
+                        onEdit={(note) => setEditingNote(note)}
+                        onCloseEdit={() => setEditingNote(null)}
+                        onArchivedSuccess={fetchNotes}
+                        onSubmitSuccess={(updatedNote) => {
+                            setNotes(prev => ({
+                                ...prev,
+                                results: prev.results.map(n =>
+                                    n.id === updatedNote.id ? updatedNote : n
+                                ),
+                            }));
+                            setEditingNote(null);
+                        }}
+                        onDelete={(deletedId) => {
+                        setNotes(prev => ({
+                            ...prev,
+                            results: prev.results.filter(n => n.id !== deletedId),
+                        }));
+                        if (editingNote?.id === deletedId) {
+                            setEditingNote(null);
+                        }
+                    }}/>
+                </div>
+            )}
             {actelem === "myDay" && (
                 <div className="ml-64 p-4">
 
