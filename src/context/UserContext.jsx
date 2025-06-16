@@ -7,8 +7,14 @@ const UserContext = createContext(null);
 export function UserProvider({ children }) {
   const [username, setUsername] = useState(null);
   const [refreshCount, setRefreshCount] = useState(0);
+  const [isRegistered, setIsRegistered] = useState(!!getUser()); 
 
-  const refreshUser = () => setRefreshCount(prev => prev + 1);
+
+  const refreshUser = () => {
+    setIsRegistered(!!getUser()); 
+    setRefreshCount(prev => prev + 1);
+  };
+
 
   useEffect(() => {
     const fetchUser = () => {
@@ -38,7 +44,8 @@ export function UserProvider({ children }) {
 
   const contextValue = {
     username,
-    refreshUser
+    refreshUser,
+    isRegistered
   };
 
   return (

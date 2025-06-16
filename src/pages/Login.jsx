@@ -7,7 +7,7 @@ import { useUser } from '../context/UserContext';
 import { useNavigate } from 'react-router-dom';
 
 
-function AuthFlow({ onLogin }) {
+function AuthFlow() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [username, setUsername] = useState('');
@@ -115,9 +115,8 @@ function AuthFlow({ onLogin }) {
           
           const data = await response.json();
           setUser(data.access_token);
-          onLogin();
-          navigate("/");
-          refreshUser()}
+          refreshUser();
+          navigate("/");}
           catch(err) {
             setError(err.message);
             setIsLoading(false)
@@ -213,7 +212,7 @@ function AuthFlow({ onLogin }) {
         return;
       }
       setUser(data.access_token);
-      onLogin();
+      refreshUser()
       navigate("/");
     } catch(err) {
       setError(err.message);
@@ -449,6 +448,6 @@ function AuthFlow({ onLogin }) {
   );
 }
 
-export default function LoginPage({ onLogin }) {
-  return <AuthFlow onLogin={onLogin} />;
+export default function LoginPage() {
+  return <AuthFlow />;
 }
