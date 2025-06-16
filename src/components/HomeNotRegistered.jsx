@@ -9,6 +9,7 @@ export default function HomeNotRegistered() {
 
 
   return (
+    <div>
     <nav>
       <Link to="/">Главная</Link>
 
@@ -25,5 +26,20 @@ export default function HomeNotRegistered() {
         </button>
       )}
     </nav>
+          <div className="home-content">
+        <h1>Добро пожаловать!</h1>
+        <p>Начните использовать наше приложение прямо сейчас</p>
+        
+        <div className="buttons-container">
+          <Link to="/login" className="start-button">
+            <button>Начать</button>
+          </Link>
+          <Link to="/demo" className="demo-button">
+            <button>Демо</button>
+          </Link>
+        </div>
+      </div>
+
+  </div>
   );
 }
