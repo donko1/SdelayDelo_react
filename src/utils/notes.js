@@ -48,7 +48,8 @@ export async function removeFromArchive(id, headers) {
                     "Content-Type": "application/json",
                 },
             body: JSON.stringify({
-                is_archived: false
+                is_archived: false,
+                date_of_note:null
             })
         })
         if (!resp.ok) {
