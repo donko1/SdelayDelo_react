@@ -1,4 +1,4 @@
-import { get_COOKIE_EXPIRES_DAYS } from "./settings";
+import { get_COOKIE_EXPIRES_DAYS } from "@utils/helpers/settings";
 import Cookies from 'js-cookie';
 
 const COOKIE_EXPIRES_DAYS = get_COOKIE_EXPIRES_DAYS()

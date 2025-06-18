@@ -1,4 +1,4 @@
-import { isParallel, isProduct } from "../utils/settings";
+import { isParallel, isProduct } from "@utils/helpers/settings";
 
 export default function GetSettings() {
   return (

@@ -1,7 +1,7 @@
 import { useState } from "react";
-import { generateHeaders, getUser } from "../utils/auth";
-import { isParallel } from "../utils/settings";
-import { addNoteToArchive } from "../utils/notes";
+import { generateHeaders, getUser } from "@utils/api/auth";
+import { isParallel } from "@utils/helpers/settings";
+import { addNoteToArchive } from "@utils/api/notes";
 
 
 function NoteForm({ note, tags, onClose, onSubmitSuccess, onDeleteSuccess, onArchivedSuccess }) {

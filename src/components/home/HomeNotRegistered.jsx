@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { useUser } from "../context/UserContext";
-import { getUser, removeUser } from "../utils/auth";
-import { chooseTextByLang, getOrSetLang } from "../utils/locale";
+import { useUser } from "@context/UserContext";
+import { getUser, removeUser } from "@utils/api/auth";
+import { chooseTextByLang, getOrSetLang } from "@utils/helpers/locale";
 
 export default function HomeNotRegistered() {
   const [isAuthenticated, setIsAuthenticated] = useState(getUser() != null);

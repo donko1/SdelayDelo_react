@@ -1,5 +1,5 @@
 
-import { isParallel } from "./settings";
+import { isParallel } from "@utils/helpers/settings";
 
 export async function getAllTagsByUser(headers) {
     let url = isParallel() ? "/api/v3/note" : "http://127.0.0.1:8000/api/tag/"

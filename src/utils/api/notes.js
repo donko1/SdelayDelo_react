@@ -1,4 +1,4 @@
-import { isParallel } from "./settings";
+import { isParallel } from "@utils/helpers/settings";
 
 export function getTagsForNote(note, tags) {
     if (!note.tags?.length) return [];

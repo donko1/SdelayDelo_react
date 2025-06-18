@@ -1,4 +1,4 @@
-import NoteForm from "./NoteForm";
+import NoteForm from "@components/ui/NoteForm";
 
 function ContentNotes({ notes, tags, editingNote, onEdit, onCloseEdit, onSubmitSuccess, onDelete, onArchivedSuccess }) {
     return (

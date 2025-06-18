@@ -1,7 +1,7 @@
 
 
-import { useUser } from '../context/UserContext';
-import { chooseTextByLang, getOrSetLang } from '../utils/locale';
+import { useUser } from '@context/UserContext';
+import { chooseTextByLang, getOrSetLang } from '@utils/helpers/locale';
 
 function Header({ activeElem, setAct, addNoteFunc, setOpenArchived }) {
     const { username } = useUser();

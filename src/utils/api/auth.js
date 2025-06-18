@@ -1,5 +1,5 @@
 import Cookies from 'js-cookie';
-import { get_COOKIE_EXPIRES_DAYS, isParallel } from './settings';
+import { get_COOKIE_EXPIRES_DAYS, isParallel } from '@utils/helpers/settings';
 
 const USER_TOKEN_KEY = 'user-token';
 const COOKIE_EXPIRES_DAYS = get_COOKIE_EXPIRES_DAYS()

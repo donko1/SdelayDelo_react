@@ -1,6 +1,6 @@
 import { createContext, useState, useEffect, useContext } from 'react';
-import { isParallel } from '../utils/settings';
-import { generateHeaders, getUser } from '../utils/auth';
+import { isParallel } from '../utils/helpers/settings';
+import { generateHeaders, getUser } from '../utils/api/auth';
 
 const UserContext = createContext(null);
 

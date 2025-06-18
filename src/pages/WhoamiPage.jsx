@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
-import { getUser, generateHeaders } from "../utils/auth";
-import { isParallel } from "../utils/settings";
+import { getUser, generateHeaders } from "@utils/api/auth";
+import { isParallel } from "@utils/helpers/settings";
 
 export function WhoamI() {
   const [userData, setUserData] = useState(null);

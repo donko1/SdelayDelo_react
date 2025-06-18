@@ -1,4 +1,4 @@
-import { chooseTextByLang, getOrSetUTC, getOrSetLang } from "./locale";
+import { chooseTextByLang, getOrSetUTC, getOrSetLang } from "@utils/helpers/locale";
 
 export function generateGreetingByTime() {
   const timeZone = getOrSetUTC();

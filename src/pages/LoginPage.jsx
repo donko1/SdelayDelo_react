@@ -1,9 +1,8 @@
 import React, { useState } from 'react';
-import { isParallel } from '../utils/settings';
-import { check_if_email_registered, setUser, generateHeaders } from '../utils/auth';
-import { toHtml } from '@fortawesome/fontawesome-svg-core';
-import { getUserLocaleInfo } from '../utils/locale';
-import { useUser } from '../context/UserContext';
+import { isParallel } from '@utils/helpers/settings';
+import { check_if_email_registered, setUser, generateHeaders } from '@utils/api/auth';
+import { getUserLocaleInfo } from '@utils/helpers/locale';
+import { useUser } from '@context/UserContext';
 import { useNavigate } from 'react-router-dom';
 
 

@@ -1,15 +1,15 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import Header from "../components/Header";
-import ContentNotes from "../components/ContentNotes";
-import NoteForm from "../components/NoteForm";
-import ArchivedNotes from "../components/ArchivedNotes";
-import { getUser, removeUser, generateHeaders } from "../utils/auth";
-import { getMyDayByUser, getAllNotesByUser } from "../utils/notes";
-import { getAllTagsByUser } from "../utils/tags";
-import { generateGreetingByTime } from "../utils/interface";
-import { chooseTextByLang, getOrSetLang } from "../utils/locale";
-import { useUser } from "../context/UserContext";
+import Header from "@components/layout/Header";
+import ContentNotes from "@components/notes/ContentNotes";
+import NoteForm from "@components/ui/NoteForm";
+import ArchivedNotes from "@components/notes/ArchivedNotes";
+import { getUser, removeUser, generateHeaders } from "@utils/api/auth";
+import { getMyDayByUser, getAllNotesByUser } from "@utils/api/notes";
+import { getAllTagsByUser } from "@utils/api/tags";
+import { generateGreetingByTime } from "@utils/helpers/interface";
+import { chooseTextByLang, getOrSetLang } from "@utils/helpers/locale";
+import { useUser } from "@context/UserContext";
 
 export default function HomeRegistered() {
   const headers = generateHeaders(getUser());

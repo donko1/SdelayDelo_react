@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { chooseTextByLang } from "../utils/locale";
-import { getArchivedNotesByUser, getTagsForNote, removeFromArchive } from "../utils/notes";
+import { chooseTextByLang } from "@utils/helpers/locale";
+import { getArchivedNotesByUser, getTagsForNote, removeFromArchive } from "@utils/api/notes";
 
 export default function ArchivedNotes({ onClose, lang, headers, onRefresh, tags }) {
     const [archivedNotes, setArchivedNotes] = useState({ results: [], next: null });
