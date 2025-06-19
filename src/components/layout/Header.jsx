@@ -40,7 +40,6 @@ function Header({ activeElem, setAct, addNoteFunc, setOpenArchived, tags_data}) 
         },
     ];
 
-    console.log(tags_data)
     return (
         <div className="flex flex-col bg-transparent text-white">
             <div className="h-24 flex items-center justify-center">
