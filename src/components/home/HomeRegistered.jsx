@@ -10,6 +10,7 @@ import { getAllTagsByUser } from "@utils/api/tags";
 import { generateGreetingByTime } from "@utils/helpers/interface";
 import { chooseTextByLang, getOrSetLang } from "@utils/helpers/locale";
 import { useUser } from "@context/UserContext";
+import Calendar from "../layout/Calendar";
 
 export default function HomeRegistered() {
   const headers = generateHeaders(getUser());
@@ -108,7 +109,9 @@ export default function HomeRegistered() {
           tags={tags}
         />
       )}
-
+      {actelem === "Calendar" && (
+        <Calendar/>
+      )} 
       {actelem === "allNotes" && (
         <div className="ml-64 p-4">
           <ContentNotes

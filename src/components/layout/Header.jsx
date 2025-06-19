@@ -31,6 +31,10 @@ function Header({ activeElem, setAct, addNoteFunc, setOpenArchived, tags_data}) 
             text: chooseTextByLang("Все мои заметки", "All my notes", lang)
         },
         {
+            id: "Calendar",
+            text: chooseTextByLang("Календарь", "Calendar", lang)
+        },
+        {
             id: "archive",
             text: chooseTextByLang("Архив", "Archive", lang)
         },
