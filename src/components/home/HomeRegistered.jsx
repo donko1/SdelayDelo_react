@@ -95,6 +95,7 @@ export default function HomeRegistered() {
           setAct={setAct}
           addNoteFunc={() => !editingNote && setEditingNote({})}
           setOpenArchived={setOpenArchived}
+          tags_data={tags}
         />
       </div>
 

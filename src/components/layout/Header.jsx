@@ -2,10 +2,12 @@
 
 import { useUser } from '@context/UserContext';
 import { chooseTextByLang, getOrSetLang } from '@utils/helpers/locale';
+import { useState } from 'react';
 
-function Header({ activeElem, setAct, addNoteFunc, setOpenArchived }) {
+function Header({ activeElem, setAct, addNoteFunc, setOpenArchived, tags_data}) {
     const { username } = useUser();
     const lang = getOrSetLang();
+    const [tagsOpened, setTagsOpened] = useState(false)
 
     const dataForElems = [
         {
@@ -38,6 +40,7 @@ function Header({ activeElem, setAct, addNoteFunc, setOpenArchived }) {
         },
     ];
 
+    console.log(tags_data)
     return (
         <div className="flex flex-col bg-transparent text-white">
             <div className="h-24 flex items-center justify-center">
@@ -53,6 +56,8 @@ function Header({ activeElem, setAct, addNoteFunc, setOpenArchived }) {
                             addNoteFunc();
                         } else if (item.id === "archive") {
                             setOpenArchived(true);
+                        } else if (item.id === "myTags") {                    
+                            setTagsOpened(!tagsOpened)
                         } else {
                             setAct(item.id);
                         }
@@ -68,6 +73,23 @@ function Header({ activeElem, setAct, addNoteFunc, setOpenArchived }) {
                     </span>
                 </div>
             ))}
+            {
+                tagsOpened && (
+                tags_data.map(item => (
+                    <div 
+                        key={item.id} 
+                        className="h-12 w-full cursor-pointer" 
+                    >
+                        <span
+                            className="text-[25px] text-left block pl-4"
+                        >
+                            #{item.title}
+                        </span>
+
+                    </div>
+                    
+                )))
+            }
         </div>
     );
 
