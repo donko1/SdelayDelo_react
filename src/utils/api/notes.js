@@ -98,6 +98,27 @@ export async function getAllNotesByUser(headers) {
     }
 }
 
+export async function getNotesByDat(headers, day) {
+    let url = isParallel() ? "api/v3/note/by_date/" : "http://127.0.0.1:8000/api/v3/note/archived/";
+    const params = new URLSearchParams({
+        date: day.toISOString()
+    })
+    try {
+        const resp = await fetch(`${url}?${params}`, {method:"GET", headers:headers})
+        if (!resp.ok) {
+            console.log("Error on side of server");
+            return 1; 
+        }
+        const data = await resp.json()
+        return data;
+    }
+    catch (error) {
+        console.log(`Error! ${error}`)
+        return 1;
+    }
+
+}
+
 export async function getArchivedNotesByUser(headers) {
     let url = isParallel() ? "/api/v3/note/archived" : "http://127.0.0.1:8000/api/v3/note/archived/"
     try {
@@ -112,8 +133,5 @@ export async function getArchivedNotesByUser(headers) {
     catch (error) {
         console.log(`Error! ${error}`)
         return 1;
-    }
-    finally {
-
     }
 }

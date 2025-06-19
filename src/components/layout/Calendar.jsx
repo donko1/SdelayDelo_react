@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { chooseTextByLang, getOrSetLang, getOrSetUTC } from '@/utils/helpers/locale';
+import { generateHeaders, getUser } from '@/utils/api/auth';
 
 export default function Calendar() {
-  
+
+  const headers = generateHeaders(getUser());
   const timezone = getOrSetUTC(); 
   const lang = getOrSetLang(); 
   const [activeDate, setActiveDate] = useState(null);
@@ -18,7 +20,6 @@ export default function Calendar() {
         if (!date1 || !date2) return false;
         return date1.toDateString() === date2.toDateString();
     };
-
 
   useEffect(() => {
     const calculateDays = () => {
@@ -86,8 +87,6 @@ export default function Calendar() {
   const handleNextWeek = () => {
     setOffsetWeeks(offsetWeeks + 1);
   };
-
-  console.log(activeDate)
 
   return (
     <div className="max-w-4xl mx-auto p-4">
