@@ -23,8 +23,11 @@ export default function HomeRegistered() {
   const [editingNote, setEditingNote] = useState(null);
   const [actelem, setAct] = useState("myDay");
   const { refreshUser } = useUser();
+  const [refreshTrigger, setRefreshTrigger] = useState(0); 
 
-  
+  const handleRefresh = () => {
+    setRefreshTrigger(prev => prev + 1); 
+  };
 
   const fetchNotes = async () => {
     try {
@@ -47,7 +50,7 @@ export default function HomeRegistered() {
   useEffect(() => {
     fetchNotes();
     fetchAllNotes();
-  }, []);
+  }, [refreshTrigger]);
 
   useEffect(() => {
     const fetchTags = async () => {
@@ -100,7 +103,7 @@ export default function HomeRegistered() {
           onClose={() => setOpenArchived(false)}
           lang={lang}
           headers={headers}
-          onRefresh={fetchNotes}
+          onRefresh={handleRefresh}
           tags={tags}
         />
       )}
@@ -113,7 +116,7 @@ export default function HomeRegistered() {
             editingNote={editingNote}
             onEdit={setEditingNote}
             onCloseEdit={() => setEditingNote(null)}
-            onArchivedSuccess={fetchNotes}
+            onArchivedSuccess={handleRefresh}
             onSubmitSuccess={updatedNote => {
               setNotes(prev => ({
                 ...prev,
