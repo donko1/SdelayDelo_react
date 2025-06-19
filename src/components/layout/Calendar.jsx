@@ -21,6 +21,23 @@ export default function Calendar() {
         return date1.toDateString() === date2.toDateString();
     };
 
+  const getWeekTitle = () => {
+    if (offsetWeeks === 0) {
+      return chooseTextByLang('Эта неделя', 'This week', lang);
+    } else if (offsetWeeks === 1) {
+      return chooseTextByLang('Следующая неделя', 'Next week', lang);
+    } else if (offsetWeeks === 2) {
+      return chooseTextByLang('Через 2 недели', 'In 2 weeks', lang);
+    } else {
+      return chooseTextByLang(
+        `Через ${offsetWeeks} недель`, 
+        `In ${offsetWeeks} weeks`, 
+        lang
+      );
+    }
+  };
+
+
   useEffect(() => {
     const calculateDays = () => {
       const now = new Date();
@@ -104,7 +121,7 @@ export default function Calendar() {
         </button>
         
         <h2 className="text-xl font-semibold">
-          {chooseTextByLang('Эта неделя', 'This week', lang)}
+          {getWeekTitle()}
         </h2>
         
         <button 
