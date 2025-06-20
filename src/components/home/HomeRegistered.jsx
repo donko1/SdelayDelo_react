@@ -110,7 +110,31 @@ export default function HomeRegistered() {
         />
       )}
       {actelem === "Calendar" && (
-        <Calendar/>
+        <Calendar
+          tags={tags}
+          editingNote={editingNote}
+          onEdit={setEditingNote}
+          onCloseEdit={() => setEditingNote(null)}
+          onArchivedSuccess={handleRefresh}
+          onSubmitSuccess={updatedNote => {
+            setNotes(prev => ({
+              ...prev,
+              results: prev.results.map(n =>
+                n.id === updatedNote.id ? updatedNote : n
+              ),
+            }));
+            setEditingNote(null);
+          }}
+          onDelete={deletedId => {
+            setNotes(prev => ({
+              ...prev,
+              results: prev.results.filter(n => n.id !== deletedId),
+            }));
+            if (editingNote?.id === deletedId) {
+              setEditingNote(null);
+            }
+          }}
+        />
       )} 
       {actelem === "allNotes" && (
         <div className="ml-64 p-4">

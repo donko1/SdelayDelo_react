@@ -98,11 +98,16 @@ export async function getAllNotesByUser(headers) {
     }
 }
 
-export async function getNotesByDat(headers, day) {
-    let url = isParallel() ? "api/v3/note/by_date/" : "http://127.0.0.1:8000/api/v3/note/archived/";
-    const params = new URLSearchParams({
-        date: day.toISOString()
-    })
+export async function getNotesByDate(headers, day) {
+    let url = isParallel() ? "api/v3/note/by_date/" : "http://127.0.0.1:8000/api/v3/note/by_date/";
+
+    const year = day.getFullYear();
+    const month = String(day.getMonth() + 1).padStart(2, '0'); 
+    const date = String(day.getDate()).padStart(2, '0');
+    const dateString = `${year}-${month}-${date}`;
+    
+    const params = new URLSearchParams({ date: dateString });
+
     try {
         const resp = await fetch(`${url}?${params}`, {method:"GET", headers:headers})
         if (!resp.ok) {
@@ -116,7 +121,6 @@ export async function getNotesByDat(headers, day) {
         console.log(`Error! ${error}`)
         return 1;
     }
-
 }
 
 export async function getArchivedNotesByUser(headers) {

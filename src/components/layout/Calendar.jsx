@@ -1,20 +1,38 @@
 import React, { useState, useEffect } from 'react';
 import { chooseTextByLang, getOrSetLang, getOrSetUTC } from '@/utils/helpers/locale';
 import { generateHeaders, getUser } from '@/utils/api/auth';
+import { getNotesByDate } from '@/utils/api/notes';
+import NoteForm from '../ui/NoteForm';
 
-export default function Calendar() {
-
+export default function Calendar({tags, editingNote, onEdit, onCloseEdit, onSubmitSuccess, onDelete, onArchivedSuccess}) {
   const headers = generateHeaders(getUser());
   const timezone = getOrSetUTC(); 
   const lang = getOrSetLang(); 
   const [activeDate, setActiveDate] = useState(null);
+  const [notes, setNotes] = useState([])
 
   const [offsetWeeks, setOffsetWeeks] = useState(0);
   const [days, setDays] = useState([]);
 
+
   const handleDayClick = (date) => {
     setActiveDate(date);
     };
+
+  const fetchNotes = async() => {
+    try {
+      const results = await getNotesByDate(headers, activeDate)
+      console.log(results)
+      setNotes(results)
+    }
+    catch (error) {
+      console.error("Ошибка при загрузке заметок моего дня:", error);
+    }
+  }
+
+  useEffect(() => {
+    fetchNotes()
+  }, [activeDate])
 
   const isSameDay = (date1, date2) => {
         if (!date1 || !date2) return false;
@@ -168,6 +186,55 @@ export default function Calendar() {
             </div>
           );
         })}
+      </div>
+      <div className="flex flex-wrap gap-5">
+        {
+          notes?.detail && (
+            <h1>{chooseTextByLang("Нет заметок на выбранную дату", "No notes for this date", lang)}</h1>
+          )
+        }
+        {
+          notes?.length > 0 && notes.map((note) => (
+            <div
+                    key={note.id}
+                    className="w-72 p-4 border-2 border-gray-300 rounded-lg hover:shadow-md"
+                >
+                    {editingNote?.id === note.id ? (
+                        <NoteForm
+                            note={note}
+                            tags={tags}
+                            onClose={onCloseEdit}
+                            onSubmitSuccess={fetchNotes}
+                            onDeleteSuccess={(deletedId) => {
+                                onDelete(deletedId);
+                                fetchNotes() 
+                            }}
+                            onArchivedSuccess={fetchNotes}
+                        />
+                    ) : (
+                        <div onClick={() => onEdit(note)} className="cursor-pointer">
+                            <h1 className="text-lg font-semibold mb-3 pb-2 border-b border-gray-200">
+                                {note.title}
+                            </h1>
+                            <div className="flex flex-wrap gap-2 mt-2">
+                                {note.tags?.map((tagId) => {
+                                    const tag = tags.find(t => t.id === tagId);
+                                    return tag ? (
+                                        <span
+                                            key={tag.id}
+                                            className="px-3 py-1 rounded text-xs text-white"
+                                            style={{ backgroundColor: tag.colour }}
+                                        >
+                                            #{tag.title}
+                                        </span>
+                                    ) : null;
+                                })}
+                            </div>
+                        </div>
+                    )}
+                </div>
+          ))
+        }
       </div>
 
     </div>
