@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, act } from 'react';
 import { chooseTextByLang, getOrSetLang, getOrSetUTC } from '@/utils/helpers/locale';
 import { generateHeaders, getUser } from '@/utils/api/auth';
 import { getNotesByDate } from '@/utils/api/notes';
@@ -10,6 +10,7 @@ export default function Calendar({tags, editingNote, onEdit, onCloseEdit, onSubm
   const lang = getOrSetLang(); 
   const [activeDate, setActiveDate] = useState(null);
   const [notes, setNotes] = useState([])
+  const [creating, setCreating] = useState(false)
 
   const [offsetWeeks, setOffsetWeeks] = useState(0);
   const [days, setDays] = useState([]);
@@ -234,7 +235,29 @@ export default function Calendar({tags, editingNote, onEdit, onCloseEdit, onSubm
                 </div>
           ))
         }
+        
       </div>
+      <div className="mt-4 mb-6">
+            <button
+              className={`px-4 py-2 text-white rounded ${
+                creating ? "bg-gray-400 cursor-not-allowed" : "bg-black"
+              }`}
+
+              onClick={() => setCreating(true)}
+              disabled={creating}
+            >
+              {chooseTextByLang("Добавить заметку", "Add note", lang)}
+            </button>
+        </div>
+        {creating && (
+          <NoteForm 
+            tags={tags}
+            onSubmitSuccess={fetchNotes}
+            onDeleteSuccess={fetchNotes}
+            onClose={() => setCreating(false)}
+            date_of_note={activeDate}
+          />
+        )}
 
     </div>
   );

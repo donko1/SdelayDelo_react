@@ -145,24 +145,8 @@ export default function HomeRegistered() {
             onEdit={setEditingNote}
             onCloseEdit={() => setEditingNote(null)}
             onArchivedSuccess={handleRefresh}
-            onSubmitSuccess={updatedNote => {
-              setNotes(prev => ({
-                ...prev,
-                results: prev.results.map(n =>
-                  n.id === updatedNote.id ? updatedNote : n
-                ),
-              }));
-              setEditingNote(null);
-            }}
-            onDelete={deletedId => {
-              setNotes(prev => ({
-                ...prev,
-                results: prev.results.filter(n => n.id !== deletedId),
-              }));
-              if (editingNote?.id === deletedId) {
-                setEditingNote(null);
-              }
-            }}
+            onSubmitSuccess={handleRefresh}
+            onDelete={handleRefresh}
           />
         </div>
       )}
@@ -202,7 +186,7 @@ export default function HomeRegistered() {
               onClick={() => !editingNote && setEditingNote({})}
               disabled={!!editingNote}
             >
-              Добавить заметку
+              {chooseTextByLang("Добавить заметку", "Add note", lang)}
             </button>
           </div>
 
