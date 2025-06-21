@@ -4,10 +4,20 @@ import { isParallel } from "@utils/helpers/settings";
 import { addNoteToArchive } from "@utils/api/notes";
 
 
-function NoteForm({ note, tags, onClose, onSubmitSuccess, onDeleteSuccess, onArchivedSuccess }) {
+function NoteForm({ note, tags, onClose, onSubmitSuccess, onDeleteSuccess, onArchivedSuccess, date_of_note }) {
     const [title, setTitle] = useState(note?.title || "");
     const [description, setDescription] = useState(note?.description || "");
     const [selectedTags, setSelectedTags] = useState(note?.tags || []);
+
+     const formatDate = (date) => {
+        if (!(date instanceof Date)) return date;
+        
+        const day = date.getDate();
+        const month = date.getMonth() + 1; 
+        const year = date.getFullYear();
+        
+        return `${day}/${month}/${year}`;
+    };
 
     const handleTagToggle = (tagId) => {
         setSelectedTags(prev =>
@@ -20,6 +30,11 @@ function NoteForm({ note, tags, onClose, onSubmitSuccess, onDeleteSuccess, onArc
     const handleSubmit = async (e) => {
         e.preventDefault();
         const content = { title, description, tags: selectedTags };
+
+        if (date_of_note && !note?.id) {
+            content.date_of_note = formatDate(date_of_note);
+        }
+
 
         try {
             const headers = generateHeaders(getUser());

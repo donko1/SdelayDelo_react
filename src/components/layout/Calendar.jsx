@@ -55,7 +55,6 @@ export default function Calendar({tags, editingNote, onEdit, onCloseEdit, onSubm
     }
   };
 
-
   useEffect(() => {
     const calculateDays = () => {
       const now = new Date();
