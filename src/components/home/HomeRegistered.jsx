@@ -8,13 +8,14 @@ import { getUser, removeUser, generateHeaders } from "@utils/api/auth";
 import { getMyDayByUser, getAllNotesByUser } from "@utils/api/notes";
 import { getAllTagsByUser } from "@utils/api/tags";
 import { generateGreetingByTime } from "@utils/helpers/interface";
-import { chooseTextByLang, getOrSetLang } from "@utils/helpers/locale";
+import { chooseTextByLang, getOrSetLang, getOrSetUTC } from "@utils/helpers/locale";
 import { useUser } from "@context/UserContext";
 import Calendar from "../layout/Calendar";
 
 export default function HomeRegistered() {
   const headers = generateHeaders(getUser());
   const lang = getOrSetLang();
+  const timezone = getOrSetUTC()
 
   const [isAuthenticated, setIsAuthenticated] = useState(getUser() != null);
   const [notes, setNotes] = useState({ results: [], next: null });
@@ -25,6 +26,18 @@ export default function HomeRegistered() {
   const [actelem, setAct] = useState("myDay");
   const { refreshUser } = useUser();
   const [refreshTrigger, setRefreshTrigger] = useState(0); 
+
+  const formatDateWithTimezone = (timezone) => {
+    const now = new Date();
+    
+    return new Intl.DateTimeFormat('en-GB', {
+      timeZone: timezone,
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric'
+    }).format(now)
+      .replace(/\//g, '/'); 
+  };
 
   const handleRefresh = () => {
     setRefreshTrigger(prev => prev + 1); 
@@ -116,24 +129,8 @@ export default function HomeRegistered() {
           onEdit={setEditingNote}
           onCloseEdit={() => setEditingNote(null)}
           onArchivedSuccess={handleRefresh}
-          onSubmitSuccess={updatedNote => {
-            setNotes(prev => ({
-              ...prev,
-              results: prev.results.map(n =>
-                n.id === updatedNote.id ? updatedNote : n
-              ),
-            }));
-            setEditingNote(null);
-          }}
-          onDelete={deletedId => {
-            setNotes(prev => ({
-              ...prev,
-              results: prev.results.filter(n => n.id !== deletedId),
-            }));
-            if (editingNote?.id === deletedId) {
-              setEditingNote(null);
-            }
-          }}
+          onSubmitSuccess={handleRefresh}
+          onDelete={handleRefresh}
         />
       )} 
       {actelem === "allNotes" && (
@@ -195,16 +192,12 @@ export default function HomeRegistered() {
               note={null}
               tags={tags}
               onClose={() => setEditingNote(null)}
-              onSubmitSuccess={newNote => {
-                setNotes(prev => ({
-                  ...prev,
-                  results: [newNote, ...prev.results],
-                }));
-                setEditingNote(null);
-              }}
-              onDeleteSuccess={() => {
-                setEditingNote(null);
-              }}
+              onSubmitSuccess={
+                handleRefresh
+              }
+              onDeleteSuccess={handleRefresh
+              }
+              date_of_note={formatDateWithTimezone(timezone)}
             />
           )}
 
@@ -214,25 +207,9 @@ export default function HomeRegistered() {
             editingNote={editingNote}
             onEdit={setEditingNote}
             onCloseEdit={() => setEditingNote(null)}
-            onArchivedSuccess={fetchNotes}
-            onSubmitSuccess={updatedNote => {
-              setNotes(prev => ({
-                ...prev,
-                results: prev.results.map(n =>
-                  n.id === updatedNote.id ? updatedNote : n
-                ),
-              }));
-              setEditingNote(null);
-            }}
-            onDelete={deletedId => {
-              setNotes(prev => ({
-                ...prev,
-                results: prev.results.filter(n => n.id !== deletedId),
-              }));
-              if (editingNote?.id === deletedId) {
-                setEditingNote(null);
-              }
-            }}
+            onArchivedSuccess={handleRefresh}
+            onSubmitSuccess={handleRefresh}
+            onDelete={handleRefresh}
           />
         </div>
       )}

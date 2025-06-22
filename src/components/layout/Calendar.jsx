@@ -204,12 +204,19 @@ export default function Calendar({tags, editingNote, onEdit, onCloseEdit, onSubm
                             note={note}
                             tags={tags}
                             onClose={onCloseEdit}
-                            onSubmitSuccess={fetchNotes}
+                            onSubmitSuccess={() => {
+                              onSubmitSuccess();
+                              fetchNotes()
+                            }}
                             onDeleteSuccess={(deletedId) => {
+                                onDeleteSuccess();
                                 onDelete(deletedId);
                                 fetchNotes() 
                             }}
-                            onArchivedSuccess={fetchNotes}
+                            onArchivedSuccess={() => {
+                              fetchNotes()
+                              onArchivedSuccess()
+                            }}
                         />
                     ) : (
                         <div onClick={() => onEdit(note)} className="cursor-pointer">
