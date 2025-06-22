@@ -6,7 +6,6 @@ const NoteCard = ({
   tags, 
   onEdit, 
   isEditing,
-  children,
   onCloseEdit,
   onSubmitSuccess,
   onDelete,
@@ -47,7 +46,6 @@ const NoteCard = ({
           ) : null;
         })}
       </div>
-      {children}
     </div>
   );
 };
