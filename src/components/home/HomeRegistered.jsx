@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { act, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import Header from "@components/layout/Header";
 import ContentNotes from "@components/notes/ContentNotes";
@@ -10,7 +10,8 @@ import { getAllTagsByUser } from "@utils/api/tags";
 import { generateGreetingByTime } from "@utils/helpers/interface";
 import { chooseTextByLang, getOrSetLang, getOrSetUTC } from "@utils/helpers/locale";
 import { useUser } from "@context/UserContext";
-import Calendar from "../layout/Calendar";
+import Calendar from "@components/layout/Calendar";
+import NextWeek from "@components/layout/NextWeek";
 
 export default function HomeRegistered() {
   const headers = generateHeaders(getUser());
@@ -133,6 +134,19 @@ export default function HomeRegistered() {
           onDelete={handleRefresh}
         />
       )} 
+      {actelem === "next7Days" && (
+        <div className="ml-64 p-4">
+          <NextWeek
+           tags={tags}
+           editingNote={editingNote}
+           onEdit={setEditingNote}
+           onCloseEdit={() => setEditingNote(null)}
+           onArchivedSuccess={handleRefresh}
+           onSubmitSuccess={handleRefresh}
+           onDelete={handleRefresh}
+          />
+        </div>
+      )}
       {actelem === "allNotes" && (
         <div className="ml-64 p-4">
           <ContentNotes
