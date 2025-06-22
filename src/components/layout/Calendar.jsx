@@ -233,9 +233,16 @@ export default function Calendar({tags, editingNote, onEdit, onCloseEdit, onSubm
         {creating && (
           <NoteForm 
             tags={tags}
-            onSubmitSuccess={fetchNotes}
-            onDeleteSuccess={fetchNotes}
+            onSubmitSuccess={() => {
+              fetchNotes();
+              onSubmitSuccess();
+            }}
+            onDeleteSuccess={() => {
+              fetchNotes()
+              onDeleteSuccess()
+            }}
             onClose={() => setCreating(false)}
+            onArchivedSuccess={onArchivedSuccess}
             date_of_note={activeDate}
           />
         )}
