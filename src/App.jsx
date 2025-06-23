@@ -14,12 +14,12 @@ function App() {
           <Route path="*" element={<h1>404: Страница не найдена</h1>} />
           {!isProduct() && (
             <>
-              <Route path="" element={<HomePage />} />
               <Route path='/test/settings' element={<Getsettings />}/>
               <Route path="/test/whoami" element={<WhoamI />} />
-              <Route path='/login' element={<LoginPage />} />
             </>
           )}
+          <Route path="" element={<HomePage />} />
+          <Route path='/login' element={<LoginPage />} />
         </Routes>
       </Router>
     </UserProvider>
