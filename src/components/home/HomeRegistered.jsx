@@ -12,6 +12,7 @@ import { chooseTextByLang, getOrSetLang, getOrSetUTC } from "@utils/helpers/loca
 import { useUser } from "@context/UserContext";
 import Calendar from "@components/layout/Calendar";
 import NextWeek from "@components/layout/NextWeek";
+import AddNoteButton from "@components/ui/AddNoteButton";
 
 export default function HomeRegistered() {
   const headers = generateHeaders(getUser());
@@ -28,6 +29,12 @@ export default function HomeRegistered() {
   const { refreshUser } = useUser();
   const [refreshTrigger, setRefreshTrigger] = useState(0); 
 
+  const getStyleByNotes = (notes) => {
+    if (notes?.results?.length > 0) {
+      return 1
+    }
+    return 2
+  }
   const formatDateWithTimezone = (timezone) => {
     const now = new Date();
     
@@ -42,6 +49,7 @@ export default function HomeRegistered() {
 
   const handleRefresh = () => {
     setRefreshTrigger(prev => prev + 1); 
+    setEditingNote(null)
   };
 
   const fetchNotes = async () => {
@@ -163,7 +171,7 @@ export default function HomeRegistered() {
       )}
 
       {actelem === "myDay" && (
-        <div className="ml-64 p-4">
+        <div className="ml-96 p-4">
           <nav>
             <Link to="/">Главная</Link>
             {!isAuthenticated && <Link to="/login">Войти</Link>}
@@ -180,26 +188,29 @@ export default function HomeRegistered() {
             )}
           </nav>
 
-          <h1 className="text-3xl font-bold">{generateGreetingByTime()}</h1>
-          <h2 className="text-xl text-gray-600">
-            {chooseTextByLang(
+          <div className="justify-start text-zinc-900 text-5xl font-extrabold font-['Inter']">{generateGreetingByTime()}</div>
+          <div className="justify-start text-neutral-500 text-5xl font-semibold font-['Inter']">{chooseTextByLang(
               "Организовывайте свою жизнь с нами.",
               "Organise your life with us.",
               lang
-            )}
-          </h2>
+            )}</div>
 
-          <div className="mb-6">
-            <button
-              className={`px-4 py-2 text-white rounded ${
-                editingNote ? "bg-gray-400 cursor-not-allowed" : "bg-black"
-              }`}
-              onClick={() => !editingNote && setEditingNote({})}
-              disabled={!!editingNote}
-            >
-              {chooseTextByLang("Добавить заметку", "Add note", lang)}
-            </button>
+          {notes?.results?.length > 0 && (
+            <div className="mt-[40px]">
+            <ContentNotes
+              notes={notes}
+              tags={tags}
+              editingNote={editingNote}
+              onEdit={setEditingNote}
+              onCloseEdit={() => setEditingNote(null)}
+              onArchivedSuccess={handleRefresh}
+              onSubmitSuccess={handleRefresh}
+              onDelete={handleRefresh}
+            />
           </div>
+          )}
+          
+          <AddNoteButton style={getStyleByNotes(notes)} editingNote={editingNote} setEditingNote={setEditingNote}/>
 
           {editingNote && !editingNote.id && (
             <NoteForm
@@ -215,16 +226,6 @@ export default function HomeRegistered() {
             />
           )}
 
-          <ContentNotes
-            notes={notes}
-            tags={tags}
-            editingNote={editingNote}
-            onEdit={setEditingNote}
-            onCloseEdit={() => setEditingNote(null)}
-            onArchivedSuccess={handleRefresh}
-            onSubmitSuccess={handleRefresh}
-            onDelete={handleRefresh}
-          />
         </div>
       )}
     </div>

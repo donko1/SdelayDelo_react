@@ -6,12 +6,12 @@ export function generateGreetingByTime() {
   const now = new Date().toLocaleString("en-US", { timeZone });
   const hour = new Date(now).getHours();
   if (hour >= 5 && hour < 12) {
-    return chooseTextByLang("Доброе утро", "Good morning", lang);
+    return chooseTextByLang("Доброе утро!", "Good morning!", lang);
   } else if (hour >= 12 && hour < 18) {
-    return chooseTextByLang("Добрый день", "Good afternoon", lang);
+    return chooseTextByLang("Добрый день!", "Good afternoon!", lang);
   } else if (hour >= 18 && hour < 23) {
-    return chooseTextByLang("Добрый вечер", "Good evening", lang);
+    return chooseTextByLang("Добрый вечер!", "Good evening!", lang);
   } else {
-    return chooseTextByLang("Доброй ночи", "Good night", lang);
+    return chooseTextByLang("Доброй ночи!", "Good night!", lang);
   }
 }
