@@ -8,3 +8,12 @@
 svg * {
   fill: currentColor !important;
 }
+svg {
+  display: block;
+  overflow: visible;
+  shape-rendering: crispEdges; 
+}
+
+path {
+  vector-effect: non-scaling-stroke;
+}

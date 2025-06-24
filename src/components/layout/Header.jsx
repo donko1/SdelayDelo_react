@@ -3,6 +3,12 @@
 import { useUser } from '@context/UserContext';
 import { chooseTextByLang, getOrSetLang } from '@utils/helpers/locale';
 import { useState } from 'react';
+import allNotesIcon from "@assets/allNotes.svg?react";
+import archiveIcon from "@assets/archive.svg?react";
+import myDayIcon from "@assets/myDay.svg?react"
+import nextWeekIcon from "@assets/nextWeek.svg?react"
+import searchIcon from "@assets/search.svg?react"
+import XIcon from "@assets/x.svg?react"
 
 function Header({ activeElem, setAct, addNoteFunc, setOpenArchived, tags_data}) {
     const { username } = useUser();
@@ -12,23 +18,28 @@ function Header({ activeElem, setAct, addNoteFunc, setOpenArchived, tags_data}) 
     const dataForElems = [
         {
             id: "addNote",
-            text: chooseTextByLang("Добавить заметку", "Add note", lang)
+            text: chooseTextByLang("Добавить заметку", "Add note", lang),
+            icon: XIcon
         },
         {
             id: "search",
-            text: chooseTextByLang("Поиск", "Search", lang)
+            text: chooseTextByLang("Поиск", "Search", lang),
+            icon: searchIcon
         },
         {
             id: "myDay",
-            text: chooseTextByLang("Мой день", "My day", lang)
+            text: chooseTextByLang("Мой день", "My day", lang),
+            icon: myDayIcon
         },
         {
             id: "next7Days",
-            text: chooseTextByLang("Следующие 7 дней", "Next 7 days", lang)
+            text: chooseTextByLang("Следующие 7 дней", "Next 7 days", lang),
+            icon: nextWeekIcon
         },
         {
             id: "allNotes",
-            text: chooseTextByLang("Все мои заметки", "All my notes", lang)
+            text: chooseTextByLang("Все мои заметки", "All my notes", lang),
+            icon: allNotesIcon
         },
         {
             id: "Calendar",
@@ -36,7 +47,8 @@ function Header({ activeElem, setAct, addNoteFunc, setOpenArchived, tags_data}) 
         },
         {
             id: "archive",
-            text: chooseTextByLang("Архив", "Archive", lang)
+            text: chooseTextByLang("Архив", "Archive", lang),
+            icon: archiveIcon
         },
         {
             id: "myTags",
@@ -51,9 +63,10 @@ function Header({ activeElem, setAct, addNoteFunc, setOpenArchived, tags_data}) 
             </div>
             {dataForElems.map(item => 
             (
+                
                 <div 
                     key={item.id} 
-                    className="h-24 flex items-center justify-center cursor-pointer" 
+                    className="group cursor-pointer my-[30px] ml-[20px] flex items-center" 
                     onClick={() => {
                         if (item.id === "addNote") {
                             addNoteFunc();
@@ -67,9 +80,25 @@ function Header({ activeElem, setAct, addNoteFunc, setOpenArchived, tags_data}) 
                     }}
                 >
 
+                    {item.icon && (
+                        <item.icon
+                            className={`mr-[16px] group-hover:scale-105 transition-all duration-300 ${
+                            item.id === 'archive' || item.id === 'next7Days' 
+                                ? 'block [&>*]:!fill-none' 
+                                : ''
+                            }`}
+                            style={{
+                            color: activeElem === item.id ? '#191212' : 'white',
+                            ...(item.id === 'archive' || item.id === 'next7Days') && {
+                                shapeRendering: "crispEdges",
+                                overflow: "visible"
+                            }
+                            }}
+                        />
+                        )}
 
                     <span
-                        className="text-[25px] text-center"
+                        className="justify-start group-hover:FAF9F9 transition-all duration-300 text-stone-50 text-[21px] hover:text-[22px] hover:font-weight:800 font-bold font-['Inter']"
                         style={{ color: activeElem === item.id ? '#191212' : 'white' }}
                     >
                         {item.text}

@@ -1,0 +1,14 @@
+<svg width="36" height="38" viewBox="0 0 36 38" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <path 
+    d="M14.6428 31.8939L20.2102 20.874V20.7845H13.7479V18.803H22.6648V20.8292L17.1037 31.8939H14.6428Z" 
+    fill="currentColor"
+  />
+  
+  <path 
+    d="M34 15.2222V9.55556C34 7.46915 32.2092 5.77778 30 5.77778H6C3.79086 5.77778 2 7.46915 2 9.55556V15.2222M34 15.2222V32.2222C34 34.3087 32.2092 36 30 36H6C3.79086 36 2 34.3087 2 32.2222V15.2222M34 15.2222H2M10 2V9.55556M26 2V9.55556" 
+    stroke="currentColor" 
+    stroke-width="3" 
+    stroke-linecap="round"
+    fill="none"
+  />
+</svg>
