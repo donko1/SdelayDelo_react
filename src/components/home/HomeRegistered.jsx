@@ -189,7 +189,7 @@ export default function HomeRegistered() {
           </nav>
 
           <div className="justify-start text-zinc-900 text-5xl font-extrabold font-['Inter']">{generateGreetingByTime()}</div>
-          <div className="justify-start text-neutral-500 text-5xl font-semibold font-['Inter']">{chooseTextByLang(
+          <div className="justify-start mt-[15px] text-neutral-500 text-5xl font-semibold font-['Inter']">{chooseTextByLang(
               "Организовывайте свою жизнь с нами.",
               "Organise your life with us.",
               lang
