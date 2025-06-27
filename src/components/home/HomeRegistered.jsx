@@ -143,7 +143,7 @@ export default function HomeRegistered() {
         />
       )} 
       {actelem === "next7Days" && (
-        <div className="ml-64 p-4">
+        <div className="ml-96 p-4">
           <NextWeek
            tags={tags}
            editingNote={editingNote}
@@ -156,7 +156,7 @@ export default function HomeRegistered() {
         </div>
       )}
       {actelem === "allNotes" && (
-        <div className="ml-64 p-4">
+        <div className="ml-96 p-4">
           <ContentNotes
             notes={allNotes}
             tags={tags}
@@ -222,7 +222,6 @@ export default function HomeRegistered() {
               }
               onDeleteSuccess={handleRefresh
               }
-              date_of_note={formatDateWithTimezone(timezone)}
             />
           )}
 
