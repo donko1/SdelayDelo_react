@@ -13,7 +13,7 @@ Frontend part of **SdelayDelo** project. This repository serves purely as open-s
 
 1. Clone repository:
 ```bash
-git clone https://github.com/donko1/sdelaydelo_react.git
+git clone https://github.com/donko1/SdelayDelo_react.git
 cd sdelaydelo_react
 ```
 
