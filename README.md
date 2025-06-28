@@ -1,12 +1,47 @@
-# React + Vite
+# 🚀 SdelayDelo Frontend (React + Vite)
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Frontend part of **SdelayDelo** project. This repository serves purely as open-source code reference with no commercial value. Created for educational/demonstration purposes.
 
-Currently, two official plugins are available:
+## 🔧 Technologies
+- **React 19**
+- **Vite 6** (build tool)
+- **Tailwind CSS** (styling)
+- **React Router v7** (navigation)
+- **ESLint** (linting)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## ⚙️ Installation & Setup
 
-## Expanding the ESLint configuration
+1. Clone repository:
+```bash
+git clone https://github.com/donko1/sdelaydelo_react.git
+cd sdelaydelo_react
+```
 
-If you are developing a production application, we recommend using TypeScript and enable type-aware lint rules. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+2. Install dependencies:
+```bash
+npm install
+```
+
+3. Configure environment (use .env.example as template):
+```bash
+cp .env.example .env
+```
+
+4. Start development server:
+```bash
+npm run dev
+```
+
+5. Build for production:
+```bash
+npm run build
+```
+
+## ⚠️ Important Notes
+- Backend required for full functionality: [donko1/SdelayDelo](https://github.com/donko1/SdelayDelo)
+- All configurations are in `/config` directory
+- Uses Tailwind CSS for styling
+- Implements React Router v7 for routing
+
+## 🔒 Environment Setup
+Rename `.env.example` to `.env` and configure as you wish
