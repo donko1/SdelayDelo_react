@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { generateHeaders, getUser } from "@utils/api/auth";
 import { isParallel } from "@utils/helpers/settings";
-import { addNoteToArchive } from "@utils/api/notes";
+import { addNoteToArchive, deleteNoteById } from "@utils/api/notes";
 
 
 function NoteForm({ note, tags, onClose, onSubmitSuccess, onDeleteSuccess, onArchivedSuccess, date_of_note }) {
@@ -85,22 +85,10 @@ function NoteForm({ note, tags, onClose, onSubmitSuccess, onDeleteSuccess, onArc
         if (!note?.id) return;
 
         try {
-            const headers = generateHeaders(getUser());
-            const baseUrl = isParallel()
-                ? "/api/v3/note/"
-                : "http://localhost:8000/api/v3/note/";
-            const url = `${baseUrl}${note.id}/`;
-
-            const response = await fetch(url, {
-                method: "DELETE",
-                headers,
-            });
-
-            if (!response.ok) throw new Error("Ошибка при удалении");
-            console.log("Заметка успешно удалена");
-            onDeleteSuccess(note.id);
-        } catch (error) {
-            console.error("Ошибка удаления заметки:", error);
+            await deleteNoteById(note.id, generateHeaders(getUser()))
+        }
+        catch (error) {
+            console.log("Ошибка при удалении: ", error)
         }
     };
 

@@ -59,7 +59,7 @@ function Header({ activeElem, setAct, addNoteFunc, setOpenArchived, tags_data}) 
     return (
         <div className="flex flex-col bg-transparent text-white">
             <div className="h-24 flex items-center justify-center">
-                <h1 className="text-[25px]">{username}</h1>
+                <h1 className="justify-start text-stone-50 text-xl font-bold font-['Inter']">{username}</h1>
             </div>
             {dataForElems.map(item => 
             (
