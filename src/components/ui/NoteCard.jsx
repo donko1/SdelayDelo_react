@@ -30,7 +30,6 @@ const NoteCard = ({
   }
 
   const headers = generateHeaders(getUser())
-  console.log(note)
   return (
     <div 
       onClick={() => onEdit(note)} 
