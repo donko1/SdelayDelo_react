@@ -69,17 +69,17 @@ const NoteCard = ({
          </div>
          <div className="ml-[auto] flex">
           <CrossIcon 
-            onClick={(e) => {
+            onClick={async (e) => {
               e.stopPropagation();
-              deleteNoteById(note.id, headers)
+              await deleteNoteById(note.id, headers)
               onDelete()
             }} 
             className="m-1 transition-all duration-500 ease-in-out transform opacity-0 group-hover:opacity-100 hover:rotate-[360deg] hover:text-red-500"
           />
       <PinIcon 
-        onClick={(e) => {
+        onClick={async (e) => {
           e.stopPropagation();
-          togglePin(note, headers)
+          await togglePin(note, headers)
           onSubmitSuccess()
         }} 
         className={`m-1 transition-all duration-300transform ${

@@ -202,15 +202,15 @@ export default function Calendar({tags, editingNote, onEdit, onCloseEdit, onSubm
             isEditing={editingNote?.id === note.id}
             onEdit={onEdit}
             onCloseEdit={onCloseEdit}
-            onSubmitSuccess={() => {
+            onSubmitSuccess={async () => {
               onSubmitSuccess();
               fetchNotes()
             }}
-            onDelete={(deletedId) => {
+            onDelete={async (deletedId) => {
               onDelete(deletedId);
               fetchNotes();
             }}
-            onArchivedSuccess={() => {
+            onArchivedSuccess={async () => {
               onArchivedSuccess();
               fetchNotes();
             }}
