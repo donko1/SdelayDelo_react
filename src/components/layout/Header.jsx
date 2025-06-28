@@ -28,7 +28,7 @@ function Header({ activeElem, setAct, addNoteFunc, setOpenArchived, tags_data}) 
         },
         {
             id: "myDay",
-            text: chooseTextByLang("Мой день", "My day", lang),
+            text: chooseTextByLang("Входящие", "Inbox", lang),
             icon: myDayIcon
         },
         {
