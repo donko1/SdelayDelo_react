@@ -34,6 +34,35 @@ export async function addNoteToArchive(id, headers) {
         return 1
     }
 }
+export async function togglePin(note, headers) {
+    const baseUrl = isParallel()
+    ? "/api/v3/note/"
+    : "http://localhost:8000/api/v3/note/";
+    const url = note.id ? `${baseUrl}${note.id}/` : baseUrl;
+
+    try {
+        const resp = await fetch(url, {
+            method:"PATCH",
+            headers: {
+                    ...headers,
+                    "Content-Type": "application/json",
+                },
+            body: JSON.stringify({
+                is_pinned: !note.is_pinned,
+            })
+        })
+        if (!resp.ok) {
+            console.log("Error on side of server")
+            return 1
+        }
+        const data = await resp.json()
+        return data;
+    }
+    catch (error) {
+        console.log(`Error! ${error}`)
+        return 1
+    }
+}
 export async function removeFromArchive(id, headers) {
     const baseUrl = isParallel()
     ? "/api/v3/note/"
@@ -122,7 +151,25 @@ export async function getNotesByDate(headers, day) {
         return 1;
     }
 }
+export async function deleteNoteById(note, headers) {
+    try {
+        const baseUrl = isParallel()
+            ? "/api/v3/note/"
+            : "http://localhost:8000/api/v3/note/";
+        const url = `${baseUrl}${note}/`;
 
+        const response = await fetch(url, {
+            method: "DELETE",
+            headers,
+        });
+
+        if (!response.ok) throw new Error("Ошибка при удалении");
+        console.log("Заметка успешно удалена");
+        onDeleteSuccess(note.id);
+    } catch (error) {
+        console.error("Ошибка удаления заметки:", error);
+    }
+}
 export async function getArchivedNotesByUser(headers) {
     let url = isParallel() ? "/api/v3/note/archived" : "http://127.0.0.1:8000/api/v3/note/archived/"
     try {
