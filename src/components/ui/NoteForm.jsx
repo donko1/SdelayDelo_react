@@ -1,7 +1,11 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { generateHeaders, getUser } from "@utils/api/auth";
 import { isParallel } from "@utils/helpers/settings";
 import { addNoteToArchive, deleteNoteById } from "@utils/api/notes";
+import { chooseTextByLang, getOrSetLang } from "@/utils/helpers/locale";
+import CrossIcon from '@assets/cross.svg?react';
+import SendIcon from '@assets/send.svg?react';
+
 
 
 function NoteForm({ note, tags, onClose, onSubmitSuccess, onDeleteSuccess, onArchivedSuccess, date_of_note }) {
@@ -9,9 +13,36 @@ function NoteForm({ note, tags, onClose, onSubmitSuccess, onDeleteSuccess, onArc
     const [description, setDescription] = useState(note?.description || "");
     const [selectedTags, setSelectedTags] = useState(note?.tags || []);
     const isEditing = !(note == null)
-
+    const lang = getOrSetLang()
     const titleTextareaRef = useRef(null);
     const descriptionTextareaRef = useRef(null);
+    const [tagDropdownOpen, setTagDropdownOpen] = useState(false);
+
+    const updateTitleHeight = () => {
+        if (title === "") {
+            setTitle("Практиковать японский каждый день в 13 дня")
+            titleTextareaRef.current.style.height = 'auto';
+            titleTextareaRef.current.style.height = `${titleTextareaRef.current.scrollHeight}px`;
+            setTitle("")
+        }
+        if (titleTextareaRef.current) {
+            titleTextareaRef.current.style.height = 'auto';
+            titleTextareaRef.current.style.height = `${titleTextareaRef.current.scrollHeight}px`;
+        }
+    };
+
+    const updateDescriptionHeight = () => {
+        if (descriptionTextareaRef.current) {
+            descriptionTextareaRef.current.style.height = 'auto';
+            descriptionTextareaRef.current.style.height = `${descriptionTextareaRef.current.scrollHeight}px`;
+        }
+    };
+
+    useEffect(() => {
+        updateTitleHeight();
+        updateDescriptionHeight();
+    }, [title, description]);
+
 
 
     useEffect(() => {
@@ -112,50 +143,72 @@ function NoteForm({ note, tags, onClose, onSubmitSuccess, onDeleteSuccess, onArc
     };
 
     const renderForm = () => (
-        <div className="rounded-[10px] p-[12px] outline outline-1 outline-offset-[-1px] outline-black mt-[60px]">
-            <form onSubmit={handleSubmit} className="">
-                <input
-                    type="text"
+        <div className="rounded-[10px] w-[290px] outline outline-1 outline-offset-[-1px] outline-black mt-[60px]">
+            <form onSubmit={handleSubmit} className="p-[12px] relative">
+                <textarea
+                    ref={titleTextareaRef}
                     value={title}
                     onChange={(e) => setTitle(e.target.value)}
-                    placeholder="Заголовок"
+                    placeholder={chooseTextByLang("Практиковать японский каждый день в 13 дня", "Practising Japanese every 2 days at 13", lang)}
                     required
-                    onKeyDown="this.style.width = ((this.value.length + 1) * 8) + 'px';"
-                    className="text-stone-400 text-base font-medium font-['Inter'] leading-normal outline-none w-full"
+                    rows={1}
+                    className="text-stone-400 text-base font-medium font-['Inter'] leading-normal outline-none w-full resize-none overflow-y-hidden"
                 />
                 <textarea
+                    ref={descriptionTextareaRef}
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
-                    placeholder="Описание"
-                    rows={3}
+                    placeholder={chooseTextByLang("Описание", "Description", lang)}
                     required
-                    className="w-full p-2 border border-gray-300 rounded"
+                    rows={1}
+                    className="mt-[34px] justify-start text-stone-400 text-base font-medium font-['Inter'] outline-none leading-normal resize-none overflow-y-hidden"
                 />
-                <div className="flex flex-wrap gap-2">
-                    {tags.map(tag => (
-                        <button
-                            key={tag.id}
-                            type="button"
-                            onClick={() => handleTagToggle(tag.id)}
-                            className={`px-3 py-1 rounded-full text-sm text-white ${
-                                selectedTags.includes(tag.id)
-                                    ? "ring-2 ring-blue-600"
-                                    : ""
-                            }`}
-                            style={{ backgroundColor: tag.colour }}
-                        >
-                            #{tag.title}
-                        </button>
-                    ))}
+                <div className="mt-[32px] w-full relative">
+                    <div className="absolute -mx-3 w-[calc(100%+24px)] inset-x-0 top-0 h-px bg-black" /> 
                 </div>
-
-                <div className="flex flex-wrap justify-between items-center gap-2">
-                <div className="flex gap-2">
-                    <button type="button" onClick={onClose} className="px-4 py-2 border border-gray-400 rounded">
-                        Отмена
+                <div className="mt-[16px] flex justify-between items-center -mb-[12px] p-[12px]">
+                    <button 
+                        type="button" 
+                        onClick={onClose}
+                        className="flex items-center justify-center w-8 h-8"
+                    >
+                        <CrossIcon className="text-zinc-600/75 transition-all transition-300 hover:rotate-90 hover:text-red-500" />
                     </button>
-                    <button type="submit" className="px-4 py-2 bg-black text-white rounded">
-                        {isEditing ? "Сохранить" : "Создать"}
+
+                    <button 
+                        type="button" 
+                        onClick={() => setTagDropdownOpen(!tagDropdownOpen)}
+                        className="group flex items-center gap-1 px-3 py-1 rounded-md"
+                    >
+                        <span className="text-neutral-500 text-base font-medium font-['Inter'] group-hover:text-black transition-300 transition-all leading-tight">{chooseTextByLang("Добавить тэг", "Add tag", lang)}</span>
+                        <div className="w-0 h-0 border-l-4 border-r-4 border-t-4 border-l-transparent group-hover:text-black transition-300 transition-all border-r-transparent border-t-neutral-500 "></div>
+                    </button>
+
+                    {tagDropdownOpen && (
+                        <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-300 rounded-md shadow-lg z-10">
+                            <div className="max-h-40 overflow-y-auto">
+                                {tags.map(tag => (
+                                    <div 
+                                        key={tag.id}
+                                        onClick={() => handleTagToggle(tag.id)}
+                                        className={`px-4 py-2 flex items-center cursor-pointer ${
+                                            selectedTags.includes(tag.id) ? 'bg-gray-100' : ''
+                                        }`}
+                                    >
+                                        <span className="text-sm">#<span style={{color: tag.colour}}>{tag.title}</span></span>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    )}
+
+                    <button 
+                        type="submit"
+                        className="flex group-submit items-center justify-center w-8 h-8"
+                    >
+                        <SendIcon
+                        className="[&>*]:!fill-none [shape-rendering:crispEdges] overflow-visible opacity-68 text-neutral-500 hover:text-black transition-300 transition-all"
+                        />
                     </button>
                 </div>
                 {isEditing && (
@@ -176,7 +229,6 @@ function NoteForm({ note, tags, onClose, onSubmitSuccess, onDeleteSuccess, onArc
                         </div>
                     </>
                 )}
-            </div>
             </form>
         </div>
     );
