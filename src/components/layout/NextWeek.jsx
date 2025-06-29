@@ -4,6 +4,7 @@ import { generateHeaders, getUser } from '@/utils/api/auth';
 import { getNotesByDate } from '@/utils/api/notes';
 import NoteForm from '@components/ui/NoteForm';
 import NoteCard from '@/components/ui/NoteCard';
+import TitleForBlock from '@components/ui/Title';
 
 export default function NextWeek({
   tags,
@@ -176,9 +177,8 @@ export default function NextWeek({
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      <h2 className="text-xl font-semibold text-center mb-6">
-        {chooseTextByLang('Эта неделя', 'This week', lang)}
-      </h2>
+      
+      <TitleForBlock text={chooseTextByLang('Эта неделя', 'This week', lang)} />
       
       <div 
         ref={containerRef}

@@ -166,6 +166,7 @@ export default function HomeRegistered() {
             onArchivedSuccess={handleRefresh}
             onSubmitSuccess={handleRefresh}
             onDelete={handleRefresh}
+            text={chooseTextByLang("Все заметки", "All notes", getOrSetLang())}
           />
         </div>
       )}
