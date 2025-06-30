@@ -169,7 +169,7 @@ function NoteForm({ note, tags, onClose, onSubmitSuccess, onDeleteSuccess, onArc
             />
             <div className="relative">
                 <button 
-                    className="group px-[20px] py-[17px] hover:bg-black transition-all transition-300 rounded-[30px] mt-[28px] flex space-x-[3px]" 
+                    className="group px-[20px] py-[17px] hover:bg-black bg-white transition-all transition-300 rounded-[30px] mt-[28px] flex space-x-[3px]" 
                     onClick={(e) => {
                         e.preventDefault();
                         setTagDropdownOpen(!tagDropdownOpen);
@@ -222,10 +222,11 @@ function NoteForm({ note, tags, onClose, onSubmitSuccess, onDeleteSuccess, onArc
                     </div>
                 )}
             </div>
-
-            <span className="inline-block text-neutral-800 text-xl font-medium font-['Inter'] mt-[42px]">{chooseTextByLang("Описание", "Description", lang)}</span>
-            <br/>
-            <textarea ref={descriptionTextareaRef} rows={1} onKeyDown={e => e.key === 'Enter' && e.preventDefault()} className="mt-[15px] bg-transparent  text-zinc-400 text-xl font-normal font-['Inter'] outline-none" type="text" value={description} onChange={(e) => {setDescription(e.target.value)}} />
+            <div className="p-2 outline outline-1 outline-black mt-[42px] rounded-lg">
+                <span className="inline-block text-neutral-800 text-xl font-medium font-['Inter'] ">{chooseTextByLang("Описание", "Description", lang)}</span>
+                <br/>
+                <textarea placeholder={chooseTextByLang("Напишите сюда ваше описание", "Write here your description", lang)} ref={descriptionTextareaRef} rows={1} onKeyDown={e => e.key === 'Enter' && e.preventDefault()} className="mt-[15px] bg-transparent  text-zinc-400 text-xl font-normal font-['Inter'] outline-none" type="text" value={description} onChange={(e) => {setDescription(e.target.value)}} />
+            </div>
         </form>
     </div>
 )

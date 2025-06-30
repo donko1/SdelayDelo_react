@@ -4,7 +4,6 @@ const ActElemContext = createContext()
 
 export function ActElemContextProvider({ children }) {
   const [actelem, setAct] = useState("myDay");
-  console.log(actelem)
   
   return (
     <ActElemContext.Provider value={{ actelem, setAct }}>
