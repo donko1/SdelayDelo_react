@@ -1,7 +1,7 @@
 import NoteCard from '@components/ui/NoteCard';
 import TitleForBlock from '../ui/Title';
 
-function ContentNotes({ notes, tags, editingNote, onEdit, onCloseEdit, onSubmitSuccess, onDelete, onArchivedSuccess, text }) {
+function ContentNotes({ notes, tags, editingNote, onEdit, onCloseEdit, onSubmitSuccess, onDelete, onArchivedSuccess, text, refreshTags }) {
   return (
     <div>
       {text && (
@@ -19,6 +19,7 @@ function ContentNotes({ notes, tags, editingNote, onEdit, onCloseEdit, onSubmitS
             onSubmitSuccess={onSubmitSuccess}
             onDelete={onDelete}
             onArchivedSuccess={onArchivedSuccess}
+            refreshTags={refreshTags}
           />
         ))}
       </div>

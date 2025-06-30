@@ -14,7 +14,8 @@ const NoteCard = ({
   onCloseEdit,
   onSubmitSuccess,
   onDelete,
-  onArchivedSuccess
+  onArchivedSuccess,
+  refreshTags
 }) => {
   if (isEditing) {
     return (
@@ -25,6 +26,7 @@ const NoteCard = ({
         onSubmitSuccess={onSubmitSuccess}
         onDeleteSuccess={onDelete}
         onArchivedSuccess={onArchivedSuccess}
+        refreshTags={refreshTags}
       />
     );
   }

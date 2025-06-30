@@ -75,8 +75,7 @@ export default function HomeRegistered() {
     fetchAllNotes();
   }, [refreshTrigger]);
 
-  useEffect(() => {
-    const fetchTags = async () => {
+  const fetchTags = async () => {
       try {
         const result = await getAllTagsByUser(headers);
         setTags(result);
@@ -84,6 +83,8 @@ export default function HomeRegistered() {
         console.log("Ошибка при загрузке тэгов: ", error);
       }
     };
+
+  useEffect(() => {
     fetchTags();
   }, []);
 
@@ -207,6 +208,7 @@ export default function HomeRegistered() {
               onArchivedSuccess={handleRefresh}
               onSubmitSuccess={handleRefresh}
               onDelete={handleRefresh}
+              refreshTags={fetchTags}
             />
           </div>
           )}
@@ -223,6 +225,7 @@ export default function HomeRegistered() {
               }
               onDeleteSuccess={handleRefresh
               }
+              refreshTags={fetchTags}
             />
           )}
 

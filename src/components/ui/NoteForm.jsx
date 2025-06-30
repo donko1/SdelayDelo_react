@@ -5,13 +5,16 @@ import { addNoteToArchive, deleteNoteById } from "@utils/api/notes";
 import { chooseTextByLang, getOrSetLang } from "@/utils/helpers/locale";
 import CrossIcon from '@assets/cross.svg?react';
 import SendIcon from '@assets/send.svg?react';
+import MyDayIcon from "@assets/myDay.svg?react"
+import ArchiveIcon from "@assets/archive.svg?react"
+import HashtagIcon from "@assets/Hashtag.svg?react"
+import { addNewTag } from "@/utils/api/tags";
 
-
-
-function NoteForm({ note, tags, onClose, onSubmitSuccess, onDeleteSuccess, onArchivedSuccess, date_of_note }) {
+function NoteForm({ note, tags, onClose, onSubmitSuccess, onDeleteSuccess, onArchivedSuccess, date_of_note, refreshTags }) {
     const [title, setTitle] = useState(note?.title || "");
     const [description, setDescription] = useState(note?.description || "");
     const [selectedTags, setSelectedTags] = useState(note?.tags || []);
+    const [newTag, setNewTag] = useState("")
     const isEditing = !(note == null)
     const lang = getOrSetLang()
     const titleTextareaRef = useRef(null);
@@ -19,7 +22,7 @@ function NoteForm({ note, tags, onClose, onSubmitSuccess, onDeleteSuccess, onArc
     const [tagDropdownOpen, setTagDropdownOpen] = useState(false);
 
     const updateTitleHeight = () => {
-        if (title === "") {
+        if (title === "" && !isEditing) {
             setTitle("Практиковать японский каждый день в 13 дня")
             titleTextareaRef.current.style.height = 'auto';
             titleTextareaRef.current.style.height = `${titleTextareaRef.current.scrollHeight}px`;
@@ -43,21 +46,7 @@ function NoteForm({ note, tags, onClose, onSubmitSuccess, onDeleteSuccess, onArc
         updateDescriptionHeight();
     }, [title, description]);
 
-
-
-    useEffect(() => {
-        if (!isEditing) return;
-
-        const handleKeyDown = (e) => {
-            if (e.key === 'Escape') {
-                onClose();
-            }
-        };
-
-        window.addEventListener('keydown', handleKeyDown);
-        return () => window.removeEventListener('keydown', handleKeyDown);
-    }, [isEditing, onClose]);
-
+    
      const formatDate = (date) => {
         if (!(date instanceof Date)) return date;
         
@@ -76,9 +65,18 @@ function NoteForm({ note, tags, onClose, onSubmitSuccess, onDeleteSuccess, onArc
         );
     };
 
-    const handleSubmit = async (e) => {
+    const handleAddTag = async (e) => {
         e.preventDefault();
-        const content = { title, description, tags: selectedTags };
+        await addNewTag(newTag, generateHeaders(getUser()))
+    }
+    const handleSubmit = async (e) => {
+        try {
+            e.preventDefault();
+        }
+        catch (e) {
+
+        }
+            const content = { title, description, tags: selectedTags };
 
         if (date_of_note && !note?.id) {
             content.date_of_note = formatDate(date_of_note);
@@ -127,9 +125,6 @@ function NoteForm({ note, tags, onClose, onSubmitSuccess, onDeleteSuccess, onArc
         }
     };
 
-
-
-
     const handleDelete = async () => {
         if (!note?.id) return;
 
@@ -141,6 +136,99 @@ function NoteForm({ note, tags, onClose, onSubmitSuccess, onDeleteSuccess, onArc
             console.log("Ошибка при удалении: ", error)
         }
     };
+
+    const onCloseEdit = async () => {
+            await handleSubmit()
+            await onClose()
+    }
+
+
+    useEffect(() => {
+        if (!isEditing) return;
+
+        const handleKeyDown = (e) => {
+            if (e.key === 'Escape') {
+                onCloseEdit();
+            }
+        };
+
+        window.addEventListener('keydown', handleKeyDown);
+        return () => window.removeEventListener('keydown', handleKeyDown);
+    }, [isEditing, onCloseEdit]);
+
+
+    const renderFormForModalWindow = () => (
+    <div className="mt-[17px] ml-[30px] mr-[40px] mb-[100px]">
+        <form onSubmit={handleSubmit} className="relative">
+            <input
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                required
+                className="bg-transparent outline-none text-black text-3xl font-semibold font-['Inter']"
+                onKeyDown={e => e.key === 'Enter' && e.preventDefault()}
+            />
+            <div className="relative">
+                <button 
+                    className="group px-[20px] py-[17px] hover:bg-black transition-all transition-300 rounded-[30px] mt-[28px] flex space-x-[3px]" 
+                    onClick={(e) => {
+                        e.preventDefault();
+                        setTagDropdownOpen(!tagDropdownOpen);
+                    }}
+                >
+                    <HashtagIcon className="w-5 h-5"/>
+                    <span className="text-black transition-all transition-300 group-hover:text-stone-50 text-base font-medium font-['Inter']">
+                        {chooseTextByLang("Тэги", "Tags", lang)}
+                    </span>
+                </button>
+                
+                {tagDropdownOpen && (
+                    <div className="absolute z-52 bg-white mt-[15px]">
+                        <div className="flex">
+                            <input 
+                                className="rounded-[10px] border border-black p-[9px] flex-grow"
+                                value={newTag}
+                                placeholder={chooseTextByLang("Добавить тэг", "Add tag", lang)}
+                                onChange={(e) => setNewTag(e.target.value)}
+                                onKeyDown={async(e) => {
+                                    if (e.key === 'Enter') {
+                                        await handleAddTag(e);
+                                        await refreshTags()
+                                    }
+                                }}
+                            />
+                            <button
+                                onClick={async (e) => {
+                                    await handleAddTag(e);
+                                    await refreshTags()
+                                }}
+                                className="ml-2 px-3 bg-gray-200 rounded-[10px] hover:bg-green-500 transition-all transition-300"
+                            >
+                                {chooseTextByLang("Добавить", "Add", lang)}
+                            </button>
+                        </div>
+                        <div className="max-h-40 overflow-y-auto">
+                            {tags.map(tag => (
+                                <div 
+                                    key={tag.id}
+                                    onClick={() => handleTagToggle(tag.id)}
+                                    className={`px-[9px] hover:bg-gray-100 transition-all transition-300 py-2 flex items-center cursor-pointer ${
+                                        selectedTags.includes(tag.id) ? 'bg-gray-100' : ''
+                                    }`}
+                                >
+                                    <span className="text-sm">#<span style={{color: tag.colour}}>{tag.title}</span></span>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                )}
+            </div>
+
+            <span className="inline-block text-neutral-800 text-xl font-medium font-['Inter'] mt-[42px]">{chooseTextByLang("Описание", "Description", lang)}</span>
+            <br/>
+            <textarea ref={descriptionTextareaRef} rows={1} onKeyDown={e => e.key === 'Enter' && e.preventDefault()} className="mt-[15px] bg-transparent  text-zinc-400 text-xl font-normal font-['Inter'] outline-none" type="text" value={description} onChange={(e) => {setDescription(e.target.value)}} />
+        </form>
+    </div>
+)
 
     const renderForm = () => (
         <div className="rounded-[10px] w-[290px] outline outline-1 outline-offset-[-1px] outline-black mt-[60px]">
@@ -191,7 +279,7 @@ function NoteForm({ note, tags, onClose, onSubmitSuccess, onDeleteSuccess, onArc
                                     <div 
                                         key={tag.id}
                                         onClick={() => handleTagToggle(tag.id)}
-                                        className={`px-4 py-2 flex items-center cursor-pointer ${
+                                        className={`px-4 py-2 flex items-center hover:bg-gray-100 transition-all transition-300 cursor-pointer ${
                                             selectedTags.includes(tag.id) ? 'bg-gray-100' : ''
                                         }`}
                                     >
@@ -235,18 +323,14 @@ function NoteForm({ note, tags, onClose, onSubmitSuccess, onDeleteSuccess, onArc
 
     if (isEditing) {
         return (
-            <div onClick={onClose} className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-                <div onClick={e => e.stopPropagation()}  className="relative bg-white rounded-lg p-6 w-full max-w-md">
-                    <div className="flex justify-between items-center mb-4">
-                        <h2 className="text-xl font-bold">modalWindow</h2>
-                        <button
-                            onClick={onClose}
-                            className="text-gray-500 hover:text-gray-700 text-2xl"
-                        >
-                            &times;
-                        </button>
+            <div onClick={onCloseEdit} className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+                <div onClick={e => e.stopPropagation()}  className="relative w-[660px] bg-[#f9f9f9] rounded-lg p-6">
+                    <div className="flex justify-end items-center mb-4 space-x-[30px]">
+                        <MyDayIcon className="h-[32px] w-[32px] text-red-500" />
+                        <ArchiveIcon onClick={handleAddToArchive} className="[&>*]:!fill-none cursor-pointer [shape-rendering:crispEdges] text-zinc-500 h-[32px] w-[32px] transition-all transition-300 hover:text-yellow-600" />
+                        <CrossIcon onClick={onCloseEdit} className="h-[32px] cursor-pointer text-zinc-500 w-[32px] transition-all transition-300 hover:text-black"/>
                     </div>
-                    {renderForm()}
+                    {renderFormForModalWindow()}
                 </div>
             </div>
         );
