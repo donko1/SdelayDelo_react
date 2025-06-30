@@ -82,14 +82,17 @@ function Header({ activeElem, setAct, addNoteFunc, setOpenArchived, tags_data}) 
 
                     {item.icon && (
                         <item.icon
-                            className={`mr-[16px] group-hover:scale-105 transition-all duration-300 ${
+                            className={`mr-[16px] group-hover:scale-125 transition-all duration-300 ${
                             item.id === 'archive' || item.id === 'next7Days' 
                                 ? 'block [&>*]:!fill-none' 
                                 : ''
+                            } ${item.id === 'addNote'
+                                ? "group-hover:bg-white group-hover:text-black group-hover:rounded-full"
+                                : ""
                             }`}
                             style={{
                             color: activeElem === item.id ? '#191212' : 'white',
-                            ...(item.id === 'archive' || item.id === 'next7Days') && {
+                            ...(item.id === 'archive' || item.id === 'next7Days' || item.id === "addNote") && {
                                 shapeRendering: "crispEdges",
                                 overflow: "visible"
                             }
@@ -98,7 +101,7 @@ function Header({ activeElem, setAct, addNoteFunc, setOpenArchived, tags_data}) 
                         )}
 
                     <span
-                        className="justify-start group-hover:FAF9F9 transition-all duration-300 text-stone-50 text-[21px] hover:text-[22px] hover:font-weight:800 font-bold font-['Inter']"
+                        className="justify-start group-hover:FAF9F9 transition-all duration-300 text-stone-50 text-[21px] group-hover:text-[25px] hover:font-weight:800 font-bold font-['Inter']"
                         style={{ color: activeElem === item.id ? '#191212' : 'white' }}
                     >
                         {item.text}

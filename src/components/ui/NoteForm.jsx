@@ -324,7 +324,7 @@ function NoteForm({ note, tags, onClose, onSubmitSuccess, onDeleteSuccess, onArc
     if (isEditing) {
         return (
             <div onClick={onCloseEdit} className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-                <div onClick={e => e.stopPropagation()}  className="relative w-[660px] bg-[#f9f9f9] rounded-lg p-6">
+                <div onClick={e => e.stopPropagation()}  className="relative w-[660px] bg-[#f9f9f9] rounded-[20px] p-6">
                     <div className="flex justify-end items-center mb-4 space-x-[30px]">
                         <MyDayIcon className="h-[32px] w-[32px] text-red-500" />
                         <ArchiveIcon onClick={handleAddToArchive} className="[&>*]:!fill-none cursor-pointer [shape-rendering:crispEdges] text-zinc-500 h-[32px] w-[32px] transition-all transition-300 hover:text-yellow-600" />

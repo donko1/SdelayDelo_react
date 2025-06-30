@@ -53,7 +53,7 @@ const NoteCard = ({
           <h1 className="text-lg font-medium font-['Inter'] leading-relaxed">
             {note.title}
           </h1>
-          <div className="flex flex-wrap max-w-[250px] gap-2 mt-5">
+          <div className="flex flex-wrap max-w-[250px] gap-2 mt-[5px]">
             {note.tags?.map((tagId) => {
               const tag = tags.find(t => t.id === tagId);
               return tag ? (
