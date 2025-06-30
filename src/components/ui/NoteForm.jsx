@@ -2,13 +2,22 @@ import { useEffect, useRef, useState } from "react";
 import { generateHeaders, getUser } from "@utils/api/auth";
 import { isParallel } from "@utils/helpers/settings";
 import { addNoteToArchive, deleteNoteById } from "@utils/api/notes";
-import { chooseTextByLang, getOrSetLang } from "@/utils/helpers/locale";
+import { chooseTextByLang, getOrSetLang, getOrSetUTC } from "@/utils/helpers/locale";
 import CrossIcon from '@assets/cross.svg?react';
 import SendIcon from '@assets/send.svg?react';
 import MyDayIcon from "@assets/myDay.svg?react"
+import NextWeekIcon from "@assets/nextWeek.svg?react"
 import ArchiveIcon from "@assets/archive.svg?react"
 import HashtagIcon from "@assets/Hashtag.svg?react"
 import { addNewTag } from "@/utils/api/tags";
+import { useActElemContext } from "@context/ActElemContext";
+
+function getTodayInTimezone(timeZone) {
+  const now = new Date();
+  return new Date(
+    now.toLocaleString('en-US', { timeZone })
+  );
+}
 
 function NoteForm({ note, tags, onClose, onSubmitSuccess, onDeleteSuccess, onArchivedSuccess, date_of_note, refreshTags }) {
     const [title, setTitle] = useState(note?.title || "");
@@ -20,6 +29,8 @@ function NoteForm({ note, tags, onClose, onSubmitSuccess, onDeleteSuccess, onArc
     const titleTextareaRef = useRef(null);
     const descriptionTextareaRef = useRef(null);
     const [tagDropdownOpen, setTagDropdownOpen] = useState(false);
+    const [isInMyDay, setIsInMyDay] = useState(false)
+    const [isInNext7Days, setIsInNext7Days] = useState(false)
 
     const updateTitleHeight = () => {
         if (title === "" && !isEditing) {
@@ -156,15 +167,56 @@ function NoteForm({ note, tags, onClose, onSubmitSuccess, onDeleteSuccess, onArc
         return () => window.removeEventListener('keydown', handleKeyDown);
     }, [isEditing, onCloseEdit]);
 
+    if (isEditing) {
+        useEffect(() => {
+            const date_of_note = note.date_of_note
+            if (!date_of_note) {
+                setIsInMyDay(true)
+            }
+            if (date_of_note) {
+                const todayInTz = getTodayInTimezone(getOrSetUTC());
+                
+                const todayStr = todayInTz.toLocaleDateString('ru-RU', {
+                    day: '2-digit',
+                    month: '2-digit',
+                    year: 'numeric'
+                }).replace(/\./g, '/');
+                
+                if (todayStr === date_of_note) {
+                    setIsInMyDay(true)
+                }
+                
+                const next7Days = [];
+                const tempDate = new Date(todayInTz); 
+                
+                for (let i = 0; i < 7; i++) {
+                    const dateStr = tempDate.toLocaleDateString('ru-RU', {
+                        day: '2-digit',
+                        month: '2-digit',
+                        year: 'numeric'
+                    }).replace(/\./g, '/');
+                    
+                    next7Days.push(dateStr);
+                    tempDate.setDate(tempDate.getDate() + 1); 
+                }
+                
+                if (next7Days.includes(date_of_note)) {
+                    setIsInNext7Days(true)
+                }
+            }
+            }, [note,])}
 
-    const renderFormForModalWindow = () => (
+    const renderFormForModalWindow = () => {
+        
+        
+        return (
     <div className="mt-[17px] ml-[30px] mr-[40px] mb-[100px]">
         <form onSubmit={handleSubmit} className="relative">
             <input
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 required
-                className="bg-transparent outline-none text-black text-3xl font-semibold font-['Inter']"
+                className="bg-transparent outline-none cursor-text text-black text-3xl font-semibold font-['Inter']"
                 onKeyDown={e => e.key === 'Enter' && e.preventDefault()}
             />
             <div className="relative">
@@ -229,7 +281,7 @@ function NoteForm({ note, tags, onClose, onSubmitSuccess, onDeleteSuccess, onArc
             </div>
         </form>
     </div>
-)
+        )}
 
     const renderForm = () => (
         <div className="rounded-[10px] w-[290px] outline outline-1 outline-offset-[-1px] outline-black mt-[60px]">
@@ -323,11 +375,15 @@ function NoteForm({ note, tags, onClose, onSubmitSuccess, onDeleteSuccess, onArc
     );
 
     if (isEditing) {
+        const {actelem, setAct} = useActElemContext()
         return (
             <div onClick={onCloseEdit} className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
                 <div onClick={e => e.stopPropagation()}  className="relative w-[660px] bg-[#f9f9f9] rounded-[20px] p-6">
                     <div className="flex justify-end items-center mb-4 space-x-[30px]">
-                        <MyDayIcon className="h-[32px] w-[32px] text-red-500" />
+                        {isInMyDay && <MyDayIcon onClick={() => {setAct("myDay");onClose()}} className="h-[32px] w-[32px] text-red-500" />}
+                        {isInNext7Days && <NextWeekIcon onClick={() => {setAct("next7Days");onClose()}} className="h-[32px] w-[32px] text-red-500 block [&>*]:!fill-none"/>}
+                        {/* {TODO: и здесь замути такую же тему с иконкой календаря ток что б date_of_note != null условие. 
+                        P.S. Я все еще жду иконку от дизайнера потому что он чото медлит :( )} */}
                         <ArchiveIcon onClick={handleAddToArchive} className="[&>*]:!fill-none cursor-pointer [shape-rendering:crispEdges] text-zinc-500 h-[32px] w-[32px] transition-all transition-300 hover:text-yellow-600" />
                         <CrossIcon onClick={onCloseEdit} className="h-[32px] cursor-pointer text-zinc-500 w-[32px] transition-all transition-300 hover:text-black"/>
                     </div>

@@ -90,13 +90,13 @@ function Header({ activeElem, setAct, addNoteFunc, setOpenArchived, tags_data}) 
                                 ? "group-hover:bg-white group-hover:text-black group-hover:rounded-full"
                                 : ""
                             }`}
-                            style={{
+                            style={item.id !== "addNote" ? {
                             color: activeElem === item.id ? '#191212' : 'white',
                             ...(item.id === 'archive' || item.id === 'next7Days' || item.id === "addNote") && {
                                 shapeRendering: "crispEdges",
                                 overflow: "visible"
                             }
-                            }}
+                            }:{}}
                         />
                         )}
 

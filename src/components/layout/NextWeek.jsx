@@ -244,6 +244,7 @@ export default function NextWeek({
                   onSubmitSuccess={() => {
                     fetchNotesForDate(day.date);
                     handleCloseForm(day.dateStr);
+                    onSubmitSuccess();
                   }}
                   onClose={() => handleCloseForm(day.dateStr)}
                 />
