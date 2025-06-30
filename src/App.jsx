@@ -5,23 +5,26 @@ import { isProduct } from '@utils/helpers/settings';
 import { WhoamI } from '@pages/WhoamiPage';
 import HomePage from '@pages/HomePage';
 import { UserProvider } from '@context/UserContext.jsx';
+import { ActElemContextProvider } from '@context/ActElemContext';
 
 function App() {
   return (
     <UserProvider>
-      <Router>
-        <Routes>
-          <Route path="*" element={<h1>404: Страница не найдена</h1>} />
-          {!isProduct() && (
-            <>
-              <Route path='/test/settings' element={<Getsettings />}/>
-              <Route path="/test/whoami" element={<WhoamI />} />
-            </>
-          )}
-          <Route path="" element={<HomePage />} />
-          <Route path='/login' element={<LoginPage />} />
-        </Routes>
-      </Router>
+      <ActElemContextProvider>
+        <Router>
+          <Routes>
+            <Route path="*" element={<h1>404: Страница не найдена</h1>} />
+            {!isProduct() && (
+              <>
+                <Route path='/test/settings' element={<Getsettings />}/>
+                <Route path="/test/whoami" element={<WhoamI />} />
+              </>
+            )}
+            <Route path="" element={<HomePage />} />
+            <Route path='/login' element={<LoginPage />} />
+          </Routes>
+        </Router>
+      </ActElemContextProvider>
     </UserProvider>
   );
 }

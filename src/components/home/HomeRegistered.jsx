@@ -13,6 +13,7 @@ import { useUser } from "@context/UserContext";
 import Calendar from "@components/layout/Calendar";
 import NextWeek from "@components/layout/NextWeek";
 import AddNoteButton from "@components/ui/AddNoteButton";
+import { useActElemContext } from "@context/ActElemContext";
 
 export default function HomeRegistered() {
   const headers = generateHeaders(getUser());
@@ -25,7 +26,7 @@ export default function HomeRegistered() {
   const [tags, setTags] = useState([]);
   const [openArchived, setOpenArchived] = useState(false);
   const [editingNote, setEditingNote] = useState(null);
-  const [actelem, setAct] = useState("myDay");
+  const {actelem, setAct} = useActElemContext()
   const { refreshUser } = useUser();
   const [refreshTrigger, setRefreshTrigger] = useState(0); 
 
