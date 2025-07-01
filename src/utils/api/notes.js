@@ -219,3 +219,36 @@ export async function setNewDate(headers, id, date) {
     return 1;
   }
 }
+
+export async function editNote(headers, id, content) {
+  const baseUrl = isParallel()
+    ? "/api/v3/note/"
+    : "http://localhost:8000/api/v3/note/";
+  const url = `${baseUrl}${id}/`;
+  const method = "PUT";
+  const response = await fetch(url, {
+    method,
+    headers: {
+      ...headers,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(content),
+  });
+  if (!response.ok) throw new Error("Ошибка при отправке заметки");
+}
+
+export async function createNote(headers, content) {
+  const url = isParallel()
+    ? "/api/v3/note/"
+    : "http://localhost:8000/api/v3/note/";
+  const method = "POST";
+  const response = await fetch(url, {
+    method,
+    headers: {
+      ...headers,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(content),
+  });
+  if (!response.ok) throw new Error("Ошибка при отправке заметки");
+}

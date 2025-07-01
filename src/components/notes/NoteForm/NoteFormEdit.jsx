@@ -11,10 +11,9 @@ import HashtagIcon from "@assets/Hashtag.svg?react";
 import { chooseTextByLang } from "@utils/helpers/locale";
 import { useLang } from "@context/LangContext";
 import TagDropdown from "@components/notes/NoteForm/TagDropdown";
-import { addNoteToArchive, setNewDate } from "@utils/api/notes";
+import { addNoteToArchive, editNote, setNewDate } from "@utils/api/notes";
 import { useAuth } from "@context/AuthContext";
 import { getTodayInTimezone } from "@utils/helpers/date";
-import { isParallel } from "@utils/helpers/settings";
 import { useTimezone } from "@context/TimezoneContext";
 
 export default function NoteFormEdit({
@@ -157,20 +156,7 @@ export default function NoteFormEdit({
     const content = { title, description, tags: selectedTags };
 
     try {
-      const baseUrl = isParallel()
-        ? "/api/v3/note/"
-        : "http://localhost:8000/api/v3/note/";
-      const url = `${baseUrl}${note.id}/`;
-      const method = "PUT";
-      const response = await fetch(url, {
-        method,
-        headers: {
-          ...headers,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(content),
-      });
-      if (!response.ok) throw new Error("Ошибка при отправке заметки");
+      await editNote(headers, note.id, content);
       await onSubmitSuccess();
       await onClose();
     } catch (error) {
