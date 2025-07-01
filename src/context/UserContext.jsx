@@ -6,16 +6,19 @@ const UserContext = createContext(null);
 
 export function UserProvider({ children }) {
   const [username, setUsername] = useState(null);
-  const { headers, userToken } = useAuth();
+  const { headers, isAuthenticated } = useAuth();
   const [refreshCount, setRefreshCount] = useState(0);
-  const [isRegistered, setIsRegistered] = useState(!!userToken);
 
   const refreshUser = () => {
-    setIsRegistered(!!userToken);
     setRefreshCount((prev) => prev + 1);
   };
 
   useEffect(() => {
+    if (!isAuthenticated) {
+      setUsername(null);
+      return;
+    }
+
     const fetchUser = () => {
       const url = isParallel()
         ? "/api/whoami"
@@ -37,12 +40,11 @@ export function UserProvider({ children }) {
     };
 
     fetchUser();
-  }, [refreshCount]);
+  }, [refreshCount, isAuthenticated, headers]);
 
   const contextValue = {
     username,
     refreshUser,
-    isRegistered,
   };
 
   return (

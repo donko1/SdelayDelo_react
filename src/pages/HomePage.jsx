@@ -1,11 +1,11 @@
 import HomeRegistered from "@components/home/HomeRegistered";
 import HomeNotRegistered from "@components/home/HomeNotRegistered";
-import { useUser } from "@context/UserContext";
+import { useAuth } from "@/context/AuthContext";
 
 export default function HomePage() {
-  const { isRegistered } = useUser();
+  const { isAuthenticated } = useAuth();
 
-  if (!isRegistered) {
+  if (!isAuthenticated) {
     return <HomeNotRegistered />;
   }
 

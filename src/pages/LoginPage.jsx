@@ -285,6 +285,7 @@ function AuthFlow() {
       } finally {
         setIsLoading(false);
         login(data.access_token);
+        refreshUser();
         navigate("/");
       }
     } catch (err) {
