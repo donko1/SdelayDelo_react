@@ -15,6 +15,7 @@ import { addNoteToArchive, editNote, setNewDate } from "@utils/api/notes";
 import { useAuth } from "@context/AuthContext";
 import { getTodayInTimezone } from "@utils/helpers/date";
 import { useTimezone } from "@context/TimezoneContext";
+import useAutoResizeTextarea from "@utils/hooks/useAutoResizeTextarea";
 
 export default function NoteFormEdit({
   note,
@@ -27,15 +28,10 @@ export default function NoteFormEdit({
   const { lang } = useLang();
   const { timezone } = useTimezone();
 
-  const [title, setTitle] = useState(note?.title || "");
-  const [description, setDescription] = useState(note?.description || "");
   const [selectedTags, setSelectedTags] = useState(note?.tags || []);
   const [showCalendar, setShowCalendar] = useState(false);
 
   const [tagDropdownOpen, setTagDropdownOpen] = useState(false);
-
-  const titleTextareaRef = useRef(null);
-  const descriptionTextareaRef = useRef(null);
 
   const [isInMyDay, setIsInMyDay] = useState(false);
   const [isInNext7Days, setIsInNext7Days] = useState(false);
@@ -50,7 +46,7 @@ export default function NoteFormEdit({
   const [currentNoteDate, setCurrentNoteDate] = useState(
     note?.date_of_note || null
   );
-  const { actelem, setAct } = useActElemContext();
+  const { setAct } = useActElemContext();
 
   const currentNoteDateRef = useRef(currentNoteDate);
 
@@ -58,30 +54,26 @@ export default function NoteFormEdit({
     currentNoteDateRef.current = currentNoteDate;
   }, [currentNoteDate]);
 
+  const titlePlaceholder = "Практиковать японский каждый день в 13 дня";
+
+  const {
+    textareaRef: titleTextareaRef,
+    value: title,
+    setValue: setTitle,
+    updateHeight: updateTitleHeight,
+  } = useAutoResizeTextarea(note?.title || "", titlePlaceholder);
+
+  const {
+    textareaRef: descriptionTextareaRef,
+    value: description,
+    setValue: setDescription,
+    updateHeight: updateDescriptionHeight,
+  } = useAutoResizeTextarea(note?.description || "");
+
   useEffect(() => {
     updateTitleHeight();
     updateDescriptionHeight();
   }, [title, description]);
-
-  const updateTitleHeight = () => {
-    if (title === "" && !isEditing) {
-      setTitle("Практиковать японский каждый день в 13 дня");
-      titleTextareaRef.current.style.height = "auto";
-      titleTextareaRef.current.style.height = `${titleTextareaRef.current.scrollHeight}px`;
-      setTitle("");
-    }
-    if (titleTextareaRef.current) {
-      titleTextareaRef.current.style.height = "auto";
-      titleTextareaRef.current.style.height = `${titleTextareaRef.current.scrollHeight}px`;
-    }
-  };
-
-  const updateDescriptionHeight = () => {
-    if (descriptionTextareaRef.current) {
-      descriptionTextareaRef.current.style.height = "auto";
-      descriptionTextareaRef.current.style.height = `${descriptionTextareaRef.current.scrollHeight}px`;
-    }
-  };
 
   useEffect(() => {
     const date_of_note = note.date_of_note;
@@ -258,8 +250,10 @@ export default function NoteFormEdit({
         </div>
         <div className="mt-[17px] ml-[30px] mr-[40px] mb-[100px]">
           <form onSubmit={handleSubmit} className="relative">
-            <input
+            <textarea
               value={title}
+              ref={titleTextareaRef}
+              rows={1}
               onChange={(e) => setTitle(e.target.value)}
               required
               className="bg-transparent outline-none cursor-text text-black text-3xl font-semibold font-['Inter']"

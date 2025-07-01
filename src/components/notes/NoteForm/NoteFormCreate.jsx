@@ -1,12 +1,13 @@
 import { useAuth } from "@context/AuthContext";
 import { chooseTextByLang } from "@utils/helpers/locale";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import SendIcon from "@assets/send.svg?react";
 import CrossIcon from "@assets/cross.svg?react";
 import TagDropdown from "@components/notes/NoteForm/TagDropdown";
 import { formatDate } from "@utils/helpers/date";
 import { useLang } from "@context/LangContext";
 import { createNote } from "@utils/api/notes";
+import useAutoResizeTextarea from "@utils/hooks/useAutoResizeTextarea";
 
 export default function NoteFormCreate({
   tags,
@@ -15,13 +16,31 @@ export default function NoteFormCreate({
   onSubmitSuccess,
   date_of_note,
 }) {
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
   const [selectedTags, setSelectedTags] = useState([]);
   const [tagDropdownOpen, setTagDropdownOpen] = useState(false);
-  const titleTextareaRef = useRef(null);
-  const descriptionTextareaRef = useRef(null);
   const { headers } = useAuth();
+  const { lang } = useLang();
+
+  const titlePlaceholder = "Практиковать японский каждый день в 13 дня";
+
+  const {
+    textareaRef: titleTextareaRef,
+    value: title,
+    setValue: setTitle,
+    updateHeight: updateTitleHeight,
+  } = useAutoResizeTextarea("", titlePlaceholder);
+
+  const {
+    textareaRef: descriptionTextareaRef,
+    value: description,
+    setValue: setDescription,
+    updateHeight: updateDescriptionHeight,
+  } = useAutoResizeTextarea("");
+
+  useEffect(() => {
+    updateTitleHeight();
+    updateDescriptionHeight();
+  }, [title, description]);
 
   const handleTagToggle = (tagId) => {
     setSelectedTags((prev) =>
@@ -29,28 +48,6 @@ export default function NoteFormCreate({
         ? prev.filter((id) => id !== tagId)
         : [...prev, tagId]
     );
-  };
-
-  const { lang } = useLang();
-
-  const updateTitleHeight = () => {
-    if (title === "") {
-      setTitle("Практиковать японский каждый день в 13 дня");
-      titleTextareaRef.current.style.height = "auto";
-      titleTextareaRef.current.style.height = `${titleTextareaRef.current.scrollHeight}px`;
-      setTitle("");
-    }
-    if (titleTextareaRef.current) {
-      titleTextareaRef.current.style.height = "auto";
-      titleTextareaRef.current.style.height = `${titleTextareaRef.current.scrollHeight}px`;
-    }
-  };
-
-  const updateDescriptionHeight = () => {
-    if (descriptionTextareaRef.current) {
-      descriptionTextareaRef.current.style.height = "auto";
-      descriptionTextareaRef.current.style.height = `${descriptionTextareaRef.current.scrollHeight}px`;
-    }
   };
 
   useEffect(() => {
