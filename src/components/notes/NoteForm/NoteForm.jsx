@@ -1,5 +1,5 @@
-import NoteFormCreate from "./NoteFormCreate";
-import NoteFormEdit from "./NoteFormEdit";
+import NoteFormCreate from "@components/notes/NoteForm/NoteFormCreate";
+import NoteFormEdit from "@components/notes/NoteForm/NoteFormEdit";
 
 function NoteForm({
   note,

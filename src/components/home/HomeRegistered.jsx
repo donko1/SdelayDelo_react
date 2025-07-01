@@ -2,9 +2,9 @@ import { act, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import Header from "@components/layout/Header";
 import ContentNotes from "@components/notes/ContentNotes";
-import NoteForm from "@/components/notes/NoteForm/NoteForm";
+import NoteForm from "@components/notes/NoteForm/NoteForm";
 import ArchivedNotes from "@components/notes/ArchivedNotes";
-import { getUser, removeUser, generateHeaders } from "@utils/api/auth";
+import { useAuth } from "@context/AuthContext";
 import { getMyDayByUser, getAllNotesByUser } from "@utils/api/notes";
 import { getAllTagsByUser } from "@utils/api/tags";
 import { generateGreetingByTime } from "@utils/helpers/interface";
@@ -17,10 +17,10 @@ import { useActElemContext } from "@context/ActElemContext";
 import { useLang } from "@context/LangContext";
 
 export default function HomeRegistered() {
-  const headers = generateHeaders(getUser());
+  const { headers, userToken, logout } = useAuth();
   const { lang } = useLang();
 
-  const [isAuthenticated, setIsAuthenticated] = useState(getUser() != null);
+  const [isAuthenticated, setIsAuthenticated] = useState(userToken != null);
   const [notes, setNotes] = useState({ results: [], next: null });
   const [allNotes, setAllNotes] = useState({ result: [], next: null });
   const [tags, setTags] = useState([]);
@@ -174,7 +174,7 @@ export default function HomeRegistered() {
             {isAuthenticated && (
               <button
                 onClick={() => {
-                  removeUser();
+                  logout();
                   refreshUser();
                   setIsAuthenticated(false);
                 }}

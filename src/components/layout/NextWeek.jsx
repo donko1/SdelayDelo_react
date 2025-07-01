@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useRef } from "react";
-import { chooseTextByLang } from "@/utils/helpers/locale";
-import { generateHeaders, getUser } from "@/utils/api/auth";
-import { getNotesByDate } from "@/utils/api/notes";
-import NoteForm from "@/components/notes/NoteForm/NoteForm";
-import NoteCard from "@/components/ui/NoteCard";
+import { chooseTextByLang } from "@utils/helpers/locale";
+import { useAuth } from "@context/AuthContext";
+import { getNotesByDate } from "@utils/api/notes";
+import NoteForm from "@components/notes/NoteForm/NoteForm";
+import NoteCard from "@components/ui/NoteCard";
 import TitleForBlock from "@components/ui/Title";
 import { useLang } from "@context/LangContext";
 import { useTimezone } from "@context/TimezoneContext";
@@ -18,7 +18,7 @@ export default function NextWeek({
   onArchivedSuccess,
   refreshTags,
 }) {
-  const headers = generateHeaders(getUser());
+  const { headers } = useAuth();
   const { timezone } = useTimezone();
   const { lang } = useLang();
   const [days, setDays] = useState([]);

@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react";
-import { getUser, generateHeaders } from "@utils/api/auth";
 import { isParallel } from "@utils/helpers/settings";
+import { useAuth } from "@context/AuthContext";
 
 export function WhoamI() {
+  const { headers } = useAuth();
   const [userData, setUserData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -14,7 +15,7 @@ export function WhoamI() {
       try {
         const response = await fetch(url, {
           method: "GET",
-          headers: generateHeaders(getUser())
+          headers: headers,
         });
 
         if (!response.ok) {
@@ -50,13 +51,15 @@ export function WhoamI() {
         <h2 className="text-2xl font-bold text-gray-800 mb-6">User Profile</h2>
         <ul className="space-y-4">
           {Object.entries(userData).map(([key, value]) => (
-            <li 
+            <li
               key={key}
               className="flex justify-between items-center border-b pb-2 last:border-b-0"
             >
-              <span className="font-medium text-gray-700 capitalize">{key.replace(/_/g, ' ')}:</span>
+              <span className="font-medium text-gray-700 capitalize">
+                {key.replace(/_/g, " ")}:
+              </span>
               <span className="text-gray-600">
-                {value === null ? 'Not set' : value.toString()}
+                {value === null ? "Not set" : value.toString()}
               </span>
             </li>
           ))}

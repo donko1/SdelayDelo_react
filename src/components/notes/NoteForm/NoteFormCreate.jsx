@@ -1,5 +1,5 @@
-import { generateHeaders, getUser } from "@/utils/api/auth";
-import { chooseTextByLang } from "@/utils/helpers/locale";
+import { useAuth } from "@context/AuthContext";
+import { chooseTextByLang } from "@utils/helpers/locale";
 import { useEffect, useRef, useState } from "react";
 import SendIcon from "@assets/send.svg?react";
 import CrossIcon from "@assets/cross.svg?react";
@@ -22,6 +22,7 @@ export default function NoteFormCreate({
   const [tagDropdownOpen, setTagDropdownOpen] = useState(false);
   const titleTextareaRef = useRef(null);
   const descriptionTextareaRef = useRef(null);
+  const { headers } = useAuth();
 
   const handleTagToggle = (tagId) => {
     setSelectedTags((prev) =>
@@ -68,7 +69,6 @@ export default function NoteFormCreate({
       content.date_of_note = formatDate(date_of_note);
     }
     try {
-      const headers = generateHeaders(getUser());
       const url = isParallel()
         ? "/api/v3/note/"
         : "http://localhost:8000/api/v3/note/";

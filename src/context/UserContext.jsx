@@ -1,57 +1,52 @@
-import { createContext, useState, useEffect, useContext } from 'react';
-import { isParallel } from '../utils/helpers/settings';
-import { generateHeaders, getUser } from '../utils/api/auth';
+import { createContext, useState, useEffect, useContext } from "react";
+import { isParallel } from "@utils/helpers/settings";
+import { useAuth } from "@context/AuthContext";
 
 const UserContext = createContext(null);
 
 export function UserProvider({ children }) {
   const [username, setUsername] = useState(null);
+  const { headers, userToken } = useAuth();
   const [refreshCount, setRefreshCount] = useState(0);
-  const [isRegistered, setIsRegistered] = useState(!!getUser()); 
-
+  const [isRegistered, setIsRegistered] = useState(!!userToken);
 
   const refreshUser = () => {
-    setIsRegistered(!!getUser()); 
-    setRefreshCount(prev => prev + 1);
+    setIsRegistered(!!userToken);
+    setRefreshCount((prev) => prev + 1);
   };
-
 
   useEffect(() => {
     const fetchUser = () => {
-      const url = isParallel() 
-        ? '/api/whoami' 
-        : 'http://localhost:8000/api/whoami';
-      
-      const headers = generateHeaders(getUser());
-      
+      const url = isParallel()
+        ? "/api/whoami"
+        : "http://localhost:8000/api/whoami";
+
       fetch(url, {
-        method: 'GET',
+        method: "GET",
         headers: headers,
       })
-        .then(res => {
-          if (!res.ok) throw new Error('Ошибка запроса');
+        .then((res) => {
+          if (!res.ok) throw new Error("Ошибка запроса");
           return res.json();
         })
-        .then(data => setUsername(data.user.username))
-        .catch(err => {
-          console.error('Ошибка получения username:', err);
+        .then((data) => setUsername(data.user.username))
+        .catch((err) => {
+          console.error("Ошибка получения username:", err);
           setUsername(null);
         });
     };
 
     fetchUser();
-  }, [refreshCount]); 
+  }, [refreshCount]);
 
   const contextValue = {
     username,
     refreshUser,
-    isRegistered
+    isRegistered,
   };
 
   return (
-    <UserContext.Provider value={contextValue}>
-      {children}
-    </UserContext.Provider>
+    <UserContext.Provider value={contextValue}>{children}</UserContext.Provider>
   );
 }
 

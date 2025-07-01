@@ -1,4 +1,4 @@
-import { generateHeaders, getUser } from "@utils/api/auth";
+import { useAuth } from "@context/AuthContext";
 import { addNewTag } from "@utils/api/tags";
 import { chooseTextByLang } from "@utils/helpers/locale";
 import { useState } from "react";
@@ -11,9 +11,10 @@ export default function TagDropdown({
   handleTagToggle,
   variant,
 }) {
+  const { headers } = useAuth();
   const handleAddTag = async (e) => {
     e.preventDefault();
-    await addNewTag(newTag, generateHeaders(getUser()));
+    await addNewTag(newTag, headers);
   };
 
   const { lang } = useLang();

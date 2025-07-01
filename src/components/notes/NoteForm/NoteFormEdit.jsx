@@ -2,7 +2,6 @@ import { useState, useRef, useEffect } from "react";
 import DateDisplay from "@components/notes/NoteForm/DateDisplay";
 import { useActElemContext } from "@context/ActElemContext";
 import CalendarForNoteForm from "@components/notes/NoteForm/Calendar";
-
 import MyDayIcon from "@assets/myDay.svg?react";
 import NextWeekIcon from "@assets/nextWeek.svg?react";
 import ArchiveIcon from "@assets/archive.svg?react";
@@ -13,7 +12,7 @@ import { chooseTextByLang } from "@utils/helpers/locale";
 import { useLang } from "@context/LangContext";
 import TagDropdown from "@components/notes/NoteForm/TagDropdown";
 import { addNoteToArchive, setNewDate } from "@utils/api/notes";
-import { generateHeaders, getUser } from "@utils/api/auth";
+import { useAuth } from "@context/AuthContext";
 import { getTodayInTimezone } from "@utils/helpers/date";
 import { isParallel } from "@utils/helpers/settings";
 import { useTimezone } from "@context/TimezoneContext";
@@ -41,7 +40,7 @@ export default function NoteFormEdit({
 
   const [isInMyDay, setIsInMyDay] = useState(false);
   const [isInNext7Days, setIsInNext7Days] = useState(false);
-  const date_of_note = note.date_of_note;
+  const { headers } = useAuth();
   const [calendarDate, setCalendarDate] = useState(() => {
     if (note?.date_of_note) {
       const [day, month, year] = note.date_of_note.split("/").map(Number);
@@ -140,7 +139,6 @@ export default function NoteFormEdit({
 
   const handleAddToArchive = async () => {
     try {
-      const headers = generateHeaders(getUser());
       await addNoteToArchive(note.id, headers);
       if (onArchivedSuccess) {
         await onArchivedSuccess();
@@ -159,7 +157,6 @@ export default function NoteFormEdit({
     const content = { title, description, tags: selectedTags };
 
     try {
-      const headers = generateHeaders(getUser());
       const baseUrl = isParallel()
         ? "/api/v3/note/"
         : "http://localhost:8000/api/v3/note/";
@@ -206,11 +203,7 @@ export default function NoteFormEdit({
     const originalFormattedDate = note?.date_of_note || null;
 
     if (currentFormattedDate !== originalFormattedDate) {
-      await setNewDate(
-        generateHeaders(getUser()),
-        note.id,
-        currentFormattedDate
-      );
+      await setNewDate(headers, note.id, currentFormattedDate);
     }
     await handleSubmit();
   };

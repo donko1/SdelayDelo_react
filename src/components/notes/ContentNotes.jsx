@@ -1,12 +1,21 @@
-import NoteCard from '@components/ui/NoteCard';
-import TitleForBlock from '../ui/Title';
+import NoteCard from "@components/ui/NoteCard";
+import TitleForBlock from "@components/ui/Title";
 
-function ContentNotes({ notes, tags, editingNote, onEdit, onCloseEdit, onSubmitSuccess, onDelete, onArchivedSuccess, text, refreshTags }) {
+function ContentNotes({
+  notes,
+  tags,
+  editingNote,
+  onEdit,
+  onCloseEdit,
+  onSubmitSuccess,
+  onDelete,
+  onArchivedSuccess,
+  text,
+  refreshTags,
+}) {
   return (
     <div>
-      {text && (
-        <TitleForBlock text={text}/>
-      )}
+      {text && <TitleForBlock text={text} />}
       <div className="flex flex-wrap gap-5">
         {notes?.results?.map((note) => (
           <NoteCard

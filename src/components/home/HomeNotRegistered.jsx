@@ -1,12 +1,13 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useUser } from "@context/UserContext";
-import { getUser, removeUser } from "@utils/api/auth";
+import { useAuth } from "@context/AuthContext";
 import { chooseTextByLang } from "@utils/helpers/locale";
 import { useLang } from "@context/LangContext";
 
 export default function HomeNotRegistered() {
-  const [isAuthenticated, setIsAuthenticated] = useState(getUser() != null);
+  const { userToken, logout } = useAuth();
+  const [isAuthenticated, setIsAuthenticated] = useState(userToken != null);
   const { refreshUser } = useUser();
   const { lang } = useLang();
 
@@ -21,7 +22,7 @@ export default function HomeNotRegistered() {
         {isAuthenticated && (
           <button
             onClick={() => {
-              removeUser();
+              logout();
               setIsAuthenticated(false);
               refreshUser();
             }}
