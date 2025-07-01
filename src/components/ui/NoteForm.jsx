@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { generateHeaders, getUser } from "@utils/api/auth";
 import { isParallel } from "@utils/helpers/settings";
-import { addNoteToArchive, deleteNoteById } from "@utils/api/notes";
+import { addNoteToArchive, deleteNoteById, setNewDate } from "@utils/api/notes";
 import { chooseTextByLang, getOrSetLang, getOrSetUTC } from "@/utils/helpers/locale";
 import CrossIcon from '@assets/cross.svg?react';
 import SendIcon from '@assets/send.svg?react';
@@ -31,6 +31,123 @@ function NoteForm({ note, tags, onClose, onSubmitSuccess, onDeleteSuccess, onArc
     const [tagDropdownOpen, setTagDropdownOpen] = useState(false);
     const [isInMyDay, setIsInMyDay] = useState(false)
     const [isInNext7Days, setIsInNext7Days] = useState(false)
+    const [showCalendar, setShowCalendar] = useState(false);
+    const [calendarDate, setCalendarDate] = useState(() => {
+        if (note?.date_of_note) {
+            const [day, month, year] = note.date_of_note.split('/').map(Number);
+            return new Date(year, month - 1, day);
+        }
+        return new Date();
+    });
+    const [currentNoteDate, setCurrentNoteDate] = useState(note?.date_of_note || null);
+    
+    const handleDateSelect = (selectedDate) => {
+        const formattedDate = `${selectedDate.getDate()}/${selectedDate.getMonth() + 1}/${selectedDate.getFullYear()}`;
+        
+        setCurrentNoteDate(formattedDate);
+        setCalendarDate(selectedDate);
+        
+        setShowCalendar(false);
+    };
+
+    const renderCalendar = () => {
+    if (!showCalendar) return null;
+    
+    const today = new Date();
+    const currentMonth = calendarDate.getMonth();
+    const currentYear = calendarDate.getFullYear();
+
+    const noteDateParts = note?.date_of_note?.split('/').map(Number) || [];
+    const noteDate = noteDateParts.length === 3 
+        ? new Date(noteDateParts[2], noteDateParts[1] - 1, noteDateParts[0])
+        : null;
+
+    const firstDay = new Date(currentYear, currentMonth, 1);
+    const lastDay = new Date(currentYear, currentMonth + 1, 0);
+    
+    const days = [];
+    const startDay = firstDay.getDay() === 0 ? 6 : firstDay.getDay() - 1; 
+    
+    for (let i = 0; i < startDay; i++) {
+        days.push(<div key={`empty-${i}`} className="w-8 h-8" />);
+    }
+    
+    for (let d = 1; d <= lastDay.getDate(); d++) {
+        const date = new Date(currentYear, currentMonth, d);
+        const isToday = date.toDateString() === today.toDateString();
+        
+        let isNoteDate = noteDate && date.toDateString() === noteDate.toDateString();
+        const isSelected = currentNoteDate === 
+            `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`;
+
+        const currentFormattedDate = currentNoteDate;
+    
+        const originalFormattedDate = note?.date_of_note || null;
+
+        if (currentFormattedDate !== originalFormattedDate) {
+            isNoteDate = false
+        }
+        
+        days.push(
+            <button
+                key={`day-${d}`}
+                onClick={() => handleDateSelect(date)}
+                className={`w-8 h-8 rounded-full flex items-center justify-center text-base font-medium transition-all ${
+                    isSelected || isNoteDate
+                        ? 'bg-[#0973ff] text-white' 
+                        : isToday 
+                            ? 'bg-red-500 text-white' 
+                            : 'hover:bg-gray-200'
+                }`}
+            >
+                {d}
+            </button>
+        );
+    }
+
+    
+    return (
+        <div className="absolute z-10 bg-white border border-gray-300 rounded-lg shadow-lg p-4 mt-1">
+            <div className="flex justify-between items-center mb-3">
+                <button 
+                    onClick={() => setCalendarDate(new Date(currentYear, currentMonth - 1, 1))}
+                    className="p-2 rounded-full hover:bg-gray-100"
+                >
+                    &lt;
+                </button>
+                <span className="text-base font-medium">
+                    {calendarDate.toLocaleDateString(lang, { 
+                        month: 'long', 
+                        year: 'numeric' 
+                    })}
+                </span>
+                <button 
+                    onClick={() => setCalendarDate(new Date(currentYear, currentMonth + 1, 1))}
+                    className="p-2 rounded-full hover:bg-gray-100"
+                >
+                    &gt;
+                </button>
+            </div>
+            
+            <div className="grid grid-cols-7 gap-1 mb-2">
+                {chooseTextByLang(
+                    ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'],
+                    ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                    lang
+                ).map((day) => (
+                    <div key={day} className="w-8 h-8 flex items-center justify-center text-sm font-medium text-gray-500">
+                        {day}
+                    </div>
+                ))}
+            </div>
+            
+            <div className="grid grid-cols-7 gap-1">
+                {days}
+            </div>
+        </div>
+    );
+};
+
 
     const updateTitleHeight = () => {
         if (title === "" && !isEditing) {
@@ -87,12 +204,11 @@ function NoteForm({ note, tags, onClose, onSubmitSuccess, onDeleteSuccess, onArc
         catch (e) {
 
         }
-            const content = { title, description, tags: selectedTags };
+        const content = { title, description, tags: selectedTags };
 
         if (date_of_note && !note?.id) {
             content.date_of_note = formatDate(date_of_note);
         }
-
 
         try {
             const headers = generateHeaders(getUser());
@@ -114,9 +230,9 @@ function NoteForm({ note, tags, onClose, onSubmitSuccess, onDeleteSuccess, onArc
 
             if (!response.ok) throw new Error("Ошибка при отправке заметки");
 
-            const updatedNote = await response.json();
-            onSubmitSuccess(updatedNote);
-            onClose();
+            await onSubmitSuccess();
+            console.log("Я ВЫПОЛНЯЮСЬ!!!")
+            await onClose();
         } catch (error) {
             console.error("Ошибка отправки заметки:", error);
         }
@@ -148,9 +264,52 @@ function NoteForm({ note, tags, onClose, onSubmitSuccess, onDeleteSuccess, onArc
         }
     };
 
+    const getDisplayDate = () => {
+        if (!currentNoteDate) {
+            return chooseTextByLang("Без даты", "no date", lang);
+        }
+
+        const [day, month, year] = currentNoteDate.split('/').map(Number);
+        const noteDate = new Date(year, month - 1, day);
+        const today = getTodayInTimezone(getOrSetUTC());
+        
+        const isToday = noteDate.getDate() === today.getDate() &&
+                    noteDate.getMonth() === today.getMonth() &&
+                    noteDate.getFullYear() === today.getFullYear();
+        
+        const tomorrow = new Date(today);
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        const isTomorrow = noteDate.getDate() === tomorrow.getDate() &&
+                        noteDate.getMonth() === tomorrow.getMonth() &&
+                        noteDate.getFullYear() === tomorrow.getFullYear();
+
+        if (isToday) {
+            return chooseTextByLang("Сегодня", "today", lang);
+        } else if (isTomorrow) {
+            return chooseTextByLang("Завтра", "tomorrow", lang);
+        } else {
+            const monthNames = chooseTextByLang(
+                ["января", "февраля", "марта", "апреля", "мая", "июня", 
+                "июля", "августа", "сентября", "октября", "ноября", "декабря"],
+                ["January", "February", "March", "April", "May", "June",
+                "July", "August", "September", "October", "November", "December"],
+                lang
+            );
+            return `${day} ${monthNames[month - 1]}`;
+        }
+    };
+
+
     const onCloseEdit = async () => {
-            await handleSubmit()
-            await onClose()
+        const currentFormattedDate = currentNoteDate;
+    
+        const originalFormattedDate = note?.date_of_note || null;
+
+        if (currentFormattedDate !== originalFormattedDate) {
+            
+            await setNewDate(generateHeaders(getUser()), note.id, currentFormattedDate);
+        }
+        await handleSubmit()
     }
 
 
@@ -374,18 +533,28 @@ function NoteForm({ note, tags, onClose, onSubmitSuccess, onDeleteSuccess, onArc
         </div>
     );
 
-    if (isEditing) {
+        if (isEditing) {
         const {actelem, setAct} = useActElemContext()
         return (
             <div onClick={onCloseEdit} className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
                 <div onClick={e => e.stopPropagation()}  className="relative w-[660px] bg-[#f9f9f9] rounded-[20px] p-6">
-                    <div className="flex justify-end items-center mb-4 space-x-[30px]">
-                        {isInMyDay && <MyDayIcon onClick={() => {setAct("myDay");onClose()}} className="h-[32px] w-[32px] text-red-500" />}
-                        {isInNext7Days && <NextWeekIcon onClick={() => {setAct("next7Days");onClose()}} className="h-[32px] w-[32px] text-red-500 block [&>*]:!fill-none"/>}
-                        {/* {TODO: и здесь замути такую же тему с иконкой календаря ток что б date_of_note != null условие. 
-                        P.S. Я все еще жду иконку от дизайнера потому что он чото медлит :( )} */}
-                        <ArchiveIcon onClick={handleAddToArchive} className="[&>*]:!fill-none cursor-pointer [shape-rendering:crispEdges] text-zinc-500 h-[32px] w-[32px] transition-all transition-300 hover:text-yellow-600" />
-                        <CrossIcon onClick={onCloseEdit} className="h-[32px] cursor-pointer text-zinc-500 w-[32px] transition-all transition-300 hover:text-black"/>
+                    <div className="flex justify-between items-center mb-4">
+                        <button 
+                            onClick={() => setShowCalendar(!showCalendar)}
+                            className="text-black ml-[30px] text-base font-medium hover:scale-125 transition-all transition-300 cursor-pointer"
+                        >
+                            {getDisplayDate()}
+                        </button>
+                        {renderCalendar()}
+                        
+                        <div className="flex items-center space-x-[30px]">
+                            {isInMyDay && <MyDayIcon onClick={() => {setAct("myDay");onClose()}} className="h-[32px] w-[32px] text-red-500" />}
+                            {isInNext7Days && <NextWeekIcon onClick={() => {setAct("next7Days");onClose()}} className="h-[32px] w-[32px] text-red-500 block [&>*]:!fill-none"/>}
+                            {/* {TODO: и здесь замути такую же тему с иконкой календаря ток что б date_of_note != null условие. 
+                            P.S. Я все еще жду иконку от дизайнера потому что он чото медлит :( )} */}
+                            <ArchiveIcon onClick={handleAddToArchive} className="[&>*]:!fill-none cursor-pointer [shape-rendering:crispEdges] text-zinc-500 h-[32px] w-[32px] transition-all transition-300 hover:text-yellow-600" />
+                            <CrossIcon onClick={onCloseEdit} className="h-[32px] cursor-pointer text-zinc-500 w-[32px] transition-all transition-300 hover:text-black"/>
+                        </div>
                     </div>
                     {renderFormForModalWindow()}
                 </div>
@@ -394,7 +563,6 @@ function NoteForm({ note, tags, onClose, onSubmitSuccess, onDeleteSuccess, onArc
     }
 
     return renderForm();
-
 }
 
 

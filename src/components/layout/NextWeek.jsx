@@ -24,12 +24,18 @@ export default function NextWeek({
   const [creatingDates, setCreatingDates] = useState({});
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isHovered, setIsHovered] = useState(false);
+  const [refreshTrigger, setRefreshTrigger] = useState(0); 
+
   
   const containerRef = useRef(null);
   const wrapperRef = useRef(null);
   const isDragging = useRef(false);
   const startX = useRef(0);
   const scrollLeft = useRef(0);
+
+  const handleRefresh = () => {
+    setRefreshTrigger(prev => prev + 1); 
+  };
 
   const formatDate = (date) => {
     const year = date.getFullYear();
@@ -242,11 +248,12 @@ export default function NextWeek({
                   tags={tags}
                   date_of_note={day.date}
                   onSubmitSuccess={() => {
-                    fetchNotesForDate(day.date);
-                    handleCloseForm(day.dateStr);
+                    handleRefresh()
                     onSubmitSuccess();
                   }}
-                  onClose={() => handleCloseForm(day.dateStr)}
+                  onClose={() => {
+                    handleCloseForm(day.dateStr)
+                  }}
                 />
               ) : (
                 <button

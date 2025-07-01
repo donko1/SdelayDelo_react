@@ -186,3 +186,34 @@ export async function getArchivedNotesByUser(headers) {
         return 1;
     }
 }
+
+export async function setNewDate(headers, id, date) {
+    console.log("Set new date for note")
+    const baseUrl = isParallel()
+    ? "/api/v3/note/"
+    : "http://localhost:8000/api/v3/note/";
+    const url = id ? `${baseUrl}${id}/` : baseUrl;
+
+    try {
+        const resp = await fetch(url, {
+            method:"PATCH",
+            headers: {
+                    ...headers,
+                    "Content-Type": "application/json",
+                },
+            body: JSON.stringify({
+                date_of_note:date
+            })
+        })
+        if (!resp.ok) {
+            console.log("Error on side of server")
+            return 1
+        }
+        const data = await resp.json()
+        return data;
+    }
+    catch (error) {
+        console.log(`Error! ${error}`)
+        return 1
+    }
+}
