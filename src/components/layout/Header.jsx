@@ -9,6 +9,7 @@ import myDayIcon from "@assets/myDay.svg?react"
 import nextWeekIcon from "@assets/nextWeek.svg?react"
 import searchIcon from "@assets/search.svg?react"
 import XIcon from "@assets/x.svg?react"
+import calendarIcon from "@assets/calendar.svg?react"
 
 function Header({ activeElem, setAct, addNoteFunc, setOpenArchived, tags_data}) {
     const { username } = useUser();
@@ -43,7 +44,8 @@ function Header({ activeElem, setAct, addNoteFunc, setOpenArchived, tags_data}) 
         },
         {
             id: "Calendar",
-            text: chooseTextByLang("Календарь", "Calendar", lang)
+            text: chooseTextByLang("Календарь", "Calendar", lang),
+            icon: calendarIcon
         },
         {
             id: "archive",
@@ -82,7 +84,7 @@ function Header({ activeElem, setAct, addNoteFunc, setOpenArchived, tags_data}) 
 
                     {item.icon && (
                         <item.icon
-                            className={`mr-[16px] group-hover:scale-125 transition-all duration-300 ${
+                            className={`mr-[16px] max-w-[40px] max-h-[40px] group-hover:scale-125 transition-all duration-300 ${
                             item.id === 'archive' || item.id === 'next7Days' 
                                 ? 'block [&>*]:!fill-none' 
                                 : ''
