@@ -9,11 +9,8 @@ import ArchiveIcon from "@assets/archive.svg?react";
 import CalendarIcon from "@assets/calendar.svg?react";
 import CrossIcon from "@assets/cross.svg?react";
 import HashtagIcon from "@assets/Hashtag.svg?react";
-import {
-  chooseTextByLang,
-  getOrSetLang,
-  getOrSetUTC,
-} from "@utils/helpers/locale";
+import { chooseTextByLang, getOrSetUTC } from "@utils/helpers/locale";
+import { useLang } from "@context/LangContext";
 import TagDropdown from "@components/notes/NoteForm/TagDropdown";
 import { addNoteToArchive, setNewDate } from "@utils/api/notes";
 import { generateHeaders, getUser } from "@utils/api/auth";
@@ -28,7 +25,8 @@ export default function NoteFormEdit({
   onArchivedSuccess,
   refreshTags,
 }) {
-  const lang = getOrSetLang();
+  const { lang } = useLang();
+
   const [title, setTitle] = useState(note?.title || "");
   const [description, setDescription] = useState(note?.description || "");
   const [selectedTags, setSelectedTags] = useState(note?.tags || []);

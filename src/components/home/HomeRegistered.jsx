@@ -8,21 +8,17 @@ import { getUser, removeUser, generateHeaders } from "@utils/api/auth";
 import { getMyDayByUser, getAllNotesByUser } from "@utils/api/notes";
 import { getAllTagsByUser } from "@utils/api/tags";
 import { generateGreetingByTime } from "@utils/helpers/interface";
-import {
-  chooseTextByLang,
-  getOrSetLang,
-  getOrSetUTC,
-} from "@utils/helpers/locale";
+import { chooseTextByLang, getOrSetUTC } from "@utils/helpers/locale";
 import { useUser } from "@context/UserContext";
 import Calendar from "@components/layout/Calendar";
 import NextWeek from "@components/layout/NextWeek";
 import AddNoteButton from "@components/ui/AddNoteButton";
 import { useActElemContext } from "@context/ActElemContext";
+import { useLang } from "@context/LangContext";
 
 export default function HomeRegistered() {
   const headers = generateHeaders(getUser());
-  const lang = getOrSetLang();
-  const timezone = getOrSetUTC();
+  const { lang } = useLang();
 
   const [isAuthenticated, setIsAuthenticated] = useState(getUser() != null);
   const [notes, setNotes] = useState({ results: [], next: null });
@@ -39,18 +35,6 @@ export default function HomeRegistered() {
       return 1;
     }
     return 2;
-  };
-  const formatDateWithTimezone = (timezone) => {
-    const now = new Date();
-
-    return new Intl.DateTimeFormat("en-GB", {
-      timeZone: timezone,
-      day: "2-digit",
-      month: "2-digit",
-      year: "numeric",
-    })
-      .format(now)
-      .replace(/\//g, "/");
   };
 
   const handleRefresh = () => {
@@ -176,7 +160,7 @@ export default function HomeRegistered() {
             onArchivedSuccess={handleRefresh}
             onSubmitSuccess={handleRefresh}
             onDelete={handleRefresh}
-            text={chooseTextByLang("Все заметки", "All notes", getOrSetLang())}
+            text={chooseTextByLang("Все заметки", "All notes", lang)}
             refreshTags={fetchTags}
           />
         </div>

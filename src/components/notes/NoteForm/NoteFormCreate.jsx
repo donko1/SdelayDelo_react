@@ -1,11 +1,12 @@
 import { generateHeaders, getUser } from "@/utils/api/auth";
-import { chooseTextByLang, getOrSetLang } from "@/utils/helpers/locale";
+import { chooseTextByLang } from "@/utils/helpers/locale";
 import { useEffect, useRef, useState } from "react";
 import SendIcon from "@assets/send.svg?react";
 import CrossIcon from "@assets/cross.svg?react";
 import TagDropdown from "@components/notes/NoteForm/TagDropdown";
 import { isParallel } from "@utils/helpers/settings";
 import { formatDate } from "@utils/helpers/date";
+import { useLang } from "@context/LangContext";
 
 export default function NoteFormCreate({
   tags,
@@ -30,7 +31,7 @@ export default function NoteFormCreate({
     );
   };
 
-  const lang = getOrSetLang();
+  const { lang } = useLang();
 
   const updateTitleHeight = () => {
     if (title === "" && !isEditing) {

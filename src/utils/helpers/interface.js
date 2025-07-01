@@ -1,8 +1,12 @@
-import { chooseTextByLang, getOrSetUTC, getOrSetLang } from "@utils/helpers/locale";
+import {
+  chooseTextByLang,
+  getOrSetUTC,
+  getCurrentLang,
+} from "@utils/helpers/locale";
 
 export function generateGreetingByTime() {
   const timeZone = getOrSetUTC();
-  const lang = getOrSetLang()
+  const lang = getCurrentLang();
   const now = new Date().toLocaleString("en-US", { timeZone });
   const hour = new Date(now).getHours();
   if (hour >= 5 && hour < 12) {

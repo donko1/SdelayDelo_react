@@ -1,16 +1,13 @@
 import { getTodayInTimezone } from "@utils/helpers/date";
-import {
-  chooseTextByLang,
-  getOrSetLang,
-  getOrSetUTC,
-} from "@utils/helpers/locale";
+import { chooseTextByLang, getOrSetUTC } from "@utils/helpers/locale";
+import { useLang } from "@context/LangContext";
 
 export default function DateDisplay({
   currentNoteDate,
   showCalendar,
   setShowCalendar,
 }) {
-  const lang = getOrSetLang();
+  const { lang } = useLang();
   const getDisplayDate = () => {
     if (!currentNoteDate) {
       return chooseTextByLang("Без даты", "no date", lang);

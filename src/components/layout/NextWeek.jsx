@@ -1,14 +1,11 @@
 import React, { useState, useEffect, useRef } from "react";
-import {
-  chooseTextByLang,
-  getOrSetLang,
-  getOrSetUTC,
-} from "@/utils/helpers/locale";
+import { chooseTextByLang, getOrSetUTC } from "@/utils/helpers/locale";
 import { generateHeaders, getUser } from "@/utils/api/auth";
 import { getNotesByDate } from "@/utils/api/notes";
 import NoteForm from "@/components/notes/NoteForm/NoteForm";
 import NoteCard from "@/components/ui/NoteCard";
 import TitleForBlock from "@components/ui/Title";
+import { useLang } from "@context/LangContext";
 
 export default function NextWeek({
   tags,
@@ -22,7 +19,7 @@ export default function NextWeek({
 }) {
   const headers = generateHeaders(getUser());
   const timezone = getOrSetUTC();
-  const lang = getOrSetLang();
+  const { lang } = useLang();
   const [days, setDays] = useState([]);
   const [notesByDate, setNotesByDate] = useState({});
   const [loadingDates, setLoadingDates] = useState({});

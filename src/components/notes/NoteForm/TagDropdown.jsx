@@ -1,7 +1,8 @@
 import { generateHeaders, getUser } from "@utils/api/auth";
 import { addNewTag } from "@utils/api/tags";
-import { chooseTextByLang, getOrSetLang } from "@utils/helpers/locale";
+import { chooseTextByLang } from "@utils/helpers/locale";
 import { useState } from "react";
+import { useLang } from "@context/LangContext";
 
 export default function TagDropdown({
   tags,
@@ -15,7 +16,7 @@ export default function TagDropdown({
     await addNewTag(newTag, generateHeaders(getUser()));
   };
 
-  const lang = getOrSetLang();
+  const { lang } = useLang();
   const [newTag, setNewTag] = useState("");
   if (variant === "edit") {
     return (

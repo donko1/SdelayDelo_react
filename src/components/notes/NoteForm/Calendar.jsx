@@ -1,4 +1,5 @@
-import { chooseTextByLang, getOrSetLang } from "@utils/helpers/locale";
+import { chooseTextByLang } from "@utils/helpers/locale";
+import { useLang } from "@context/LangContext";
 
 export default function CalendarForNoteForm({
   showCalendar,
@@ -9,7 +10,8 @@ export default function CalendarForNoteForm({
   handleDateSelect,
 }) {
   if (!showCalendar) return null;
-  const lang = getOrSetLang();
+  const { lang } = useLang();
+
   const today = new Date();
   const currentMonth = calendarDate.getMonth();
   const currentYear = calendarDate.getFullYear();

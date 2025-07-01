@@ -1,14 +1,11 @@
 import React, { useState, useEffect, act } from "react";
-import {
-  chooseTextByLang,
-  getOrSetLang,
-  getOrSetUTC,
-} from "@/utils/helpers/locale";
+import { chooseTextByLang, getOrSetUTC } from "@/utils/helpers/locale";
 import { generateHeaders, getUser } from "@/utils/api/auth";
 import { getNotesByDate } from "@/utils/api/notes";
 import NoteForm from "@/components/notes/NoteForm/NoteForm";
 import NoteCard from "@/components/ui/NoteCard";
 import TitleForBlock from "../ui/Title";
+import { useLang } from "@context/LangContext";
 
 export default function Calendar({
   tags,
@@ -22,7 +19,7 @@ export default function Calendar({
 }) {
   const headers = generateHeaders(getUser());
   const timezone = getOrSetUTC();
-  const lang = getOrSetLang();
+  const { lang } = useLang();
   const [activeDate, setActiveDate] = useState(null);
   const [notes, setNotes] = useState([]);
   const [creating, setCreating] = useState(false);

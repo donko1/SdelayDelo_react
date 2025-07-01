@@ -2,33 +2,35 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useUser } from "@context/UserContext";
 import { getUser, removeUser } from "@utils/api/auth";
-import { chooseTextByLang, getOrSetLang } from "@utils/helpers/locale";
+import { chooseTextByLang } from "@utils/helpers/locale";
+import { useLang } from "@context/LangContext";
 
 export default function HomeNotRegistered() {
   const [isAuthenticated, setIsAuthenticated] = useState(getUser() != null);
   const { refreshUser } = useUser();
-  const lang = getOrSetLang();
+  const { lang } = useLang();
 
   return (
     <div>
-    <nav>
-      <Link to="/">Главная</Link>
+      <nav>
+        <Link to="/">Главная</Link>
 
-      {!isAuthenticated && <Link to="/login">{chooseTextByLang("Войти", "login", lang)}</Link>}
-      {isAuthenticated && (
-        <button
-          onClick={() => {
-            removeUser();
-            setIsAuthenticated(false);
-            refreshUser();
-          }}
-        >
-          {chooseTextByLang("Выйти", 'Logout', lang)}
-        </button>
-      )}
-    </nav>
-          <div className="home-content">
-        
+        {!isAuthenticated && (
+          <Link to="/login">{chooseTextByLang("Войти", "login", lang)}</Link>
+        )}
+        {isAuthenticated && (
+          <button
+            onClick={() => {
+              removeUser();
+              setIsAuthenticated(false);
+              refreshUser();
+            }}
+          >
+            {chooseTextByLang("Выйти", "Logout", lang)}
+          </button>
+        )}
+      </nav>
+      <div className="home-content">
         <div className="buttons-container">
           <Link to="/login" className="start-button">
             <button>{chooseTextByLang("Начать", "Get started", lang)}</button>
@@ -38,7 +40,6 @@ export default function HomeNotRegistered() {
           </Link>
         </div>
       </div>
-
-  </div>
+    </div>
   );
 }
