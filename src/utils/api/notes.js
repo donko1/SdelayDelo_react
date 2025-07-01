@@ -1,219 +1,221 @@
 import { isParallel } from "@utils/helpers/settings";
 
 export function getTagsForNote(note, tags) {
-    if (!note.tags?.length) return [];
-    return tags.filter(tag => note.tags.includes(tag.id));
-};
+  if (!note.tags?.length) return [];
+  return tags.filter((tag) => note.tags.includes(tag.id));
+}
 
 export async function addNoteToArchive(id, headers) {
-    const baseUrl = isParallel()
+  const baseUrl = isParallel()
     ? "/api/v3/note/"
     : "http://localhost:8000/api/v3/note/";
-    const url = id ? `${baseUrl}${id}/` : baseUrl;
+  const url = id ? `${baseUrl}${id}/` : baseUrl;
 
-    try {
-        const resp = await fetch(url, {
-            method:"PATCH",
-            headers: {
-                    ...headers,
-                    "Content-Type": "application/json",
-                },
-            body: JSON.stringify({
-                is_archived: true
-            })
-        })
-        if (!resp.ok) {
-            console.log("Error on side of server")
-            return 1
-        }
-        const data = await resp.json()
-        return data;
+  try {
+    const resp = await fetch(url, {
+      method: "PATCH",
+      headers: {
+        ...headers,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        is_archived: true,
+      }),
+    });
+    if (!resp.ok) {
+      console.log("Error on side of server");
+      return 1;
     }
-    catch (error) {
-        console.log(`Error! ${error}`)
-        return 1
-    }
+    const data = await resp.json();
+    return data;
+  } catch (error) {
+    console.log(`Error! ${error}`);
+    return 1;
+  }
 }
 export async function togglePin(note, headers) {
-    const baseUrl = isParallel()
+  const baseUrl = isParallel()
     ? "/api/v3/note/"
     : "http://localhost:8000/api/v3/note/";
-    const url = note.id ? `${baseUrl}${note.id}/` : baseUrl;
+  const url = note.id ? `${baseUrl}${note.id}/` : baseUrl;
 
-    try {
-        const resp = await fetch(url, {
-            method:"PATCH",
-            headers: {
-                    ...headers,
-                    "Content-Type": "application/json",
-                },
-            body: JSON.stringify({
-                is_pinned: !note.is_pinned,
-            })
-        })
-        if (!resp.ok) {
-            console.log("Error on side of server")
-            return 1
-        }
-        const data = await resp.json()
-        return data;
+  try {
+    const resp = await fetch(url, {
+      method: "PATCH",
+      headers: {
+        ...headers,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        is_pinned: !note.is_pinned,
+      }),
+    });
+    if (!resp.ok) {
+      console.log("Error on side of server");
+      return 1;
     }
-    catch (error) {
-        console.log(`Error! ${error}`)
-        return 1
-    }
+    const data = await resp.json();
+    return data;
+  } catch (error) {
+    console.log(`Error! ${error}`);
+    return 1;
+  }
 }
 export async function removeFromArchive(id, headers) {
-    const baseUrl = isParallel()
+  const baseUrl = isParallel()
     ? "/api/v3/note/"
     : "http://localhost:8000/api/v3/note/";
-    const url = id ? `${baseUrl}${id}/` : baseUrl;
+  const url = id ? `${baseUrl}${id}/` : baseUrl;
 
-    try {
-        const resp = await fetch(url, {
-            method:"PATCH",
-            headers: {
-                    ...headers,
-                    "Content-Type": "application/json",
-                },
-            body: JSON.stringify({
-                is_archived: false,
-                date_of_note:null
-            })
-        })
-        if (!resp.ok) {
-            console.log("Error on side of server")
-            return 1
-        }
-        const data = await resp.json()
-        return data;
+  try {
+    const resp = await fetch(url, {
+      method: "PATCH",
+      headers: {
+        ...headers,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        is_archived: false,
+        date_of_note: null,
+      }),
+    });
+    if (!resp.ok) {
+      console.log("Error on side of server");
+      return 1;
     }
-    catch (error) {
-        console.log(`Error! ${error}`)
-        return 1
-    }
+    const data = await resp.json();
+    return data;
+  } catch (error) {
+    console.log(`Error! ${error}`);
+    return 1;
+  }
 }
 
 export async function getMyDayByUser(headers) {
-    let url = isParallel() ? "/api/v3/note/my_day/" : "http://127.0.0.1:8000/api/v3/note/my_day/"
-    try {
-        const resp = await fetch(url, {method:"GET", headers:headers})
-        if (!resp.ok) {
-            console.log("Error on side of server");
-            return 1; 
-        }
-        const data = await resp.json()
-        return data;
+  let url = isParallel()
+    ? "/api/v3/note/my_day/"
+    : "http://127.0.0.1:8000/api/v3/note/my_day/";
+  try {
+    const resp = await fetch(url, { method: "GET", headers: headers });
+    if (!resp.ok) {
+      console.log("Error on side of server");
+      return 1;
     }
-    catch (error) {
-        console.log(`Error! ${error}`)
-        return 1;
-    }
+    const data = await resp.json();
+    return data;
+  } catch (error) {
+    console.log(`Error! ${error}`);
+    return 1;
+  }
 }
 export async function getAllNotesByUser(headers) {
-    let url = isParallel() ? "/api/v3/note" : "http://127.0.0.1:8000/api/v3/note/"
-    try {
-        const resp = await fetch(url, {method:"GET", headers:headers})
-        if (!resp.ok) {
-            console.log("Error on side of server");
-            return 1; 
-        }
-        const data = await resp.json()
-        return data;
+  let url = isParallel()
+    ? "/api/v3/note"
+    : "http://127.0.0.1:8000/api/v3/note/";
+  try {
+    const resp = await fetch(url, { method: "GET", headers: headers });
+    if (!resp.ok) {
+      console.log("Error on side of server");
+      return 1;
     }
-    catch (error) {
-        console.log(`Error! ${error}`)
-        return 1;
-    }
+    const data = await resp.json();
+    return data;
+  } catch (error) {
+    console.log(`Error! ${error}`);
+    return 1;
+  }
 }
 
 export async function getNotesByDate(headers, day) {
-    let url = isParallel() ? "api/v3/note/by_date/" : "http://127.0.0.1:8000/api/v3/note/by_date/";
+  let url = isParallel()
+    ? "api/v3/note/by_date/"
+    : "http://127.0.0.1:8000/api/v3/note/by_date/";
 
-    const year = day.getFullYear();
-    const month = String(day.getMonth() + 1).padStart(2, '0'); 
-    const date = String(day.getDate()).padStart(2, '0');
-    const dateString = `${year}-${month}-${date}`;
-    
-    const params = new URLSearchParams({ date: dateString });
+  const year = day.getFullYear();
+  const month = String(day.getMonth() + 1).padStart(2, "0");
+  const date = String(day.getDate()).padStart(2, "0");
+  const dateString = `${year}-${month}-${date}`;
 
-    try {
-        const resp = await fetch(`${url}?${params}`, {method:"GET", headers:headers})
-        if (!resp.ok) {
-            console.log("Error on side of server");
-            return 1; 
-        }
-        const data = await resp.json()
-        return data;
+  const params = new URLSearchParams({ date: dateString });
+
+  try {
+    const resp = await fetch(`${url}?${params}`, {
+      method: "GET",
+      headers: headers,
+    });
+    if (!resp.ok) {
+      console.log("Error on side of server");
+      return 1;
     }
-    catch (error) {
-        console.log(`Error! ${error}`)
-        return 1;
-    }
+    const data = await resp.json();
+    return data;
+  } catch (error) {
+    console.log(`Error! ${error}`);
+    return 1;
+  }
 }
 export async function deleteNoteById(note, headers) {
-    try {
-        const baseUrl = isParallel()
-            ? "/api/v3/note/"
-            : "http://localhost:8000/api/v3/note/";
-        const url = `${baseUrl}${note}/`;
+  try {
+    const baseUrl = isParallel()
+      ? "/api/v3/note/"
+      : "http://localhost:8000/api/v3/note/";
+    const url = `${baseUrl}${note}/`;
 
-        const response = await fetch(url, {
-            method: "DELETE",
-            headers,
-        });
+    const response = await fetch(url, {
+      method: "DELETE",
+      headers,
+    });
 
-        if (!response.ok) throw new Error("Ошибка при удалении");
-        console.log("Заметка успешно удалена");
-        onDeleteSuccess(note.id);
-    } catch (error) {
-        console.error("Ошибка удаления заметки:", error);
-    }
+    if (!response.ok) throw new Error("Ошибка при удалении");
+    console.log("Заметка успешно удалена");
+    onDeleteSuccess(note.id);
+  } catch (error) {
+    console.error("Ошибка удаления заметки:", error);
+  }
 }
 export async function getArchivedNotesByUser(headers) {
-    let url = isParallel() ? "/api/v3/note/archived" : "http://127.0.0.1:8000/api/v3/note/archived/"
-    try {
-        const resp = await fetch(url, {method:"GET", headers:headers})
-        if (!resp.ok) {
-            console.log("Error on side of server");
-            return 1; 
-        }
-        const data = await resp.json()
-        return data;
+  let url = isParallel()
+    ? "/api/v3/note/archived"
+    : "http://127.0.0.1:8000/api/v3/note/archived/";
+  try {
+    const resp = await fetch(url, { method: "GET", headers: headers });
+    if (!resp.ok) {
+      console.log("Error on side of server");
+      return 1;
     }
-    catch (error) {
-        console.log(`Error! ${error}`)
-        return 1;
-    }
+    const data = await resp.json();
+    return data;
+  } catch (error) {
+    console.log(`Error! ${error}`);
+    return 1;
+  }
 }
 
 export async function setNewDate(headers, id, date) {
-    console.log("Set new date for note")
-    const baseUrl = isParallel()
+  const baseUrl = isParallel()
     ? "/api/v3/note/"
     : "http://localhost:8000/api/v3/note/";
-    const url = id ? `${baseUrl}${id}/` : baseUrl;
+  const url = id ? `${baseUrl}${id}/` : baseUrl;
 
-    try {
-        const resp = await fetch(url, {
-            method:"PATCH",
-            headers: {
-                    ...headers,
-                    "Content-Type": "application/json",
-                },
-            body: JSON.stringify({
-                date_of_note:date
-            })
-        })
-        if (!resp.ok) {
-            console.log("Error on side of server")
-            return 1
-        }
-        const data = await resp.json()
-        return data;
+  try {
+    const resp = await fetch(url, {
+      method: "PATCH",
+      headers: {
+        ...headers,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        date_of_note: date,
+      }),
+    });
+    if (!resp.ok) {
+      console.log("Error on side of server");
+      return 1;
     }
-    catch (error) {
-        console.log(`Error! ${error}`)
-        return 1
-    }
+    const data = await resp.json();
+    return data;
+  } catch (error) {
+    console.log(`Error! ${error}`);
+    return 1;
+  }
 }

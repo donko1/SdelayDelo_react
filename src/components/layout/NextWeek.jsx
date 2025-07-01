@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { chooseTextByLang, getOrSetLang, getOrSetUTC } from '@/utils/helpers/locale';
 import { generateHeaders, getUser } from '@/utils/api/auth';
 import { getNotesByDate } from '@/utils/api/notes';
-import NoteForm from '@components/ui/NoteForm';
+import NoteForm from '@/components/notes/NoteForm/NoteForm';
 import NoteCard from '@/components/ui/NoteCard';
 import TitleForBlock from '@components/ui/Title';
 

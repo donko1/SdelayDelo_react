@@ -1,59 +1,67 @@
-import React, { useState, useEffect, act } from 'react';
-import { chooseTextByLang, getOrSetLang, getOrSetUTC } from '@/utils/helpers/locale';
-import { generateHeaders, getUser } from '@/utils/api/auth';
-import { getNotesByDate } from '@/utils/api/notes';
-import NoteForm from '@components/ui/NoteForm';
-import NoteCard from '@/components/ui/NoteCard';
-import TitleForBlock from '../ui/Title';
+import React, { useState, useEffect, act } from "react";
+import {
+  chooseTextByLang,
+  getOrSetLang,
+  getOrSetUTC,
+} from "@/utils/helpers/locale";
+import { generateHeaders, getUser } from "@/utils/api/auth";
+import { getNotesByDate } from "@/utils/api/notes";
+import NoteForm from "@/components/notes/NoteForm/NoteForm";
+import NoteCard from "@/components/ui/NoteCard";
+import TitleForBlock from "../ui/Title";
 
-
-export default function Calendar({tags, editingNote, onEdit, onCloseEdit, onSubmitSuccess, onDelete, onArchivedSuccess}) {
+export default function Calendar({
+  tags,
+  editingNote,
+  onEdit,
+  onCloseEdit,
+  onSubmitSuccess,
+  onDelete,
+  onArchivedSuccess,
+}) {
   const headers = generateHeaders(getUser());
-  const timezone = getOrSetUTC(); 
-  const lang = getOrSetLang(); 
+  const timezone = getOrSetUTC();
+  const lang = getOrSetLang();
   const [activeDate, setActiveDate] = useState(null);
-  const [notes, setNotes] = useState([])
-  const [creating, setCreating] = useState(false)
+  const [notes, setNotes] = useState([]);
+  const [creating, setCreating] = useState(false);
 
   const [offsetWeeks, setOffsetWeeks] = useState(0);
   const [days, setDays] = useState([]);
 
-
   const handleDayClick = (date) => {
     setActiveDate(date);
-    };
+  };
 
-  const fetchNotes = async() => {
+  const fetchNotes = async () => {
     try {
-      const results = await getNotesByDate(headers, activeDate)
-      console.log(results)
-      setNotes(results)
-    }
-    catch (error) {
+      const results = await getNotesByDate(headers, activeDate);
+      setNotes(results);
+    } catch (error) {
       console.error("Ошибка при загрузке заметок моего дня:", error);
     }
-  }
+  };
 
   useEffect(() => {
-    fetchNotes()
-  }, [activeDate])
+    fetchNotes();
+  }, [activeDate]);
 
   const isSameDay = (date1, date2) => {
-        if (!date1 || !date2) return false;
-        return date1.toDateString() === date2.toDateString();
-    };
+    if (!date1 || !date2) return false;
+    return date1.toDateString() === date2.toDateString();
+  };
 
   const getWeekTitle = () => {
     if (offsetWeeks === 0) {
-      return chooseTextByLang('Эта неделя', 'This week', lang);
+      return chooseTextByLang("Эта неделя", "This week", lang);
     } else if (offsetWeeks === 1) {
-      return chooseTextByLang('Следующая неделя', 'Next week', lang);
+      return chooseTextByLang("Следующая неделя", "Next week", lang);
     } else if (offsetWeeks === 2) {
-      return chooseTextByLang('Через 2 недели', 'In 2 weeks', lang);
+      return chooseTextByLang("Через 2 недели", "In 2 weeks", lang);
     } else {
       return chooseTextByLang(
-        `Через ${offsetWeeks} недель`, 
-        `In ${offsetWeeks} weeks`, 
+        `Через ${offsetWeeks} недель`,
+        `In ${offsetWeeks} weeks`,
         lang
       );
     }
@@ -64,53 +72,54 @@ export default function Calendar({tags, editingNote, onEdit, onCloseEdit, onSubm
       const now = new Date();
       const startDate = new Date(now);
       startDate.setDate(now.getDate() + offsetWeeks * 7);
-      
+
       const newDays = [];
-      
-      const weekdayFormatter = new Intl.DateTimeFormat(lang, { 
+
+      const weekdayFormatter = new Intl.DateTimeFormat(lang, {
         timeZone: timezone,
-        weekday: 'short' 
+        weekday: "short",
       });
-      
-      const dayFormatter = new Intl.DateTimeFormat(lang, { 
+
+      const dayFormatter = new Intl.DateTimeFormat(lang, {
         timeZone: timezone,
-        day: 'numeric' 
+        day: "numeric",
       });
-      
+
       const todayInTz = new Intl.DateTimeFormat(lang, {
         timeZone: timezone,
-        day: 'numeric',
-        month: 'numeric',
-        year: 'numeric'
+        day: "numeric",
+        month: "numeric",
+        year: "numeric",
       }).format(now);
-      
+
       for (let i = 0; i < 8; i++) {
         const date = new Date(startDate);
         date.setDate(startDate.getDate() + i);
-        
+
         const dateInTz = new Intl.DateTimeFormat(lang, {
           timeZone: timezone,
-          day: 'numeric',
-          month: 'numeric',
-          year: 'numeric'
+          day: "numeric",
+          month: "numeric",
+          year: "numeric",
         }).format(date);
-        
+
         const isToday = dateInTz === todayInTz && offsetWeeks === 0;
-        
+
         newDays.push({
           date,
           weekday: weekdayFormatter.format(date),
           day: dayFormatter.format(date),
-          isToday
+          isToday,
         });
       }
-      
-      setDays(newDays);
-      
-      if (!activeDate) {
-        setActiveDate(newDays.find(day => day.isToday)?.date || newDays[0]?.date);
-        }
 
+      setDays(newDays);
+
+      if (!activeDate) {
+        setActiveDate(
+          newDays.find((day) => day.isToday)?.date || newDays[0]?.date
+        );
+      }
     };
 
     calculateDays();
@@ -128,30 +137,52 @@ export default function Calendar({tags, editingNote, onEdit, onCloseEdit, onSubm
 
   return (
     <div className="max-w-4xl mx-auto p-4">
-      <TitleForBlock text={chooseTextByLang("Календарь", "Calendar", lang)}/>
+      <TitleForBlock text={chooseTextByLang("Календарь", "Calendar", lang)} />
       <div className="flex items-center justify-between mb-6">
-        <button 
+        <button
           onClick={handlePrevWeek}
           disabled={offsetWeeks === 0}
-          className={`p-2 rounded-full ${offsetWeeks === 0 
-            ? 'text-gray-300 cursor-not-allowed' 
-            : 'text-gray-600 hover:bg-gray-100'}`}
+          className={`p-2 rounded-full ${
+            offsetWeeks === 0
+              ? "text-gray-300 cursor-not-allowed"
+              : "text-gray-600 hover:bg-gray-100"
+          }`}
         >
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="h-6 w-6"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M15 19l-7-7 7-7"
+            />
           </svg>
         </button>
-        
-        <h2 className="text-xl font-semibold">
-          {getWeekTitle()}
-        </h2>
-        
-        <button 
+
+        <h2 className="text-xl font-semibold">{getWeekTitle()}</h2>
+
+        <button
           onClick={handleNextWeek}
           className="p-2 rounded-full text-gray-600 hover:bg-gray-100"
         >
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="h-6 w-6"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M9 5l7 7-7 7"
+            />
           </svg>
         </button>
       </div>
@@ -159,32 +190,41 @@ export default function Calendar({tags, editingNote, onEdit, onCloseEdit, onSubm
         {days.map((day, index) => {
           const isActive = isSameDay(day.date, activeDate);
           const isToday = day.isToday;
-          
+
           return (
-            <div 
+            <div
               key={index}
               onClick={() => handleDayClick(day.date)}
               className={`flex flex-col items-center py-3 rounded-lg cursor-pointer ${
-                isActive 
-                  ? 'bg-blue-50 border border-blue-200' 
-                  : 'hover:bg-gray-50'
+                isActive
+                  ? "bg-blue-50 border border-blue-200"
+                  : "hover:bg-gray-50"
               }`}
             >
-
-              <div className={`text-sm ${
-                isActive || isToday ? 'font-medium' : ''
-              } ${
-                isActive ? 'text-blue-600' : 
-                isToday ? 'text-blue-500' : 'text-gray-500'
-              }`}>
-                {isToday 
-                  ? chooseTextByLang('Сегодня', 'Today', lang) 
+              <div
+                className={`text-sm ${
+                  isActive || isToday ? "font-medium" : ""
+                } ${
+                  isActive
+                    ? "text-blue-600"
+                    : isToday
+                    ? "text-blue-500"
+                    : "text-gray-500"
+                }`}
+              >
+                {isToday
+                  ? chooseTextByLang("Сегодня", "Today", lang)
                   : day.weekday}
               </div>
-              <div className={`mt-1 text-lg font-medium ${
-                isActive ? 'text-blue-700' : 
-                isToday ? 'text-blue-600' : 'text-gray-800'
-              }`}>
+              <div
+                className={`mt-1 text-lg font-medium ${
+                  isActive
+                    ? "text-blue-700"
+                    : isToday
+                    ? "text-blue-600"
+                    : "text-gray-800"
+                }`}
+              >
                 {day.day}
               </div>
             </div>
@@ -192,63 +232,66 @@ export default function Calendar({tags, editingNote, onEdit, onCloseEdit, onSubm
         })}
       </div>
       <div className="flex flex-wrap gap-5">
-        
         {notes?.detail && (
-          <h1>{chooseTextByLang("Нет заметок на выбранную дату", "No notes for this date", lang)}</h1>
+          <h1>
+            {chooseTextByLang(
+              "Нет заметок на выбранную дату",
+              "No notes for this date",
+              lang
+            )}
+          </h1>
         )}
-        {notes?.length > 0 && notes.map((note) => (
-          <NoteCard 
-            key={note.id}
-            note={note}
-            tags={tags}
-            isEditing={editingNote?.id === note.id}
-            onEdit={onEdit}
-            onCloseEdit={onCloseEdit}
-            onSubmitSuccess={async () => {
-              onSubmitSuccess();
-              fetchNotes()
-            }}
-            onDelete={async (deletedId) => {
-              onDelete(deletedId);
-              fetchNotes();
-            }}
-            onArchivedSuccess={async () => {
-              onArchivedSuccess();
-              fetchNotes();
-            }}
-          />
-        ))}
-        
+        {notes?.length > 0 &&
+          notes.map((note) => (
+            <NoteCard
+              key={note.id}
+              note={note}
+              tags={tags}
+              isEditing={editingNote?.id === note.id}
+              onEdit={onEdit}
+              onCloseEdit={onCloseEdit}
+              onSubmitSuccess={async () => {
+                onSubmitSuccess();
+                fetchNotes();
+              }}
+              onDelete={async (deletedId) => {
+                onDelete(deletedId);
+                fetchNotes();
+              }}
+              onArchivedSuccess={async () => {
+                onArchivedSuccess();
+                fetchNotes();
+              }}
+            />
+          ))}
       </div>
       <div className="mt-4 mb-6">
-            <button
-              className={`px-4 py-2 text-white rounded ${
-                creating ? "bg-gray-400 cursor-not-allowed" : "bg-black"
-              }`}
-
-              onClick={() => setCreating(true)}
-              disabled={creating}
-            >
-              {chooseTextByLang("Добавить заметку", "Add note", lang)}
-            </button>
-        </div>
-        {creating && (
-          <NoteForm 
-            tags={tags}
-            onSubmitSuccess={() => {
-              fetchNotes();
-              onSubmitSuccess();
-            }}
-            onDeleteSuccess={() => {
-              fetchNotes()
-              onDeleteSuccess()
-            }}
-            onClose={() => setCreating(false)}
-            onArchivedSuccess={onArchivedSuccess}
-            date_of_note={activeDate}
-          />
-        )}
-
+        <button
+          className={`px-4 py-2 text-white rounded ${
+            creating ? "bg-gray-400 cursor-not-allowed" : "bg-black"
+          }`}
+          onClick={() => setCreating(true)}
+          disabled={creating}
+        >
+          {chooseTextByLang("Добавить заметку", "Add note", lang)}
+        </button>
+      </div>
+      {creating && (
+        <NoteForm
+          tags={tags}
+          onSubmitSuccess={() => {
+            fetchNotes();
+            onSubmitSuccess();
+          }}
+          onDeleteSuccess={() => {
+            fetchNotes();
+            onDeleteSuccess();
+          }}
+          onClose={() => setCreating(false)}
+          onArchivedSuccess={onArchivedSuccess}
+          date_of_note={activeDate}
+        />
+      )}
     </div>
   );
-};
+}

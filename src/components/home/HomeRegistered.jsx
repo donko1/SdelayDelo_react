@@ -2,7 +2,7 @@ import { act, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import Header from "@components/layout/Header";
 import ContentNotes from "@components/notes/ContentNotes";
-import NoteForm from "@components/ui/NoteForm";
+import NoteForm from "@/components/notes/NoteForm/NoteForm";
 import ArchivedNotes from "@components/notes/ArchivedNotes";
 import { getUser, removeUser, generateHeaders } from "@utils/api/auth";
 import { getMyDayByUser, getAllNotesByUser } from "@utils/api/notes";

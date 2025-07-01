@@ -1,5 +1,5 @@
 import React from 'react';
-import NoteForm from '@components/ui/NoteForm';
+import NoteForm from '@/components/notes/NoteForm/NoteForm';
 import { addNoteToArchive, deleteNoteById, togglePin } from '@/utils/api/notes';
 import { generateHeaders, getUser } from '@/utils/api/auth';
 import CheckIcon from "@assets/check.svg?react"
