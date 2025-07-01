@@ -1,5 +1,11 @@
 import { chooseTextByLang } from "@utils/helpers/locale";
 import { useLang } from "@context/LangContext";
+import {
+  formatDateToDmy,
+  isToday,
+  areDatesEqual,
+  parseDmyString,
+} from "@utils/helpers/date";
 
 export default function CalendarForNoteForm({
   showCalendar,
@@ -16,11 +22,7 @@ export default function CalendarForNoteForm({
   const currentMonth = calendarDate.getMonth();
   const currentYear = calendarDate.getFullYear();
 
-  const noteDateParts = note?.date_of_note?.split("/").map(Number) || [];
-  const noteDate =
-    noteDateParts.length === 3
-      ? new Date(noteDateParts[2], noteDateParts[1] - 1, noteDateParts[0])
-      : null;
+  const selectedDate = parseDmyString(currentNoteDate);
 
   const firstDay = new Date(currentYear, currentMonth, 1);
   const lastDay = new Date(currentYear, currentMonth + 1, 0);
@@ -34,28 +36,17 @@ export default function CalendarForNoteForm({
 
   for (let d = 1; d <= lastDay.getDate(); d++) {
     const date = new Date(currentYear, currentMonth, d);
-    const isToday = date.toDateString() === today.toDateString();
+    const dateStr = formatDateToDmy(date);
 
-    let isNoteDate =
-      noteDate && date.toDateString() === noteDate.toDateString();
-    const isSelected =
-      currentNoteDate ===
-      `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`;
-
-    const currentFormattedDate = currentNoteDate;
-
-    const originalFormattedDate = note?.date_of_note || null;
-
-    if (currentFormattedDate !== originalFormattedDate) {
-      isNoteDate = false;
-    }
+    const isSelected = selectedDate && areDatesEqual(date, selectedDate);
+    const isToday = areDatesEqual(date, today);
 
     days.push(
       <button
         key={`day-${d}`}
         onClick={() => handleDateSelect(date)}
         className={`w-8 h-8 rounded-full flex items-center justify-center text-base font-medium transition-all ${
-          isSelected || isNoteDate
+          isSelected
             ? "bg-[#0973ff] text-white"
             : isToday
             ? "bg-red-500 text-white"

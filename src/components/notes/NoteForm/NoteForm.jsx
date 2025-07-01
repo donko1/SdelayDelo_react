@@ -29,7 +29,6 @@ function NoteForm({
       tags={tags}
       onClose={onClose}
       refreshTags={refreshTags}
-      isEditing={isEditing}
       onSubmitSuccess={onSubmitSuccess}
       date_of_note={date_of_note}
     />

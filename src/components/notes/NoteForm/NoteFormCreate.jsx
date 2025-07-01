@@ -12,7 +12,6 @@ export default function NoteFormCreate({
   tags,
   onClose,
   refreshTags,
-  isEditing,
   onSubmitSuccess,
   date_of_note,
 }) {
@@ -35,7 +34,7 @@ export default function NoteFormCreate({
   const { lang } = useLang();
 
   const updateTitleHeight = () => {
-    if (title === "" && !isEditing) {
+    if (title === "") {
       setTitle("Практиковать японский каждый день в 13 дня");
       titleTextareaRef.current.style.height = "auto";
       titleTextareaRef.current.style.height = `${titleTextareaRef.current.scrollHeight}px`;
