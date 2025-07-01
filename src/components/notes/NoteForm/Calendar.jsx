@@ -2,7 +2,6 @@ import { chooseTextByLang } from "@utils/helpers/locale";
 import { useLang } from "@context/LangContext";
 import {
   formatDateToDmy,
-  isToday,
   areDatesEqual,
   parseDmyString,
 } from "@utils/helpers/date";
