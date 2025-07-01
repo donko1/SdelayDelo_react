@@ -1,5 +1,5 @@
-import { generateHeaders, getUser } from "@/utils/api/auth";
-import { addNewTag } from "@/utils/api/tags";
+import { generateHeaders, getUser } from "@utils/api/auth";
+import { addNewTag } from "@utils/api/tags";
 import { chooseTextByLang, getOrSetLang } from "@utils/helpers/locale";
 import { useState } from "react";
 

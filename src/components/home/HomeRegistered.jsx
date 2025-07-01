@@ -8,7 +8,11 @@ import { getUser, removeUser, generateHeaders } from "@utils/api/auth";
 import { getMyDayByUser, getAllNotesByUser } from "@utils/api/notes";
 import { getAllTagsByUser } from "@utils/api/tags";
 import { generateGreetingByTime } from "@utils/helpers/interface";
-import { chooseTextByLang, getOrSetLang, getOrSetUTC } from "@utils/helpers/locale";
+import {
+  chooseTextByLang,
+  getOrSetLang,
+  getOrSetUTC,
+} from "@utils/helpers/locale";
 import { useUser } from "@context/UserContext";
 import Calendar from "@components/layout/Calendar";
 import NextWeek from "@components/layout/NextWeek";
@@ -18,7 +22,7 @@ import { useActElemContext } from "@context/ActElemContext";
 export default function HomeRegistered() {
   const headers = generateHeaders(getUser());
   const lang = getOrSetLang();
-  const timezone = getOrSetUTC()
+  const timezone = getOrSetUTC();
 
   const [isAuthenticated, setIsAuthenticated] = useState(getUser() != null);
   const [notes, setNotes] = useState({ results: [], next: null });
@@ -26,31 +30,32 @@ export default function HomeRegistered() {
   const [tags, setTags] = useState([]);
   const [openArchived, setOpenArchived] = useState(false);
   const [editingNote, setEditingNote] = useState(null);
-  const {actelem, setAct} = useActElemContext()
+  const { actelem, setAct } = useActElemContext();
   const { refreshUser } = useUser();
-  const [refreshTrigger, setRefreshTrigger] = useState(0); 
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
 
   const getStyleByNotes = (notes) => {
     if (notes?.results?.length > 0) {
-      return 1
+      return 1;
     }
-    return 2
-  }
+    return 2;
+  };
   const formatDateWithTimezone = (timezone) => {
     const now = new Date();
-    
-    return new Intl.DateTimeFormat('en-GB', {
+
+    return new Intl.DateTimeFormat("en-GB", {
       timeZone: timezone,
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric'
-    }).format(now)
-      .replace(/\//g, '/'); 
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+    })
+      .format(now)
+      .replace(/\//g, "/");
   };
 
   const handleRefresh = () => {
-    setRefreshTrigger(prev => prev + 1); 
-    setEditingNote(null)
+    setRefreshTrigger((prev) => prev + 1);
+    setEditingNote(null);
   };
 
   const fetchNotes = async () => {
@@ -77,13 +82,13 @@ export default function HomeRegistered() {
   }, [refreshTrigger]);
 
   const fetchTags = async () => {
-      try {
-        const result = await getAllTagsByUser(headers);
-        setTags(result);
-      } catch (error) {
-        console.log("Ошибка при загрузке тэгов: ", error);
-      }
-    };
+    try {
+      const result = await getAllTagsByUser(headers);
+      setTags(result);
+    } catch (error) {
+      console.log("Ошибка при загрузке тэгов: ", error);
+    }
+  };
 
   useEffect(() => {
     fetchTags();
@@ -92,13 +97,14 @@ export default function HomeRegistered() {
   useEffect(() => {
     const handleScroll = async () => {
       if (
-        window.innerHeight + window.scrollY >= document.body.offsetHeight - 300 &&
+        window.innerHeight + window.scrollY >=
+          document.body.offsetHeight - 300 &&
         notes.next
       ) {
         try {
           const response = await fetch(notes.next, { headers });
           const newNotes = await response.json();
-          setNotes(prev => ({
+          setNotes((prev) => ({
             results: [...prev.results, ...newNotes.results],
             next: newNotes.next,
           }));
@@ -142,18 +148,20 @@ export default function HomeRegistered() {
           onArchivedSuccess={handleRefresh}
           onSubmitSuccess={handleRefresh}
           onDelete={handleRefresh}
+          refreshTags={fetchTags}
         />
-      )} 
+      )}
       {actelem === "next7Days" && (
         <div className="ml-96 p-4">
           <NextWeek
-           tags={tags}
-           editingNote={editingNote}
-           onEdit={setEditingNote}
-           onCloseEdit={() => setEditingNote(null)}
-           onArchivedSuccess={handleRefresh}
-           onSubmitSuccess={handleRefresh}
-           onDelete={handleRefresh}
+            tags={tags}
+            editingNote={editingNote}
+            onEdit={setEditingNote}
+            onCloseEdit={() => setEditingNote(null)}
+            onArchivedSuccess={handleRefresh}
+            onSubmitSuccess={handleRefresh}
+            onDelete={handleRefresh}
+            refreshTags={fetchTags}
           />
         </div>
       )}
@@ -169,6 +177,7 @@ export default function HomeRegistered() {
             onSubmitSuccess={handleRefresh}
             onDelete={handleRefresh}
             text={chooseTextByLang("Все заметки", "All notes", getOrSetLang())}
+            refreshTags={fetchTags}
           />
         </div>
       )}
@@ -191,45 +200,49 @@ export default function HomeRegistered() {
             )}
           </nav>
 
-          <div className="justify-start text-zinc-900 text-5xl font-extrabold font-['Inter']">{generateGreetingByTime()}</div>
-          <div className="justify-start mt-[15px] text-neutral-500 text-5xl font-semibold font-['Inter']">{chooseTextByLang(
+          <div className="justify-start text-zinc-900 text-5xl font-extrabold font-['Inter']">
+            {generateGreetingByTime()}
+          </div>
+          <div className="justify-start mt-[15px] text-neutral-500 text-5xl font-semibold font-['Inter']">
+            {chooseTextByLang(
               "Организовывайте свою жизнь с нами.",
               "Organise your life with us.",
               lang
-            )}</div>
+            )}
+          </div>
 
           {notes?.results?.length > 0 && (
             <div className="mt-[40px]">
-            <ContentNotes
-              notes={notes}
-              tags={tags}
-              editingNote={editingNote}
-              onEdit={setEditingNote}
-              onCloseEdit={() => setEditingNote(null)}
-              onArchivedSuccess={handleRefresh}
-              onSubmitSuccess={handleRefresh}
-              onDelete={handleRefresh}
-              refreshTags={fetchTags}
-            />
-          </div>
+              <ContentNotes
+                notes={notes}
+                tags={tags}
+                editingNote={editingNote}
+                onEdit={setEditingNote}
+                onCloseEdit={() => setEditingNote(null)}
+                onArchivedSuccess={handleRefresh}
+                onSubmitSuccess={handleRefresh}
+                onDelete={handleRefresh}
+                refreshTags={fetchTags}
+              />
+            </div>
           )}
-          
-          <AddNoteButton style={getStyleByNotes(notes)} editingNote={editingNote} setEditingNote={setEditingNote}/>
+
+          <AddNoteButton
+            style={getStyleByNotes(notes)}
+            editingNote={editingNote}
+            setEditingNote={setEditingNote}
+          />
 
           {editingNote && !editingNote.id && (
             <NoteForm
               note={null}
               tags={tags}
               onClose={() => setEditingNote(null)}
-              onSubmitSuccess={
-                handleRefresh
-              }
-              onDeleteSuccess={handleRefresh
-              }
+              onSubmitSuccess={handleRefresh}
+              onDeleteSuccess={handleRefresh}
               refreshTags={fetchTags}
             />
           )}
-
         </div>
       )}
     </div>

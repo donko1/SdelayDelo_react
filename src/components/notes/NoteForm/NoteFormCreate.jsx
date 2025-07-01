@@ -3,9 +3,9 @@ import { chooseTextByLang, getOrSetLang } from "@/utils/helpers/locale";
 import { useEffect, useRef, useState } from "react";
 import SendIcon from "@assets/send.svg?react";
 import CrossIcon from "@assets/cross.svg?react";
-import TagDropdown from "./TagDropdown";
-import { isParallel } from "@/utils/helpers/settings";
-import { formatDate } from "@/utils/helpers/date";
+import TagDropdown from "@components/notes/NoteForm/TagDropdown";
+import { isParallel } from "@utils/helpers/settings";
+import { formatDate } from "@utils/helpers/date";
 
 export default function NoteFormCreate({
   tags,

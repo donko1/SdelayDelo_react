@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from "react";
-import DateDisplay from "./DateDisplay";
+import DateDisplay from "@components/notes/NoteForm/DateDisplay";
 import { useActElemContext } from "@context/ActElemContext";
-import CalendarForNoteForm from "./Calendar";
+import CalendarForNoteForm from "@components/notes/NoteForm/Calendar";
 
 import MyDayIcon from "@assets/myDay.svg?react";
 import NextWeekIcon from "@assets/nextWeek.svg?react";
@@ -13,19 +13,18 @@ import {
   chooseTextByLang,
   getOrSetLang,
   getOrSetUTC,
-} from "@/utils/helpers/locale";
-import TagDropdown from "./TagDropdown";
-import { addNoteToArchive, setNewDate } from "@/utils/api/notes";
-import { generateHeaders, getUser } from "@/utils/api/auth";
-import { formatDate, getTodayInTimezone } from "@/utils/helpers/date";
-import { isParallel } from "@/utils/helpers/settings";
+} from "@utils/helpers/locale";
+import TagDropdown from "@components/notes/NoteForm/TagDropdown";
+import { addNoteToArchive, setNewDate } from "@utils/api/notes";
+import { generateHeaders, getUser } from "@utils/api/auth";
+import { formatDate, getTodayInTimezone } from "@utils/helpers/date";
+import { isParallel } from "@utils/helpers/settings";
 
 export default function NoteFormEdit({
   note,
   tags,
   onClose,
   onSubmitSuccess,
-  onDeleteSuccess,
   onArchivedSuccess,
   refreshTags,
 }) {
