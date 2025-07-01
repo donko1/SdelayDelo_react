@@ -9,13 +9,14 @@ import ArchiveIcon from "@assets/archive.svg?react";
 import CalendarIcon from "@assets/calendar.svg?react";
 import CrossIcon from "@assets/cross.svg?react";
 import HashtagIcon from "@assets/Hashtag.svg?react";
-import { chooseTextByLang, getOrSetUTC } from "@utils/helpers/locale";
+import { chooseTextByLang } from "@utils/helpers/locale";
 import { useLang } from "@context/LangContext";
 import TagDropdown from "@components/notes/NoteForm/TagDropdown";
 import { addNoteToArchive, setNewDate } from "@utils/api/notes";
 import { generateHeaders, getUser } from "@utils/api/auth";
-import { formatDate, getTodayInTimezone } from "@utils/helpers/date";
+import { getTodayInTimezone } from "@utils/helpers/date";
 import { isParallel } from "@utils/helpers/settings";
+import { useTimezone } from "@context/TimezoneContext";
 
 export default function NoteFormEdit({
   note,
@@ -26,6 +27,7 @@ export default function NoteFormEdit({
   refreshTags,
 }) {
   const { lang } = useLang();
+  const { timezone } = useTimezone();
 
   const [title, setTitle] = useState(note?.title || "");
   const [description, setDescription] = useState(note?.description || "");
@@ -89,7 +91,7 @@ export default function NoteFormEdit({
       setIsInMyDay(true);
     }
     if (date_of_note) {
-      const todayInTz = getTodayInTimezone(getOrSetUTC());
+      const todayInTz = getTodayInTimezone(timezone);
 
       const todayStr = todayInTz
         .toLocaleDateString("ru-RU", {

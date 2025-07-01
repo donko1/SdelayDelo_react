@@ -1,11 +1,11 @@
 import {
   chooseTextByLang,
-  getOrSetUTC,
+  getCurrentUTC,
   getCurrentLang,
 } from "@utils/helpers/locale";
 
 export function generateGreetingByTime() {
-  const timeZone = getOrSetUTC();
+  const timeZone = getCurrentUTC();
   const lang = getCurrentLang();
   const now = new Date().toLocaleString("en-US", { timeZone });
   const hour = new Date(now).getHours();

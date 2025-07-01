@@ -8,7 +8,7 @@ import { getUser, removeUser, generateHeaders } from "@utils/api/auth";
 import { getMyDayByUser, getAllNotesByUser } from "@utils/api/notes";
 import { getAllTagsByUser } from "@utils/api/tags";
 import { generateGreetingByTime } from "@utils/helpers/interface";
-import { chooseTextByLang, getOrSetUTC } from "@utils/helpers/locale";
+import { chooseTextByLang } from "@utils/helpers/locale";
 import { useUser } from "@context/UserContext";
 import Calendar from "@components/layout/Calendar";
 import NextWeek from "@components/layout/NextWeek";

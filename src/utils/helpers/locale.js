@@ -25,23 +25,7 @@ export function getCurrentLang() {
   return lang || (navigator.language || navigator.userLanguage).split("-")[0];
 }
 
-export function getOrSetUTC(UTCIn = "") {
-  if (UTCIn !== "") {
-    Cookies.set("UTC", UTCIn, {
-      expires: COOKIE_EXPIRES_DAYS,
-      path: "/",
-      sameSite: "strict",
-    });
-    return UTCIn;
-  }
+export function getCurrentUTC() {
   let UTC = Cookies.get("UTC");
-  if (UTC === undefined) {
-    UTC = Intl.DateTimeFormat().resolvedOptions().timeZone;
-    Cookies.set("UTC", UTC, {
-      expires: COOKIE_EXPIRES_DAYS,
-      path: "/",
-      sameSite: "strict",
-    });
-  }
   return UTC;
 }

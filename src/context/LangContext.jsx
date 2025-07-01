@@ -1,4 +1,3 @@
-// contexts/LangContext.jsx
 import React, { createContext, useState, useEffect, useContext } from "react";
 import Cookies from "js-cookie";
 import { get_COOKIE_EXPIRES_DAYS } from "@utils/helpers/settings";
@@ -39,7 +38,6 @@ export function LangProvider({ children }) {
     });
     setLang(newLang);
   };
-  console.log(lang);
   return (
     <LangContext.Provider value={{ lang, changeLanguage }}>
       {children}

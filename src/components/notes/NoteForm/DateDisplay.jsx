@@ -1,6 +1,7 @@
 import { getTodayInTimezone } from "@utils/helpers/date";
-import { chooseTextByLang, getOrSetUTC } from "@utils/helpers/locale";
+import { chooseTextByLang } from "@utils/helpers/locale";
 import { useLang } from "@context/LangContext";
+import { useTimezone } from "@context/TimezoneContext";
 
 export default function DateDisplay({
   currentNoteDate,
@@ -15,7 +16,8 @@ export default function DateDisplay({
 
     const [day, month, year] = currentNoteDate.split("/").map(Number);
     const noteDate = new Date(year, month - 1, day);
-    const today = getTodayInTimezone(getOrSetUTC());
+    const { timezone } = useTimezone();
+    const today = getTodayInTimezone(timezone);
 
     const isToday =
       noteDate.getDate() === today.getDate() &&
