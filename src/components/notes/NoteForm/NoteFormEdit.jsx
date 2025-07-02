@@ -1,21 +1,12 @@
 import { useState, useRef, useEffect } from "react";
-import DateDisplay from "@components/notes/NoteForm/DateDisplay";
-import { useActElemContext } from "@context/ActElemContext";
-import CalendarForNoteForm from "@components/notes/NoteForm/Calendar";
-import MyDayIcon from "@assets/myDay.svg?react";
-import NextWeekIcon from "@assets/nextWeek.svg?react";
-import ArchiveIcon from "@assets/archive.svg?react";
-import CalendarIcon from "@assets/calendar.svg?react";
-import CrossIcon from "@assets/cross.svg?react";
 import HashtagIcon from "@assets/Hashtag.svg?react";
 import { chooseTextByLang } from "@utils/helpers/locale";
 import { useLang } from "@context/LangContext";
 import TagDropdown from "@components/notes/NoteForm/TagDropdown";
 import { addNoteToArchive, editNote, setNewDate } from "@utils/api/notes";
 import { useAuth } from "@context/AuthContext";
-import { getTodayInTimezone } from "@utils/helpers/date";
-import { useTimezone } from "@context/TimezoneContext";
 import useAutoResizeTextarea from "@utils/hooks/useAutoResizeTextarea";
+import NoteFormEditNavbar from "@components/notes/NoteForm/NoteFormEditNavbar";
 
 export default function NoteFormEdit({
   note,
@@ -26,15 +17,12 @@ export default function NoteFormEdit({
   refreshTags,
 }) {
   const { lang } = useLang();
-  const { timezone } = useTimezone();
 
   const [selectedTags, setSelectedTags] = useState(note?.tags || []);
   const [showCalendar, setShowCalendar] = useState(false);
 
   const [tagDropdownOpen, setTagDropdownOpen] = useState(false);
 
-  const [isInMyDay, setIsInMyDay] = useState(false);
-  const [isInNext7Days, setIsInNext7Days] = useState(false);
   const { headers } = useAuth();
   const [calendarDate, setCalendarDate] = useState(() => {
     if (note?.date_of_note) {
@@ -46,7 +34,6 @@ export default function NoteFormEdit({
   const [currentNoteDate, setCurrentNoteDate] = useState(
     note?.date_of_note || null
   );
-  const { setAct } = useActElemContext();
 
   const currentNoteDateRef = useRef(currentNoteDate);
 
@@ -74,48 +61,6 @@ export default function NoteFormEdit({
     updateTitleHeight();
     updateDescriptionHeight();
   }, [title, description]);
-
-  useEffect(() => {
-    const date_of_note = note.date_of_note;
-    if (!date_of_note) {
-      setIsInMyDay(true);
-    }
-    if (date_of_note) {
-      const todayInTz = getTodayInTimezone(timezone);
-
-      const todayStr = todayInTz
-        .toLocaleDateString("ru-RU", {
-          day: "2-digit",
-          month: "2-digit",
-          year: "numeric",
-        })
-        .replace(/\./g, "/");
-
-      if (todayStr === date_of_note) {
-        setIsInMyDay(true);
-      }
-
-      const next7Days = [];
-      const tempDate = new Date(todayInTz);
-
-      for (let i = 0; i < 7; i++) {
-        const dateStr = tempDate
-          .toLocaleDateString("ru-RU", {
-            day: "2-digit",
-            month: "2-digit",
-            year: "numeric",
-          })
-          .replace(/\./g, "/");
-
-        next7Days.push(dateStr);
-        tempDate.setDate(tempDate.getDate() + 1);
-      }
-
-      if (next7Days.includes(date_of_note)) {
-        setIsInNext7Days(true);
-      }
-    }
-  }, [note]);
 
   useEffect(() => {
     const handleKeyDown = (e) => {
@@ -195,59 +140,18 @@ export default function NoteFormEdit({
         onClick={(e) => e.stopPropagation()}
         className="relative w-[660px] bg-[#f9f9f9] rounded-[20px] p-6"
       >
-        <div className="flex justify-between items-center mb-4">
-          <DateDisplay
-            currentNoteDate={currentNoteDate}
-            showCalendar={showCalendar}
-            setShowCalendar={setShowCalendar}
-          />
-          <CalendarForNoteForm
-            showCalendar={showCalendar}
-            calendarDate={calendarDate}
-            setCalendarDate={setCalendarDate}
-            currentNoteDate={currentNoteDate}
-            note={note}
-            handleDateSelect={handleDateSelect}
-          />
-
-          <div className="flex items-center space-x-[30px]">
-            {isInMyDay && (
-              <MyDayIcon
-                onClick={() => {
-                  setAct("myDay");
-                  onClose();
-                }}
-                className="h-[32px] w-[32px] text-red-500 transition-all transition-300 hover:text-black"
-              />
-            )}
-            {isInNext7Days && (
-              <NextWeekIcon
-                onClick={() => {
-                  setAct("next7Days");
-                  onClose();
-                }}
-                className="h-[32px] w-[32px] text-red-500 block [&>*]:!fill-none transition-all transition-300 hover:text-black"
-              />
-            )}
-            {note.date_of_note !== null && (
-              <CalendarIcon
-                onClick={() => {
-                  setAct("Calendar");
-                  onClose();
-                }}
-                className="h-[32px] w-[32px] text-red-500 block transition-all transition-300 hover:text-black"
-              />
-            )}
-            <ArchiveIcon
-              onClick={handleAddToArchive}
-              className="[&>*]:!fill-none cursor-pointer [shape-rendering:crispEdges] text-zinc-500 h-[32px] w-[32px] transition-all transition-300 hover:text-yellow-600"
-            />
-            <CrossIcon
-              onClick={onCloseEdit}
-              className="h-[32px] cursor-pointer text-zinc-500 w-[32px] transition-all transition-300 hover:text-black"
-            />
-          </div>
-        </div>
+        <NoteFormEditNavbar
+          currentNoteDate={currentNoteDate}
+          showCalendar={showCalendar}
+          setShowCalendar={setShowCalendar}
+          calendarDate={calendarDate}
+          setCalendarDate={setCalendarDate}
+          note={note}
+          handleDateSelect={handleDateSelect}
+          onClose={onClose}
+          handleAddToArchive={handleAddToArchive}
+          onCloseEdit={onCloseEdit}
+        />
         <div className="mt-[17px] ml-[30px] mr-[40px] mb-[100px]">
           <form onSubmit={handleSubmit} className="relative">
             <textarea
