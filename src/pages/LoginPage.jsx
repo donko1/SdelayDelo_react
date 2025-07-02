@@ -1,5 +1,13 @@
 import React, { useState } from "react";
-import { isParallel } from "@utils/helpers/settings";
+import {
+  fetchEmailByUsername,
+  sendVerificationCode,
+  checkCode,
+  loginUser,
+  resetPassword,
+  registerUser,
+  updateUserInfo,
+} from "@utils/api/login";
 import { check_if_email_registered } from "@utils/api/auth";
 import { useAuth } from "@context/AuthContext";
 import { getUserLocaleInfo } from "@utils/helpers/locale";
@@ -22,32 +30,13 @@ function AuthFlow() {
   const navigate = useNavigate();
   const { refreshUser } = useUser();
 
-  const fetchEmailByUsername = async (username) => {
-    const baseUrl = isParallel()
-      ? "/api/get_email_by_username"
-      : "http://localhost:8000/api/get_email_by_username";
-    const url = new URL(baseUrl, window.location.origin);
-    url.searchParams.append("username", username);
-
-    const response = await fetch(url.toString(), {
-      method: "GET",
-    });
-
-    if (!response.ok) throw new Error("Пользователь не найден");
-    const data = await response.json();
-    return data.email;
-  };
-
   const handleEmailSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
     try {
-      let resolvedEmail = "";
-      if (isEmail(identifier)) {
-        resolvedEmail = identifier;
-      } else {
-        resolvedEmail = await fetchEmailByUsername(identifier);
-      }
+      const resolvedEmail = isEmail(identifier)
+        ? identifier
+        : await fetchEmailByUsername(identifier);
 
       setEmail(resolvedEmail);
       const isRegistered = await check_if_email_registered(resolvedEmail);
@@ -58,7 +47,6 @@ function AuthFlow() {
         await sendVerificationCode(resolvedEmail);
         setStep("send_code");
       }
-
       setError("");
     } catch (err) {
       setError(err.message);
@@ -67,64 +55,19 @@ function AuthFlow() {
     }
   };
 
-  const sendVerificationCode = async (targetEmail) => {
-    const url = isParallel()
-      ? "/api/send_code/"
-      : "http://localhost:8000/api/send_code/";
-    const response = await fetch(url, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email: targetEmail }),
-    });
-    if (!response.ok) throw new Error("Ошибка отправки кода");
-  };
-
   const handleFA2Submit = async (e) => {
-    let tkn;
     e.preventDefault();
     setError("");
     setIsLoading(true);
-    try {
-      const url = isParallel()
-        ? "/api/check_code/"
-        : "http://localhost:8000/api/check_code/";
-      const response = await fetch(url, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, code }),
-      });
-
-      if (!response.ok) throw new Error("Неверный код");
-
-      const data = await response.json();
-      tkn = data.token;
-      setError("");
-    } catch (err) {
-      setError(err.message);
-      setIsLoading(false);
-      return;
-    }
 
     try {
-      const url = isParallel()
-        ? "/api/login"
-        : "http://localhost:8000/api/login";
-      const response = await fetch(url, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password, token: tkn }),
-      });
-
-      if (!response.ok) throw new Error("Неверные данные");
-
-      const data = await response.json();
+      const { token: tkn } = await checkCode(email, code);
+      const data = await loginUser(email, password, tkn);
       login(data.access_token);
       refreshUser();
       navigate("/");
     } catch (err) {
       setError(err.message);
-      setIsLoading(false);
-      return;
     } finally {
       setIsLoading(false);
     }
@@ -134,19 +77,8 @@ function AuthFlow() {
     e.preventDefault();
     setIsLoading(true);
     try {
-      const url = isParallel()
-        ? "/api/check_code/"
-        : "http://localhost:8000/api/check_code/";
-      const response = await fetch(url, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, code }),
-      });
-
-      if (!response.ok) throw new Error("Неверный код");
-
-      const data = await response.json();
-      setToken(data.token);
+      const { token: newToken } = await checkCode(email, code);
+      setToken(newToken);
       setStep("register");
       setError("");
     } catch (err) {
@@ -157,71 +89,32 @@ function AuthFlow() {
   };
 
   const handleChangePassword = async (e) => {
-    let tkn;
     e.preventDefault();
     setIsLoading(true);
     try {
-      const url = isParallel()
-        ? "/api/check_code/"
-        : "http://localhost:8000/api/check_code/";
-      const response = await fetch(url, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, code }),
-      });
-
-      if (!response.ok) throw new Error("Неверный код");
-
-      const data = await response.json();
-      tkn = data.token;
+      const { token: tkn } = await checkCode(email, code);
+      await resetPassword(tkn, password);
+      setStep("");
       setError("");
     } catch (err) {
       setError(err.message);
+    } finally {
       setIsLoading(false);
-      return;
     }
-
-    try {
-      const url = isParallel()
-        ? "api/reset_password"
-        : "http://localhost:8000/api/reset_password";
-      const response = await fetch(url, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ token: tkn, new_password: password }),
-      });
-      if (!response.ok) throw new Error("Пароль слишком простой");
-    } catch (err) {
-      setError(err.message);
-      setIsLoading(false);
-      return;
-    }
-    setStep("");
-    setIsLoading(false);
   };
+
   const handleLogin = async (e) => {
     e.preventDefault();
     setIsLoading(true);
     try {
-      const url = isParallel()
-        ? "/api/login"
-        : "http://localhost:8000/api/login";
-      const response = await fetch(url, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
-      });
+      const data = await loginUser(email, password);
 
-      if (!response.ok) throw new Error("Неверные данные");
-      console.log(response.status);
-      const data = await response.json();
-      if (response.status === 202) {
-        setError("");
-        setIsLoading(false);
+      if (data.requires2FA) {
         setSecretEmail(data.email);
         setStep("FA2");
         return;
       }
+
       login(data.access_token);
       refreshUser();
       navigate("/");
@@ -236,64 +129,25 @@ function AuthFlow() {
     e.preventDefault();
     setIsLoading(true);
     try {
-      let url = isParallel()
-        ? "/api/register/"
-        : "http://localhost:8000/api/register/";
-      const response = await fetch(url, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          email,
-          username,
-          password,
-          token: token,
-        }),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        switch (data.detail) {
-          case "password_8_symbols":
-            throw new Error("В пароле должно быть минимум 8 символов");
-          case "username_isnt_uniq":
-            throw new Error("Придумайте уникальный username");
-        }
-
-        throw new Error("Ошибка регистрации");
-      }
+      const data = await registerUser(email, username, password, token);
 
       try {
-        url = isParallel()
-          ? "api/change-userinfo/"
-          : "http://localhost:8000/api/change-userinfo/";
         const { language, timeZone } = getUserLocaleInfo();
-        const response = await fetch(url, {
-          method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Token ${data.access_token}`,
-          },
-          body: JSON.stringify({
-            language: language,
-            timezone: timeZone,
-          }),
-        });
+        await updateUserInfo(data.access_token, language, timeZone);
       } catch (err) {
-        console.log(err);
-        setError(err.message);
-      } finally {
-        setIsLoading(false);
-        login(data.access_token);
-        refreshUser();
-        navigate("/");
+        console.error("Ошибка обновления данных:", err);
       }
+
+      login(data.access_token);
+      refreshUser();
+      navigate("/");
     } catch (err) {
       setError(err.message);
     } finally {
       setIsLoading(false);
     }
   };
+
   return (
     <div className="max-w-md mx-auto p-4 space-y-6">
       <form onSubmit={handleEmailSubmit} className="space-y-4">
