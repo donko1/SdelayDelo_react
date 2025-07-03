@@ -15,6 +15,7 @@ Frontend part of **SdelayDelo** project. This repository serves purely as open-s
 - **Mobile-friendly layout** – Improving responsiveness for smaller screens.
 - **Better adaptive design** – Transitioning from `px` to relative units (`rem`, `%`).
 - **Touch-friendly interactions** – Optimizing hover effects for mobile devices
+- **Some features**: search, some parts of design, demo page, etc
 
 ## ⚙️ Installation & Setup
 
