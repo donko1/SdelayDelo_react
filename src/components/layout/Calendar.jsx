@@ -7,6 +7,8 @@ import NoteCard from "@components/ui/NoteCard";
 import TitleForBlock from "../ui/Title";
 import { useLang } from "@context/LangContext";
 import { useTimezone } from "@context/TimezoneContext";
+import SendIcon from "@assets/send.svg?react";
+import AddNoteButton from "@components/ui/AddNoteButton";
 
 export default function Calendar({
   tags,
@@ -135,57 +137,33 @@ export default function Calendar({
   };
 
   return (
-    <div className="max-w-4xl mx-auto p-4">
+    <div className="max-w-6xl mx-auto p-4">
       <TitleForBlock text={chooseTextByLang("Календарь", "Calendar", lang)} />
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex items-center justify-center mb-6">
         <button
           onClick={handlePrevWeek}
           disabled={offsetWeeks === 0}
-          className={`p-2 rounded-full ${
+          className={`p-2 rounded-full flex items-center justify-center ${
             offsetWeeks === 0
               ? "text-gray-300 cursor-not-allowed"
-              : "text-gray-600 hover:bg-gray-100"
+              : "text-black hover:text-[#8e8484] transition-all transition-300"
           }`}
         >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="h-6 w-6"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M15 19l-7-7 7-7"
-            />
-          </svg>
+          <SendIcon className="rotate-180 [&>*]:!fill-none" />
         </button>
-
-        <h2 className="text-xl font-semibold">{getWeekTitle()}</h2>
-
+        <h2 className="text-xl relative font-semibold px-[16px]">
+          {getWeekTitle()}
+          <div className="w-0 h-8 absolute left-0 top-0 outline outline-1  " />
+          <div className="w-0 h-8 absolute  top-0 right-0 outline outline-1 " />
+        </h2>
         <button
           onClick={handleNextWeek}
-          className="p-2 rounded-full text-gray-600 hover:bg-gray-100"
+          className="p-2 rounded-full flex items-center justify-center hover:text-[#8e8484] transition-all transition-300"
         >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="h-6 w-6"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M9 5l7 7-7 7"
-            />
-          </svg>
+          <SendIcon className="[&>*]:!fill-none" />
         </button>
       </div>
-      <div className="grid grid-cols-8 gap-1">
+      <div className="grid grid-cols-8 gap-1 pb-[9px]">
         {days.map((day, index) => {
           const isActive = isSameDay(day.date, activeDate);
           const isToday = day.isToday;
@@ -194,52 +172,28 @@ export default function Calendar({
             <div
               key={index}
               onClick={() => handleDayClick(day.date)}
-              className={`flex flex-col items-center py-3 rounded-lg cursor-pointer ${
-                isActive
-                  ? "bg-blue-50 border border-blue-200"
-                  : "hover:bg-gray-50"
-              }`}
+              className={`flex flex-col items-center py-3 rounded-lg cursor-pointer`}
             >
               <div
-                className={`text-sm ${
+                className={`text-2xl font-semibold font-['Inter'] hover:text-black transition-300 transition-all ${
                   isActive || isToday ? "font-medium" : ""
                 } ${
                   isActive
-                    ? "text-blue-600"
+                    ? "text-black"
                     : isToday
-                    ? "text-blue-500"
+                    ? "text-red-500"
                     : "text-gray-500"
                 }`}
               >
-                {isToday
-                  ? chooseTextByLang("Сегодня", "Today", lang)
-                  : day.weekday}
-              </div>
-              <div
-                className={`mt-1 text-lg font-medium ${
-                  isActive
-                    ? "text-blue-700"
-                    : isToday
-                    ? "text-blue-600"
-                    : "text-gray-800"
-                }`}
-              >
-                {day.day}
+                {day.weekday}
+                {" " + day.day}
               </div>
             </div>
           );
         })}
+        <div className="col-span-8 outline outline-1 w-full outline-offset-[-0.50px] outline-black mt-auto" />
       </div>
-      <div className="flex flex-wrap gap-5">
-        {notes?.detail && (
-          <h1>
-            {chooseTextByLang(
-              "Нет заметок на выбранную дату",
-              "No notes for this date",
-              lang
-            )}
-          </h1>
-        )}
+      <div className="flex flex-wrap gap-5 mt-[44px]">
         {notes?.length > 0 &&
           notes.map((note) => (
             <NoteCard
@@ -264,23 +218,19 @@ export default function Calendar({
             />
           ))}
       </div>
-      <div className="mt-4 mb-6">
-        <button
-          className={`px-4 py-2 text-white rounded ${
-            creating ? "bg-gray-400 cursor-not-allowed" : "bg-black"
-          }`}
-          onClick={() => setCreating(true)}
-          disabled={creating}
-        >
-          {chooseTextByLang("Добавить заметку", "Add note", lang)}
-        </button>
-      </div>
+      <AddNoteButton
+        style={1}
+        editingNote={creating}
+        setEditingNote={setCreating}
+      />
+
       {creating && (
         <NoteForm
           tags={tags}
           onSubmitSuccess={() => {
             fetchNotes();
             onSubmitSuccess();
+            setCreating(false);
           }}
           onDeleteSuccess={() => {
             fetchNotes();
