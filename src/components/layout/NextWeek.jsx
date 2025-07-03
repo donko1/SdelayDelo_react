@@ -199,6 +199,7 @@ export default function NextWeek({
                       onArchivedSuccess?.();
                       refreshAllDays();
                     }}
+                    refreshTags={refreshTags}
                   />
                 ))
               ) : (
