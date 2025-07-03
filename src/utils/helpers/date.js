@@ -38,3 +38,35 @@ export const parseDmyString = (dateString) => {
   if (parts.length !== 3) return null;
   return new Date(parts[2], parts[1] - 1, parts[0]);
 };
+
+export const formatDateToApi = (date) => {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+};
+
+export const calculateDays = (startDate, numDays, lang, timezone) => {
+  const newDays = [];
+  const weekdayFormatter = new Intl.DateTimeFormat(lang, {
+    timeZone: timezone,
+    weekday: "short",
+  });
+
+  const dayFormatter = new Intl.DateTimeFormat(lang, {
+    timeZone: timezone,
+    day: "numeric",
+  });
+
+  for (let i = 0; i < numDays; i++) {
+    const date = new Date(startDate);
+    date.setDate(startDate.getDate() + i);
+    newDays.push({
+      date,
+      weekday: weekdayFormatter.format(date),
+      day: dayFormatter.format(date),
+      dateStr: formatDateToApi(date),
+    });
+  }
+  return newDays;
+};

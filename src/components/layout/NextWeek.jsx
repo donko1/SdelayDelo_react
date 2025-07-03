@@ -1,5 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
-import { chooseTextByLang } from "@utils/helpers/locale";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import { useAuth } from "@context/AuthContext";
 import { getNotesByDate } from "@utils/api/notes";
 import NoteForm from "@components/notes/NoteForm/NoteForm";
@@ -7,6 +6,8 @@ import NoteCard from "@components/ui/NoteCard";
 import TitleForBlock from "@components/ui/Title";
 import { useLang } from "@context/LangContext";
 import { useTimezone } from "@context/TimezoneContext";
+import { calculateDays, formatDateToApi } from "@utils/helpers/date";
+import { getText } from "@utils/helpers/interface";
 
 export default function NextWeek({
   tags,
@@ -33,69 +34,44 @@ export default function NextWeek({
   const isDragging = useRef(false);
   const startX = useRef(0);
   const scrollLeft = useRef(0);
-
-  const formatDate = (date) => {
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, "0");
-    const day = String(date.getDate()).padStart(2, "0");
-    return `${year}-${month}-${day}`;
-  };
-
-  const getDayTitle = (index) => {
-    if (index === 0) return chooseTextByLang("Сегодня", "Today", lang);
-    if (index === 1) return chooseTextByLang("Завтра", "Tomorrow", lang);
-    return days[index]?.weekday || "";
-  };
-
-  const fetchNotesForDate = async (date) => {
-    const dateStr = formatDate(date);
-    setLoadingDates((prev) => ({ ...prev, [dateStr]: true }));
-
-    try {
-      const results = await getNotesByDate(headers, date);
-      setNotesByDate((prev) => ({
-        ...prev,
-        [dateStr]: results?.detail ? [] : results,
-      }));
-    } catch (error) {
-      setNotesByDate((prev) => ({ ...prev, [dateStr]: [] }));
-    } finally {
-      setLoadingDates((prev) => ({ ...prev, [dateStr]: false }));
-    }
-  };
+  const daysRef = useRef(days);
 
   useEffect(() => {
-    const calculateDays = () => {
-      const now = new Date();
-      const newDays = [];
-      const weekdayFormatter = new Intl.DateTimeFormat(lang, {
-        timeZone: timezone,
-        weekday: "short",
-      });
+    daysRef.current = days;
+  }, [days]);
 
-      const dayFormatter = new Intl.DateTimeFormat(lang, {
-        timeZone: timezone,
-        day: "numeric",
-      });
+  const fetchNotesForDate = useCallback(
+    async (date) => {
+      const dateStr = formatDateToApi(date);
+      setLoadingDates((prev) => ({ ...prev, [dateStr]: true }));
 
-      for (let i = 0; i < 7; i++) {
-        const date = new Date(now);
-        date.setDate(now.getDate() + i);
-
-        newDays.push({
-          date,
-          weekday: weekdayFormatter.format(date),
-          day: dayFormatter.format(date),
-          dateStr: formatDate(date),
-        });
+      try {
+        const results = await getNotesByDate(headers, date);
+        setNotesByDate((prev) => ({
+          ...prev,
+          [dateStr]: results?.detail ? [] : results,
+        }));
+      } catch (error) {
+        setNotesByDate((prev) => ({ ...prev, [dateStr]: [] }));
+      } finally {
+        setLoadingDates((prev) => ({ ...prev, [dateStr]: false }));
       }
+    },
+    [headers]
+  );
 
+  const refreshAllDays = useCallback(async () => {
+    if (daysRef.current.length === 0) return;
+    const promises = daysRef.current.map((day) => fetchNotesForDate(day.date));
+    await Promise.all(promises);
+  }, [fetchNotesForDate]);
+
+  useEffect(() => {
+    const loadDaysAndNotes = async () => {
+      const now = new Date();
+      const newDays = calculateDays(now, 7, lang, timezone);
       setDays(newDays);
-      return newDays;
-    };
 
-    const loadNotes = async () => {
-      const newDays = calculateDays();
       for (const day of newDays) {
         if (!notesByDate[day.dateStr]) {
           await fetchNotesForDate(day.date);
@@ -103,8 +79,8 @@ export default function NextWeek({
       }
     };
 
-    loadNotes();
-  }, [timezone, lang]);
+    loadDaysAndNotes();
+  }, [timezone, lang, fetchNotesForDate]);
 
   useEffect(() => {
     const container = containerRef.current;
@@ -137,9 +113,6 @@ export default function NextWeek({
     container.addEventListener("mouseup", handleMouseUp);
     container.addEventListener("mouseleave", handleMouseUp);
 
-    container.style.overflow = "hidden";
-    container.style.cursor = "grab";
-
     return () => {
       container.removeEventListener("mousedown", handleMouseDown);
       container.removeEventListener("mousemove", handleMouseMove);
@@ -158,16 +131,18 @@ export default function NextWeek({
 
   const scrollToIndex = (index) => {
     if (index < 0 || index >= days.length) return;
-
     setCurrentIndex(index);
     const container = containerRef.current;
     if (container) {
       const scrollAmount = container.clientWidth * index;
-      container.scrollTo({
-        left: scrollAmount,
-        behavior: "smooth",
-      });
+      container.scrollTo({ left: scrollAmount, behavior: "smooth" });
     }
+  };
+
+  const getDayTitle = (index) => {
+    if (index === 0) return getText("today", lang);
+    if (index === 1) return getText("tomorrow", lang);
+    return days[index]?.weekday || "";
   };
 
   const canScrollLeft = currentIndex > 0;
@@ -180,7 +155,7 @@ export default function NextWeek({
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      <TitleForBlock text={chooseTextByLang("Эта неделя", "This week", lang)} />
+      <TitleForBlock text={getText("this_week", lang)} />
 
       <div
         ref={containerRef}
@@ -201,7 +176,7 @@ export default function NextWeek({
             <div className="flex-grow overflow-y-auto mb-4 space-y-3">
               {loadingDates[day.dateStr] ? (
                 <p className="text-center text-gray-500">
-                  {chooseTextByLang("Загрузка...", "Loading...", lang)}
+                  {getText("loading", lang)}
                 </p>
               ) : notesByDate[day.dateStr]?.length > 0 ? (
                 notesByDate[day.dateStr].map((note) => (
@@ -213,22 +188,22 @@ export default function NextWeek({
                     onEdit={onEdit}
                     onCloseEdit={onCloseEdit}
                     onSubmitSuccess={() => {
-                      if (onSubmitSuccess) onSubmitSuccess();
-                      fetchNotesForDate(day.date);
+                      onSubmitSuccess?.();
+                      refreshAllDays();
                     }}
                     onDelete={() => {
-                      if (onDelete) onDelete();
-                      fetchNotesForDate(day.date);
+                      onDelete?.();
+                      refreshAllDays();
                     }}
                     onArchivedSuccess={() => {
-                      if (onArchivedSuccess) onArchivedSuccess();
-                      fetchNotesForDate(day.date);
+                      onArchivedSuccess?.();
+                      refreshAllDays();
                     }}
                   />
                 ))
               ) : (
                 <p className="text-center text-gray-500">
-                  {chooseTextByLang("Нет заметок", "No notes", lang)}
+                  {getText("no_notes", lang)}
                 </p>
               )}
             </div>
@@ -240,11 +215,11 @@ export default function NextWeek({
                   tags={tags}
                   date_of_note={day.date}
                   onSubmitSuccess={() => {
-                    onSubmitSuccess();
-                  }}
-                  onClose={() => {
+                    onSubmitSuccess?.();
+                    refreshAllDays();
                     handleCloseForm(day.dateStr);
                   }}
+                  onClose={() => handleCloseForm(day.dateStr)}
                   refreshTags={refreshTags}
                 />
               ) : (
@@ -252,7 +227,7 @@ export default function NextWeek({
                   className="w-full py-2 bg-black text-white rounded"
                   onClick={() => handleCreateClick(day.dateStr)}
                 >
-                  {chooseTextByLang("Добавить заметку", "Add note", lang)}
+                  {getText("add_note", lang)}
                 </button>
               )}
             </div>
@@ -267,7 +242,7 @@ export default function NextWeek({
             : "opacity-30 cursor-default"
         } ${isHovered ? "opacity-100" : "opacity-0"}`}
         onClick={() => canScrollLeft && scrollToIndex(currentIndex - 1)}
-        aria-label={chooseTextByLang("Предыдущий день", "Previous day", lang)}
+        aria-label={getText("previous_day", lang)}
       >
         &larr;
       </button>
@@ -279,7 +254,7 @@ export default function NextWeek({
             : "opacity-30 cursor-default"
         } ${isHovered ? "opacity-100" : "opacity-0"}`}
         onClick={() => canScrollRight && scrollToIndex(currentIndex + 1)}
-        aria-label={chooseTextByLang("Следующий день", "Next day", lang)}
+        aria-label={getText("next_day", lang)}
       >
         &rarr;
       </button>
