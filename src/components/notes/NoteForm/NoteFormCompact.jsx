@@ -34,7 +34,7 @@ export default function NoteFormCompact({ onClose, onSubmitSuccess, day }) {
   return (
     <div className="flex h-full items-center justify-center">
       <input
-        className="rounded-[10px] pl-3 h-[45px] outline outline-1 placeholder:ml-[20px] w-[76%] justify-start text-For-clarification text-base font-medium font-['Inter'] leading-normal"
+        className="rounded-[10px] pl-3 h-[45px] outline outline-1 outline-[#0973ff] placeholder:ml-[20px] w-[76%] justify-start text-For-clarification text-base font-medium font-['Inter'] leading-normal"
         placeholder={getText("add_note", lang)}
         value={noteTitle}
         onChange={(e) => {
