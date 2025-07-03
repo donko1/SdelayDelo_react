@@ -21,7 +21,7 @@ const NoteCard = ({
   return (
     <div
       onClick={() => onEdit(note)}
-      className="min-w-[295px] group left-0 top-[-0.11px] bg-Frame-color rounded-[10px] shadow-[0px_0px_20px_0px_rgba(0,0,0,0.05)] border border-stone-300 cursor-pointer"
+      className="min-w-[295px] group/card left-0 top-[-0.11px] bg-Frame-color rounded-[10px] shadow-[0px_0px_20px_0px_rgba(0,0,0,0.05)] border border-stone-300 cursor-pointer"
     >
       <div className="p-[17px] flex">
         <div
@@ -61,7 +61,7 @@ const NoteCard = ({
               await deleteNoteById(note.id, headers);
               onDelete();
             }}
-            className="m-1 transition-all duration-500 ease-in-out transform opacity-0 group-hover:opacity-100 hover:rotate-[360deg] hover:text-red-500"
+            className="m-1 transition-all duration-500 ease-in-out transform opacity-0 group-hover/card:opacity-100 hover:rotate-[360deg] hover:text-red-500"
           />
           <PinIcon
             onClick={async (e) => {
@@ -72,7 +72,7 @@ const NoteCard = ({
             className={`m-1 transition-all duration-300transform ${
               note.is_pinned
                 ? "opacity-100 text-yellow-500 hover:text-black "
-                : "opacity-0 group-hover:opacity-100 hover:text-yellow-500 "
+                : "opacity-0 group-hover/card:opacity-100 hover:text-yellow-500 "
             } hover:animate-pulse`}
           />
         </div>

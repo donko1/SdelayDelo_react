@@ -165,14 +165,14 @@ export default function NoteFormEdit({
             />
             <div className="relative">
               <button
-                className="group px-[20px] py-[17px] hover:bg-black bg-white transition-all transition-300 rounded-[30px] mt-[28px] flex space-x-[3px]"
+                className="group/tags px-[20px] py-[17px] hover:bg-black bg-white transition-all transition-300 rounded-[30px] mt-[28px] flex space-x-[3px]"
                 onClick={(e) => {
                   e.preventDefault();
                   setTagDropdownOpen(!tagDropdownOpen);
                 }}
               >
                 <HashtagIcon className="w-5 h-5" />
-                <span className="text-black transition-all transition-300 group-hover:text-stone-50 text-base font-medium font-['Inter']">
+                <span className="text-black transition-all transition-300 group-hover/tags:text-zinc-50 text-base font-medium font-['Inter']">
                   {chooseTextByLang("Тэги", "Tags", lang)}
                 </span>
               </button>
