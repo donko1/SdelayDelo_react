@@ -252,3 +252,13 @@ export async function createNote(headers, content) {
   });
   if (!response.ok) throw new Error("Ошибка при отправке заметки");
 }
+
+export async function createNoteCompact(headers, title, day) {
+  const content = {
+    date_of_note: day,
+    title: title,
+    description: ":)",
+    tags: [],
+  };
+  await createNote(headers, content);
+}

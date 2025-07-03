@@ -7,7 +7,8 @@ import TitleForBlock from "@components/ui/Title";
 import { useLang } from "@context/LangContext";
 import { useTimezone } from "@context/TimezoneContext";
 import { calculateDays, formatDateToApi } from "@utils/helpers/date";
-import { getText } from "@utils/helpers/interface";
+import { capitalizeFirstLetter, getText } from "@utils/helpers/interface";
+import XIcon from "@assets/x.svg?react";
 
 export default function NextWeek({
   tags,
@@ -142,7 +143,7 @@ export default function NextWeek({
   const getDayTitle = (index) => {
     if (index === 0) return getText("today", lang);
     if (index === 1) return getText("tomorrow", lang);
-    return days[index]?.weekday || "";
+    return capitalizeFirstLetter(days[index]?.weekday || "");
   };
 
   const canScrollLeft = currentIndex > 0;
@@ -159,21 +160,18 @@ export default function NextWeek({
 
       <div
         ref={containerRef}
-        className="flex overflow-x-hidden pb-4 space-x-4 relative"
+        className="flex overflow-x-hidden space-x-4 relative  p-2 mt-[35px]"
       >
         {days.map((day, index) => (
           <div
             key={day.dateStr}
-            className="min-w-[25%] bg-white rounded-xl shadow-md p-4 flex-shrink-0 flex flex-col h-[85vh]"
+            className="min-w-[25%] bg-[#fffdfd] relative rounded-2xl shadow-md pl-[36px] flex-shrink-0 flex flex-col min-h-[73vh]"
           >
-            <div className="text-center mb-4">
-              <div className="text-sm font-medium text-gray-600">
-                {getDayTitle(index)}
-              </div>
-              <div className="text-lg font-bold text-gray-800">{day.day}</div>
+            <div className="text-zinc-900 text-3xl font-semibold font-['Inter']">
+              {getDayTitle(index)}
             </div>
 
-            <div className="flex-grow overflow-y-auto mb-4 space-y-3">
+            <div className="flex-grow mt-[20px] mb-4 space-y-[20px]">
               {loadingDates[day.dateStr] ? (
                 <p className="text-center text-gray-500">
                   {getText("loading", lang)}
@@ -195,21 +193,21 @@ export default function NextWeek({
                       onDelete?.();
                       refreshAllDays();
                     }}
-                    onArchivedSuccess={() => {
-                      onArchivedSuccess?.();
-                      refreshAllDays();
+                    onArchivedSuccess={async () => {
+                      await onArchivedSuccess?.();
+                      await refreshAllDays();
                     }}
                     refreshTags={refreshTags}
                   />
                 ))
               ) : (
-                <p className="text-center text-gray-500">
+                <p className="text-center mt-10 text-gray-500">
                   {getText("no_notes", lang)}
                 </p>
               )}
             </div>
 
-            <div className="mt-auto">
+            <div className="h-20 absolute bottom-0 left-0 w-full outline-1 outline rounded-bl-2xl rounded-br-2xl">
               {creatingDates[day.dateStr] ? (
                 <NoteForm
                   compact={true}
@@ -222,14 +220,18 @@ export default function NextWeek({
                   }}
                   onClose={() => handleCloseForm(day.dateStr)}
                   refreshTags={refreshTags}
+                  day={day}
                 />
               ) : (
-                <button
-                  className="w-full py-2 bg-black text-white rounded"
-                  onClick={() => handleCreateClick(day.dateStr)}
-                >
-                  {getText("add_note", lang)}
-                </button>
+                <div className="flex h-full items-center justify-center">
+                  <button
+                    className="text-stone-700 rounded-[10px]  flex items-center justify-center text-base font-medium px-[26px] py-[9px] font-['Inter'] leading-normal outline outline-1"
+                    onClick={() => handleCreateClick(day.dateStr)}
+                  >
+                    <XIcon className="w-7 h-7 " />
+                    {getText("add_note", lang)}
+                  </button>
+                </div>
               )}
             </div>
           </div>

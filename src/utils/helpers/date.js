@@ -50,7 +50,7 @@ export const calculateDays = (startDate, numDays, lang, timezone) => {
   const newDays = [];
   const weekdayFormatter = new Intl.DateTimeFormat(lang, {
     timeZone: timezone,
-    weekday: "short",
+    weekday: "long",
   });
 
   const dayFormatter = new Intl.DateTimeFormat(lang, {
