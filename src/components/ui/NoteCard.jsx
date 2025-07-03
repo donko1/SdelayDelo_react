@@ -17,20 +17,6 @@ const NoteCard = ({
   onArchivedSuccess,
   refreshTags,
 }) => {
-  if (isEditing) {
-    return (
-      <NoteForm
-        note={note}
-        tags={tags}
-        onClose={onCloseEdit}
-        onSubmitSuccess={onSubmitSuccess}
-        onDeleteSuccess={onDelete}
-        onArchivedSuccess={onArchivedSuccess}
-        refreshTags={refreshTags}
-      />
-    );
-  }
-
   const { headers } = useAuth();
   return (
     <div
@@ -91,6 +77,17 @@ const NoteCard = ({
           />
         </div>
       </div>
+      {isEditing && (
+        <NoteForm
+          note={note}
+          tags={tags}
+          onClose={onCloseEdit}
+          onSubmitSuccess={onSubmitSuccess}
+          onDeleteSuccess={onDelete}
+          onArchivedSuccess={onArchivedSuccess}
+          refreshTags={refreshTags}
+        />
+      )}
     </div>
   );
 };
