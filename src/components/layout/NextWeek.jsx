@@ -165,7 +165,7 @@ export default function NextWeek({
         {days.map((day, index) => (
           <div
             key={day.dateStr}
-            className="min-w-[25%] bg-[#fffdfd] relative rounded-2xl shadow-md pl-[36px] flex-shrink-0 flex flex-col min-h-[73vh]"
+            className="min-w-[25%] bg-[#fffdfd] relative rounded-2xl shadow-md px-[36px] flex-shrink-0 flex flex-col min-h-[73vh]"
           >
             <div className="text-zinc-900 text-3xl font-semibold font-['Inter']">
               {getDayTitle(index)}
