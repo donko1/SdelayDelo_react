@@ -19,8 +19,13 @@ export default function NoteFormEdit({
   const { lang } = useLang();
 
   const [selectedTags, setSelectedTags] = useState(note?.tags || []);
-  const [showCalendar, setShowCalendar] = useState(false);
+  const selectedTagsRef = useRef(selectedTags);
 
+  useEffect(() => {
+    selectedTagsRef.current = selectedTags;
+  }, [selectedTags]);
+
+  const [showCalendar, setShowCalendar] = useState(false);
   const [tagDropdownOpen, setTagDropdownOpen] = useState(false);
 
   const { headers } = useAuth();
@@ -48,6 +53,7 @@ export default function NoteFormEdit({
     value: title,
     setValue: setTitle,
     updateHeight: updateTitleHeight,
+    valueRef: titleRef,
   } = useAutoResizeTextarea(note?.title || "", titlePlaceholder);
 
   const {
@@ -55,6 +61,7 @@ export default function NoteFormEdit({
     value: description,
     setValue: setDescription,
     updateHeight: updateDescriptionHeight,
+    valueRef: descriptionRef,
   } = useAutoResizeTextarea(note?.description || "");
 
   useEffect(() => {
@@ -87,10 +94,12 @@ export default function NoteFormEdit({
   };
 
   const handleSubmit = async (e) => {
-    try {
-      e.preventDefault();
-    } catch (e) {}
-    const content = { title, description, tags: selectedTags };
+    e?.preventDefault();
+    const content = {
+      title: titleRef.current,
+      description: descriptionRef.current,
+      tags: selectedTagsRef.current,
+    };
 
     try {
       await editNote(headers, note.id, content);

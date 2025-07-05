@@ -7,6 +7,11 @@ export default function useAutoResizeTextarea(
 ) {
   const textareaRef = useRef(null);
   const [value, setValue] = useState(initialValue);
+  const valueRef = useRef(value);
+
+  useEffect(() => {
+    valueRef.current = value;
+  }, [value]);
 
   const updateHeight = useCallback(() => {
     if (!textareaRef.current) return;
@@ -34,5 +39,6 @@ export default function useAutoResizeTextarea(
     value,
     setValue,
     updateHeight,
+    valueRef,
   };
 }
