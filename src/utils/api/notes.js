@@ -173,10 +173,11 @@ export async function deleteNoteById(note, headers) {
     console.error("Ошибка удаления заметки:", error);
   }
 }
-export async function getArchivedNotesByUser(headers) {
+export async function getArchivedNotesByUser(headers, step) {
+  console.log("Гружу заметки!", step);
   let url = isParallel()
-    ? "/api/v3/note/archived"
-    : "http://127.0.0.1:8000/api/v3/note/archived/";
+    ? `/api/v3/note/archived/?page=${step}`
+    : `http://127.0.0.1:8000/api/v3/note/archived/?page=${step}`;
   try {
     const resp = await fetch(url, { method: "GET", headers: headers });
     if (!resp.ok) {

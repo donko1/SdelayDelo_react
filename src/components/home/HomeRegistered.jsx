@@ -1,4 +1,5 @@
-import { act, useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
+import { useInView } from "react-intersection-observer";
 import { Link } from "react-router-dom";
 import Header from "@components/layout/Header";
 import ContentNotes from "@components/notes/ContentNotes";
@@ -29,6 +30,49 @@ export default function HomeRegistered() {
   const { actelem, setAct } = useActElemContext();
   const { refreshUser } = useUser();
   const [refreshTrigger, setRefreshTrigger] = useState(0);
+  const [notesRef, notesInView] = useInView({
+    triggerOnce: false,
+    rootMargin: "100px",
+  });
+
+  const [allNotesRef, allNotesInView] = useInView({
+    triggerOnce: false,
+    rootMargin: "100px",
+  });
+
+  const fetchNextPage = useCallback(
+    async (url, setter) => {
+      try {
+        const response = await fetch(url, { headers });
+        const newData = await response.json();
+        setter((prev) => ({
+          results: [...prev.results, ...newData.results],
+          next: newData.next,
+        }));
+      } catch (err) {
+        console.error("Ошибка при загрузке следующей страницы:", err);
+      }
+    },
+    [headers]
+  );
+
+  useEffect(() => {
+    if (notesInView && notes.next && actelem === "myDay") {
+      const timer = setTimeout(() => {
+        fetchNextPage(notes.next, setNotes);
+      }, 300);
+      return () => clearTimeout(timer);
+    }
+  }, [notesInView, notes.next, actelem, fetchNextPage]);
+
+  useEffect(() => {
+    if (allNotesInView && allNotes.next && actelem === "allNotes") {
+      const timer = setTimeout(() => {
+        fetchNextPage(allNotes.next, setAllNotes);
+      }, 300);
+      return () => clearTimeout(timer);
+    }
+  }, [allNotesInView, allNotes.next, actelem, fetchNextPage]);
 
   const getStyleByNotes = (notes) => {
     if (notes?.results?.length > 0) {
@@ -78,30 +122,6 @@ export default function HomeRegistered() {
     fetchTags();
   }, []);
 
-  useEffect(() => {
-    const handleScroll = async () => {
-      if (
-        window.innerHeight + window.scrollY >=
-          document.body.offsetHeight - 300 &&
-        notes.next
-      ) {
-        try {
-          const response = await fetch(notes.next, { headers });
-          const newNotes = await response.json();
-          setNotes((prev) => ({
-            results: [...prev.results, ...newNotes.results],
-            next: newNotes.next,
-          }));
-        } catch (err) {
-          console.error("Ошибка при загрузке следующей страницы:", err);
-        }
-      }
-    };
-
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, [notes, headers]);
-
   return (
     <div className="relative">
       <div className="fixed left-0 top-0 bottom-0 bg-[#6a6a6a] text-white p-[15px] overflow-y-auto">
@@ -117,8 +137,6 @@ export default function HomeRegistered() {
       {openArchived && (
         <ArchivedNotes
           onClose={() => setOpenArchived(false)}
-          lang={lang}
-          headers={headers}
           onRefresh={handleRefresh}
           tags={tags}
         />
@@ -163,6 +181,7 @@ export default function HomeRegistered() {
             text={chooseTextByLang("Все заметки", "All notes", lang)}
             refreshTags={fetchTags}
           />
+          {allNotes.next && <div ref={allNotesRef} className="h-2" />}
         </div>
       )}
 
@@ -208,6 +227,7 @@ export default function HomeRegistered() {
                 onDelete={handleRefresh}
                 refreshTags={fetchTags}
               />
+              {notes.next && <div ref={notesRef} className="h-2" />}
             </div>
           )}
 
