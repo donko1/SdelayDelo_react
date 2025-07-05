@@ -16,7 +16,7 @@ function ContentNotes({
   return (
     <div>
       {text && <TitleForBlock text={text} />}
-      <div className="flex flex-wrap gap-5">
+      <div className="flex flex-wrap gap-5 mt-[40px]">
         {notes?.results?.map((note) => (
           <NoteCard
             key={note.id}
