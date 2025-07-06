@@ -16,6 +16,7 @@ import NextWeek from "@components/layout/NextWeek";
 import AddNoteButton from "@components/ui/AddNoteButton";
 import { useActElemContext } from "@context/ActElemContext";
 import { useLang } from "@context/LangContext";
+import NoteFormCreate from "@components/notes/NoteForm/NoteFormCreate";
 
 export default function HomeRegistered() {
   const { headers, userToken, logout } = useAuth();
@@ -28,6 +29,7 @@ export default function HomeRegistered() {
   const [openArchived, setOpenArchived] = useState(false);
   const [editingNote, setEditingNote] = useState(null);
   const { actelem, setAct } = useActElemContext();
+  const [isCreating, setIsCreating] = useState(false);
   const { refreshUser } = useUser();
   const [refreshTrigger, setRefreshTrigger] = useState(0);
   const [notesRef, notesInView] = useInView({
@@ -124,13 +126,24 @@ export default function HomeRegistered() {
 
   return (
     <div className="relative">
+      {isCreating && (
+        <NoteFormCreate
+          tags={tags}
+          onClose={() => {
+            setIsCreating(false);
+          }}
+          refreshTags={fetchTags}
+          onSubmitSuccess={handleRefresh}
+          fixedStyle={true}
+        />
+      )}
       <div className="fixed left-0 top-0 bottom-0 bg-[#6a6a6a] text-white p-[15px] overflow-y-auto">
         <Header
           activeElem={actelem}
           setAct={setAct}
-          addNoteFunc={() => !editingNote && setEditingNote({})}
           setOpenArchived={setOpenArchived}
           tags_data={tags}
+          openForm={setIsCreating}
         />
       </div>
 
