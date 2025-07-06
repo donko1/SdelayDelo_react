@@ -82,7 +82,6 @@ export default function NoteFormEditNavbar({
         calendarDate={calendarDate}
         setCalendarDate={setCalendarDate}
         currentNoteDate={currentNoteDate}
-        note={note}
         handleDateSelect={handleDateSelect}
       />
 

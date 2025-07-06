@@ -11,7 +11,6 @@ export default function CalendarForNoteForm({
   calendarDate,
   setCalendarDate,
   currentNoteDate,
-  note,
   handleDateSelect,
 }) {
   if (!showCalendar) return null;
