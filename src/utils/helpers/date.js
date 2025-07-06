@@ -34,6 +34,9 @@ export const areDatesEqual = (date1, date2) => {
 
 export const parseDmyString = (dateString) => {
   if (!dateString) return null;
+  if (!(typeof dateString === "string")) {
+    return dateString;
+  }
   const parts = dateString.split("/").map(Number);
   if (parts.length !== 3) return null;
   return new Date(parts[2], parts[1] - 1, parts[0]);

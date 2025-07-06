@@ -4,10 +4,12 @@ import { useEffect, useState } from "react";
 import SendIcon from "@assets/send.svg?react";
 import CrossIcon from "@assets/cross.svg?react";
 import TagDropdown from "@components/notes/NoteForm/TagDropdown";
-import { formatDate } from "@utils/helpers/date";
+import { formatDate, formatDateToApi } from "@utils/helpers/date";
 import { useLang } from "@context/LangContext";
 import { createNote } from "@utils/api/notes";
 import useAutoResizeTextarea from "@utils/hooks/useAutoResizeTextarea";
+import CalendarForNoteForm from "@components/notes/NoteForm/Calendar";
+import CalendarIcon from "@assets/calendar.svg?react";
 
 export default function NoteFormCreate({
   tags,
@@ -21,9 +23,13 @@ export default function NoteFormCreate({
   const [tagDropdownOpen, setTagDropdownOpen] = useState(false);
   const { headers } = useAuth();
   const { lang } = useLang();
-
+  const [calendarDate, setCalendarDate] = useState(() => {
+    if (date_of_note) {
+      return date_of_note;
+    }
+  });
+  const [openedCalendar, setOpenedCalendar] = useState(false);
   const titlePlaceholder = "Практиковать японский каждый день в 13 дня";
-
   const {
     textareaRef: titleTextareaRef,
     value: title,
@@ -61,9 +67,13 @@ export default function NoteFormCreate({
       e.preventDefault();
     } catch (e) {}
 
-    const content = { title, description, tags: selectedTags };
-    if (date_of_note) {
-      content.date_of_note = formatDate(date_of_note);
+    const content = {
+      title,
+      description,
+      tags: selectedTags,
+    };
+    if (calendarDate) {
+      content.date_of_note = formatDate(calendarDate);
     }
     try {
       await createNote(headers, content);
@@ -84,6 +94,7 @@ export default function NoteFormCreate({
       {fixedStyle && (
         <div className="bg-black opacity-50 inset-0 absolute w-[100vw] h-[100vh]" />
       )}
+
       <div
         className={`rounded-[10px] w-[290px] outline outline-1 outline-offset-[-1px] outline-black mt-[60px] relative ${
           fixedStyle && "bg-[#ffffff] opacity-100 z-52"
@@ -146,6 +157,16 @@ export default function NoteFormCreate({
             )}
 
             <button
+              type="button"
+              onClick={() => setOpenedCalendar(!openedCalendar)}
+            >
+              <CalendarIcon
+                className={`w-[25px] h-[25px]  hover:text-black transition-all transition-300 ${
+                  openedCalendar ? "text-black" : "text-neutral-500"
+                }`}
+              />
+            </button>
+            <button
               type="submit"
               className="flex group-submit items-center justify-center w-8 h-8"
             >
@@ -154,6 +175,17 @@ export default function NoteFormCreate({
           </div>
         </form>
       </div>
+
+      <CalendarForNoteForm
+        showCalendar={openedCalendar}
+        calendarDate={new Date()}
+        currentNoteDate={calendarDate}
+        setCalendarDate={setCalendarDate}
+        handleDateSelect={(date) => {
+          setCalendarDate(date);
+          setOpenedCalendar(false);
+        }}
+      />
     </div>
   );
 }
