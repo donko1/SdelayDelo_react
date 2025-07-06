@@ -24,6 +24,36 @@ export const isToday = (date) => {
   );
 };
 
+export const isTodayOrYesterday = (date) => {
+  const today = new Date();
+  const yesterday = new Date(
+    (year = today.getFullYear()),
+    (month = today.getMonth()),
+    (date = today.getDate())
+  );
+  return (
+    (date.getDate() === today.getDate() &&
+      date.getMonth() === today.getMonth() &&
+      date.getFullYear() === today.getFullYear()) ||
+    (date.getDate() === yesterday.getDate() &&
+      date.getMonth() === yesterday.getMonth() &&
+      date.getFullYear() === yesterday.getFullYear())
+  );
+};
+
+export const isInThisWeek = (date) => {
+  const today = new Date();
+  const old_date = new Date(
+    (year = today.getFullYear()),
+    (month = today.getMonth()),
+    (date = today.getDate() - 7)
+  );
+  if (date >= old_date && date <= today) {
+    return true;
+  }
+  return false;
+};
+
 export const areDatesEqual = (date1, date2) => {
   return (
     date1.getDate() === date2.getDate() &&
