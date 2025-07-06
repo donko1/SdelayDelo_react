@@ -27,6 +27,12 @@ export default function NoteFormCreate({
     if (date_of_note) {
       return date_of_note;
     }
+    return new Date();
+  });
+  const [noteDate, setNoteDate] = useState(() => {
+    if (date_of_note) {
+      return date_of_note;
+    }
   });
   const [openedCalendar, setOpenedCalendar] = useState(false);
   const titlePlaceholder = "Практиковать японский каждый день в 13 дня";
@@ -72,8 +78,8 @@ export default function NoteFormCreate({
       description,
       tags: selectedTags,
     };
-    if (calendarDate) {
-      content.date_of_note = formatDate(calendarDate);
+    if (noteDate) {
+      content.date_of_note = formatDate(noteDate);
     }
     try {
       await createNote(headers, content);
@@ -175,8 +181,10 @@ export default function NoteFormCreate({
               onClick={() => setOpenedCalendar(!openedCalendar)}
             >
               <CalendarIcon
-                className={`w-[25px] h-[25px]  hover:text-black transition-all transition-300 ${
-                  openedCalendar ? "text-black" : "text-neutral-500"
+                className={`w-[25px] h-[25px]   transition-all transition-300 ${
+                  openedCalendar
+                    ? "text-black hover:text-neutral-500"
+                    : "text-neutral-500 hover:text-black"
                 }`}
               />
             </button>
@@ -188,18 +196,20 @@ export default function NoteFormCreate({
             </button>
           </div>
         </form>
-      </div>
 
-      <CalendarForNoteForm
-        showCalendar={openedCalendar}
-        calendarDate={new Date()}
-        currentNoteDate={calendarDate}
-        setCalendarDate={setCalendarDate}
-        handleDateSelect={(date) => {
-          setCalendarDate(date);
-          setOpenedCalendar(false);
-        }}
-      />
+        <div className="absolute w-full">
+          <CalendarForNoteForm
+            showCalendar={openedCalendar}
+            calendarDate={calendarDate}
+            currentNoteDate={noteDate}
+            setCalendarDate={setCalendarDate}
+            handleDateSelect={(date) => {
+              setNoteDate(date);
+              setOpenedCalendar(false);
+            }}
+          />
+        </div>
+      </div>
     </div>
   );
 }
