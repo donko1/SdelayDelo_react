@@ -5,6 +5,28 @@ export function getTagsForNote(note, tags) {
   return tags.filter((tag) => note.tags.includes(tag.id));
 }
 
+export async function clearArchive(headers) {
+  const url = isParallel()
+    ? "/api/v3/note/clear_archive/"
+    : "http://localhost:8000/api/v3/note/clear_archive/";
+  try {
+    const resp = await fetch(url, {
+      method: "DELETE",
+      headers: headers,
+    });
+
+    if (!resp.ok) {
+      console.log("Error on side of server");
+      return 1;
+    }
+    const data = await resp.json();
+    return data;
+  } catch (error) {
+    console.log(`Error! ${error}`);
+    return 1;
+  }
+}
+
 export async function addNoteToArchive(id, headers) {
   const baseUrl = isParallel()
     ? "/api/v3/note/"
@@ -174,7 +196,6 @@ export async function deleteNoteById(note, headers) {
   }
 }
 export async function getArchivedNotesByUser(headers, step) {
-  console.log("Гружу заметки!", step);
   let url = isParallel()
     ? `/api/v3/note/archived/?page=${step}`
     : `http://127.0.0.1:8000/api/v3/note/archived/?page=${step}`;

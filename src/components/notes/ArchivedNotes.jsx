@@ -4,6 +4,7 @@ import {
   getArchivedNotesByUser,
   getTagsForNote,
   removeFromArchive,
+  clearArchive,
 } from "@utils/api/notes";
 import { useLang } from "@context/LangContext";
 import { useAuth } from "@context/AuthContext";
@@ -36,23 +37,24 @@ export default function ArchivedNotes({ onClose, onRefresh, tags }) {
     hasNextRef.current = archivedNotes.next;
   }, [archivedNotes.next]);
 
-  useEffect(() => {
-    const fetchArchivedNotes = async () => {
-      try {
-        setIsLoading(true);
-        const result = await getArchivedNotesByUser(headers, 1);
-        if (result !== 1) {
-          setArchivedNotes(result);
-          setStep(1);
-        } else {
-          console.error("Ошибка при загрузке архивных заметок");
-        }
-      } catch (error) {
-        console.error("Ошибка при загрузке архивных заметок:", error);
-      } finally {
-        setIsLoading(false);
+  const fetchArchivedNotes = async () => {
+    try {
+      setIsLoading(true);
+      const result = await getArchivedNotesByUser(headers, 1);
+      if (result !== 1) {
+        setArchivedNotes(result);
+        setStep(1);
+      } else {
+        console.error("Ошибка при загрузке архивных заметок");
       }
-    };
+    } catch (error) {
+      console.error("Ошибка при загрузке архивных заметок:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
     fetchArchivedNotes();
   }, [headers]);
 
@@ -203,6 +205,15 @@ export default function ArchivedNotes({ onClose, onRefresh, tags }) {
               </div>
             )}
           </div>
+        </div>
+        <div
+          onClick={async () => {
+            await clearArchive(headers);
+            await fetchArchivedNotes();
+          }}
+          className="absolute bottom-0 left-0 w-ful"
+        >
+          <h1>Очистить архив</h1>
         </div>
       </div>
     </div>
