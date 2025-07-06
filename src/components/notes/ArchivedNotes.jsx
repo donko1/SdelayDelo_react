@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useMemo } from "react";
 import { chooseTextByLang } from "@utils/helpers/locale";
 import {
   getArchivedNotesByUser,
@@ -8,6 +8,8 @@ import {
 } from "@utils/api/notes";
 import { useLang } from "@context/LangContext";
 import { useAuth } from "@context/AuthContext";
+import { isInThisWeek, isTodayOrYesterday } from "@utils/helpers/date";
+import { useTimezone } from "@context/TimezoneContext";
 
 export default function ArchivedNotes({ onClose, onRefresh, tags }) {
   const [archivedNotes, setArchivedNotes] = useState({
@@ -16,8 +18,9 @@ export default function ArchivedNotes({ onClose, onRefresh, tags }) {
   });
   const { lang } = useLang();
   const { headers } = useAuth();
-
+  const { timezone } = useTimezone();
   const [step, setStep] = useState(1);
+  const [actELem, setActElem] = useState("all");
   const [isLoading, setIsLoading] = useState(false);
 
   const isLoadingRef = useRef(false);
@@ -36,6 +39,25 @@ export default function ArchivedNotes({ onClose, onRefresh, tags }) {
   useEffect(() => {
     hasNextRef.current = archivedNotes.next;
   }, [archivedNotes.next]);
+
+  const filteredNotes = useMemo(() => {
+    if (!archivedNotes.results) return [];
+
+    if (actELem === "all") return archivedNotes.results;
+
+    return archivedNotes.results.filter((note) => {
+      try {
+        const [day, month, year] = note.date_of_note.split("/").map(Number);
+        const noteDate = new Date(year, month - 1, day);
+
+        if (actELem === "today") return isTodayOrYesterday(noteDate, timezone);
+        if (actELem === "tsweek") return isInThisWeek(noteDate, timezone);
+        return true;
+      } catch (e) {
+        return false;
+      }
+    });
+  }, [actELem, archivedNotes]);
 
   const fetchArchivedNotes = async () => {
     try {
@@ -157,8 +179,28 @@ export default function ArchivedNotes({ onClose, onRefresh, tags }) {
           className="bg-white rounded-b-lg overflow-y-auto flex-1"
           onClick={(e) => e.stopPropagation()}
         >
+          <div className="flex w-full items-center justify-center gap-5">
+            <h1
+              className={actELem === "all" ? "text-black" : "text-gray-500"}
+              onClick={() => setActElem("all")}
+            >
+              {chooseTextByLang("Все заметки", "All notes", lang)}
+            </h1>
+            <h1
+              className={actELem === "today" ? "text-black" : "text-gray-500"}
+              onClick={() => setActElem("today")}
+            >
+              {chooseTextByLang("Сегодня", "Today", lang)}
+            </h1>
+            <h1
+              className={actELem === "tsweek" ? "text-black" : "text-gray-500"}
+              onClick={() => setActElem("tsweek")}
+            >
+              {chooseTextByLang("За неделю", "This week", lang)}
+            </h1>
+          </div>
           <div className="px-4 py-4">
-            {archivedNotes?.results?.map((note) => (
+            {filteredNotes.map((note) => (
               <div
                 key={note.id}
                 className="relative group flex items-center p-3 mb-2 bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow border border-gray-100"

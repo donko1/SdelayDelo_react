@@ -23,35 +23,30 @@ export const isToday = (date) => {
     date.getFullYear() === today.getFullYear()
   );
 };
-
 export const isTodayOrYesterday = (date) => {
   const today = new Date();
-  const yesterday = new Date(
-    (year = today.getFullYear()),
-    (month = today.getMonth()),
-    (date = today.getDate())
-  );
+  today.setHours(0, 0, 0, 0);
+
+  const yesterday = new Date(today);
+  yesterday.setDate(yesterday.getDate() - 1);
+
+  const checkDate = new Date(date);
+  checkDate.setHours(0, 0, 0, 0);
+
   return (
-    (date.getDate() === today.getDate() &&
-      date.getMonth() === today.getMonth() &&
-      date.getFullYear() === today.getFullYear()) ||
-    (date.getDate() === yesterday.getDate() &&
-      date.getMonth() === yesterday.getMonth() &&
-      date.getFullYear() === yesterday.getFullYear())
+    checkDate.getTime() === today.getTime() ||
+    checkDate.getTime() === yesterday.getTime()
   );
 };
 
 export const isInThisWeek = (date) => {
   const today = new Date();
-  const old_date = new Date(
-    (year = today.getFullYear()),
-    (month = today.getMonth()),
-    (date = today.getDate() - 7)
-  );
-  if (date >= old_date && date <= today) {
-    return true;
-  }
-  return false;
+  today.setHours(0, 0, 0, 0);
+
+  const weekAgo = new Date(today);
+  weekAgo.setDate(today.getDate() - 7);
+
+  return date >= weekAgo && date <= today;
 };
 
 export const areDatesEqual = (date1, date2) => {
