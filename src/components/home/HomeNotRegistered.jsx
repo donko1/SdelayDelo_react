@@ -4,9 +4,10 @@ import { useUser } from "@context/UserContext";
 import { useAuth } from "@context/AuthContext";
 import { chooseTextByLang } from "@utils/helpers/locale";
 import { useLang } from "@context/LangContext";
+import { create_demo } from "@utils/api/auth";
 
 export default function HomeNotRegistered() {
-  const { userToken, logout } = useAuth();
+  const { userToken, logout, login } = useAuth();
   const [isAuthenticated, setIsAuthenticated] = useState(userToken != null);
   const { refreshUser } = useUser();
   const { lang } = useLang();
@@ -36,9 +37,16 @@ export default function HomeNotRegistered() {
           <Link to="/login" className="start-button">
             <button>{chooseTextByLang("Начать", "Get started", lang)}</button>
           </Link>
-          <Link to="/demo" className="demo-button">
-            <button>{chooseTextByLang("Демо", "Demo", lang)}</button>
-          </Link>
+          <div className="demo-button">
+            <button
+              onClick={async () => {
+                let token = await create_demo();
+                login(token);
+              }}
+            >
+              {chooseTextByLang("Демо", "Demo", lang)}
+            </button>
+          </div>
         </div>
       </div>
     </div>

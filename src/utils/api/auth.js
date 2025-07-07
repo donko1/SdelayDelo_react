@@ -25,3 +25,30 @@ export async function check_if_email_registered(email) {
     return 1;
   }
 }
+
+export async function create_demo() {
+  let url = isParallel() ? "/api/demo" : "http://localhost:8000/api/demo";
+  console.log(navigator.language || navigator.userLanguage);
+  try {
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        language: navigator.language || navigator.userLanguage,
+      }),
+    });
+    if (!response.ok) {
+      console.log("Error on side of server");
+      return 1;
+    }
+
+    const data = await response.json();
+    console.log(data);
+    return data.token;
+  } catch (error) {
+    console.log("Error! We can't check if email registered:", error);
+    return 1;
+  }
+}
