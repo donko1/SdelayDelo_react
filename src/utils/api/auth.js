@@ -37,6 +37,7 @@ export async function create_demo() {
       },
       body: JSON.stringify({
         language: navigator.language || navigator.userLanguage,
+        timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
       }),
     });
     if (!response.ok) {
