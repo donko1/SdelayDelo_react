@@ -177,7 +177,7 @@ export default function Calendar({
           className={`p-2 rounded-full flex items-center justify-center ${
             offsetWeeks === 0
               ? "text-gray-300 cursor-not-allowed"
-              : "text-black hover:text-[#8e8484] transition-all transition-300"
+              : "text-black hover:text-[#8e8484] transition-all duration-300"
           }`}
         >
           <SendIcon className="rotate-180 [&>*]:!fill-none" />
@@ -189,7 +189,7 @@ export default function Calendar({
         </h2>
         <button
           onClick={handleNextWeek}
-          className="p-2 rounded-full flex items-center justify-center hover:text-[#8e8484] transition-all transition-300"
+          className="p-2 rounded-full flex items-center justify-center hover:text-[#8e8484] transition-all duration-300"
         >
           <SendIcon className="[&>*]:!fill-none" />
         </button>
@@ -209,7 +209,7 @@ export default function Calendar({
               className={`flex flex-col items-center py-3 rounded-lg cursor-pointer`}
             >
               <div
-                className={`text-2xl font-semibold font-['Inter'] hover:text-black transition-300 transition-all ${
+                className={`text-2xl font-semibold font-['Inter'] hover:text-black duration-300 transition-all ${
                   isActive || isToday ? "font-medium" : ""
                 } ${
                   isActive

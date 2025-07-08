@@ -13,7 +13,7 @@ export default function AddNoteButton({ style, editingNote, setEditingNote }) {
     return (
       <div className="mt-16">
         <button
-          className="min-w-48 px-6 py-3 bg-black rounded-2xl inline-flex justify-center duration-300 transition-all items-center hover:shadow-[0px_2px_10px_0px_rgba(151,71,255,1.00)] transition-300ms gap-2.5"
+          className="min-w-48 px-6 py-3 bg-black rounded-2xl inline-flex justify-center duration-300 transition-all items-center hover:shadow-[0px_2px_10px_0px_rgba(151,71,255,1.00)] duration-300ms gap-2.5"
           onClick={onClick}
           disabled={!!editingNote}
         >

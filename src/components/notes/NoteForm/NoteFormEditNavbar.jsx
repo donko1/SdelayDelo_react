@@ -92,7 +92,7 @@ export default function NoteFormEditNavbar({
               setAct("myDay");
               onClose();
             }}
-            className="h-[32px] w-[32px] text-red-500 transition-all transition-300 hover:text-black"
+            className="h-[32px] w-[32px] text-red-500 transition-all duration-300 hover:text-black"
           />
         )}
         {isInNext7Days && (
@@ -101,7 +101,7 @@ export default function NoteFormEditNavbar({
               setAct("next7Days");
               onClose();
             }}
-            className="h-[32px] w-[32px] text-red-500 block [&>*]:!fill-none transition-all transition-300 hover:text-black"
+            className="h-[32px] w-[32px] text-red-500 block [&>*]:!fill-none transition-all duration-300 hover:text-black"
           />
         )}
         {note.date_of_note !== null && (
@@ -110,16 +110,16 @@ export default function NoteFormEditNavbar({
               setAct("Calendar");
               onClose();
             }}
-            className="h-[32px] w-[32px] text-red-500 block transition-all transition-300 hover:text-black"
+            className="h-[32px] w-[32px] text-red-500 block transition-all duration-300 hover:text-black"
           />
         )}
         <ArchiveIcon
           onClick={handleAddToArchive}
-          className="[&>*]:!fill-none cursor-pointer [shape-rendering:crispEdges] text-zinc-500 h-[32px] w-[32px] transition-all transition-300 hover:text-yellow-600"
+          className="[&>*]:!fill-none cursor-pointer [shape-rendering:crispEdges] text-zinc-500 h-[32px] w-[32px] transition-all duration-300 hover:text-yellow-600"
         />
         <CrossIcon
           onClick={onCloseEdit}
-          className="h-[32px] cursor-pointer text-zinc-500 w-[32px] transition-all transition-300 hover:text-black"
+          className="h-[32px] cursor-pointer text-zinc-500 w-[32px] transition-all duration-300 hover:text-black"
         />
       </div>
     </div>

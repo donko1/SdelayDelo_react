@@ -45,7 +45,7 @@ export default function NoteFormCompact({ onClose, onSubmitSuccess, day }) {
 
       <SendIcon
         onClick={handleSubmit}
-        className="absolute hover:scale-125 cursor-pointer transition-all transition-300 right-[60px]"
+        className="absolute hover:scale-125 cursor-pointer transition-all duration-300 right-[60px]"
       />
     </div>
   );

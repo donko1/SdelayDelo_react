@@ -10,6 +10,8 @@ import { useLang } from "@context/LangContext";
 import { useAuth } from "@context/AuthContext";
 import { isInThisWeek, isTodayOrYesterday } from "@utils/helpers/date";
 import { useTimezone } from "@context/TimezoneContext";
+import ReturnIcon from "@assets/return.svg?react";
+import TrashIcon from "@assets/trash.svg?react";
 
 export default function ArchivedNotes({ onClose, onRefresh, tags }) {
   const [archivedNotes, setArchivedNotes] = useState({
@@ -149,14 +151,14 @@ export default function ArchivedNotes({ onClose, onRefresh, tags }) {
         onClick={onClose}
       ></div>
 
-      <div className="relative w-full max-w-2xl h-[50vh] flex flex-col">
-        <div className="bg-white rounded-t-lg flex justify-between items-center p-4 border-b">
-          <h3 className="text-xl font-bold">
+      <div className="relative max-w-2xl h-[700px] w-[525px] flex flex-col">
+        <div className="bg-white rounded-t-3xl flex justify-end items-center p-4 border-b">
+          <h3 className="text-3xl font-semibold font-['Inter'] w-full text-center">
             {chooseTextByLang("Архив заметок", "Notes Archive", lang)}
           </h3>
           <button
             onClick={onClose}
-            className="text-gray-500 hover:text-gray-700"
+            className="text-gray-500 w-8 h-8  hover:text-gray-700 transition-all duration-300"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -176,66 +178,77 @@ export default function ArchivedNotes({ onClose, onRefresh, tags }) {
         </div>
         <div
           ref={scrollContainerRef}
-          className="bg-white rounded-b-lg overflow-y-auto flex-1"
+          className="bg-white overflow-y-auto mb-24 flex-1"
           onClick={(e) => e.stopPropagation()}
         >
-          <div className="flex w-full items-center justify-center gap-5">
+          <div className="flex w-full items-center justify-center gap-5 mt-[45px]">
             <h1
-              className={actELem === "all" ? "text-black" : "text-gray-500"}
+              className={`text-2xl font-semibold duration-300 font-['Inter'] cursor-pointer ${
+                actELem === "all"
+                  ? "text-neutral-700"
+                  : "text-neutral-400 hover:text-neutral-700"
+              }`}
               onClick={() => setActElem("all")}
             >
               {chooseTextByLang("Все заметки", "All notes", lang)}
             </h1>
             <h1
-              className={actELem === "today" ? "text-black" : "text-gray-500"}
+              className={`text-2xl font-semibold  duration-300font-['Inter'] cursor-pointer ${
+                actELem === "today"
+                  ? "text-neutral-700"
+                  : "text-neutral-400 hover:text-neutral-700"
+              }`}
               onClick={() => setActElem("today")}
             >
               {chooseTextByLang("Сегодня", "Today", lang)}
             </h1>
             <h1
-              className={actELem === "tsweek" ? "text-black" : "text-gray-500"}
+              className={`text-2xl transition-all duration-300 font-semibold font-['Inter'] cursor-pointer ${
+                actELem === "tsweek"
+                  ? "text-neutral-700"
+                  : "text-neutral-400 hover:text-neutral-700"
+              }`}
               onClick={() => setActElem("tsweek")}
             >
               {chooseTextByLang("За неделю", "This week", lang)}
             </h1>
           </div>
-          <div className="px-4 py-4">
+          <div className="mt-[50px] px-[35px] ">
             {filteredNotes.map((note) => (
               <div
                 key={note.id}
-                className="relative group flex items-center p-3 mb-2 bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow border border-gray-100"
+                onClick={async () => {
+                  try {
+                    await removeFromArchive(note.id, headers);
+                    onRefresh();
+                    setArchivedNotes((prev) => ({
+                      ...prev,
+                      results: prev.results.filter((n) => n.id !== note.id),
+                    }));
+                  } catch (error) {
+                    console.error("Ошибка при удалении из архива:", error);
+                  }
+                }}
+                className="relative group/archive flex items-center p-3 mb-2 bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow border border-gray-100"
               >
-                <div className="flex items-center justify-center mr-3">
-                  <input
-                    type="checkbox"
-                    className="h-4 w-4 text-indigo-600 rounded-full focus:ring-indigo-500 cursor-pointer"
-                    onClick={async () => {
-                      try {
-                        await removeFromArchive(note.id, headers);
-                        onRefresh();
-                        setArchivedNotes((prev) => ({
-                          ...prev,
-                          results: prev.results.filter((n) => n.id !== note.id),
-                        }));
-                      } catch (error) {
-                        console.error("Ошибка при удалении из архива:", error);
-                      }
-                    }}
-                  />
+                <div className="flex items-center justify-center mr-[9px]">
+                  <div className="w-5 h-5 opacity-70 rounded-full border-2 border-zinc-950 cursor-pointer flex justify-center items-center">
+                    <ReturnIcon className="opacity-0 duration-300 transition-all group-hover/archive:opacity-100" />
+                  </div>
                 </div>
 
                 <h1 className="text-gray-800 font-medium text-lg truncate">
                   {note.title}
                 </h1>
 
-                <div className="absolute right-3 top-1/2 transform -translate-y-1/2 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                <div className="absolute right-3 top-1/2 transform -translate-y-1/2 flex gap-2 opacity-0 group-hover/archive:opacity-100 transition-opacity duration-200">
                   {getTagsForNote(note, tags).map((tag) => (
                     <span
                       key={tag.id}
                       className="text-sm px-2 py-1 rounded-full text-white whitespace-nowrap"
-                      style={{ backgroundColor: tag.colour }}
+                      style={{ color: tag.colour }}
                     >
-                      #{tag.title}
+                      # {tag.title}
                     </span>
                   ))}
                 </div>
@@ -249,13 +262,13 @@ export default function ArchivedNotes({ onClose, onRefresh, tags }) {
           </div>
         </div>
         <div
+          className="cursor-pointer absolute bottom-0 left-0 w-full h-24 bg-black flex items-center justify-center rounded-bl-3xl rounded-br-3xl"
           onClick={async () => {
             await clearArchive(headers);
             await fetchArchivedNotes();
           }}
-          className="absolute bottom-0 left-0 w-ful"
         >
-          <h1>Очистить архив</h1>
+          <TrashIcon className="text-white" />
         </div>
       </div>
     </div>

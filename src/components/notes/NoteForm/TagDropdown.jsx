@@ -40,7 +40,7 @@ export default function TagDropdown({
               await handleAddTag(e);
               await refreshTags();
             }}
-            className="ml-2 px-3 bg-gray-200 rounded-[10px] hover:bg-green-500 transition-all transition-300"
+            className="ml-2 px-3 bg-gray-200 rounded-[10px] hover:bg-green-500 transition-all duration-300"
           >
             {chooseTextByLang("Добавить", "Add", lang)}
           </button>
@@ -50,7 +50,7 @@ export default function TagDropdown({
             <div
               key={tag.id}
               onClick={() => handleTagToggle(tag.id)}
-              className={`px-[9px] hover:bg-gray-100 transition-all transition-300 py-2 flex items-center cursor-pointer ${
+              className={`px-[9px] hover:bg-gray-100 transition-all duration-300 py-2 flex items-center cursor-pointer ${
                 selectedTags.includes(tag.id) ? "bg-gray-100" : ""
               }`}
             >
@@ -70,7 +70,7 @@ export default function TagDropdown({
           <div
             key={tag.id}
             onClick={() => handleTagToggle(tag.id)}
-            className={`px-4 py-2 flex items-center hover:bg-gray-100 transition-all transition-300 cursor-pointer ${
+            className={`px-4 py-2 flex items-center hover:bg-gray-100 transition-all duration-300 cursor-pointer ${
               selectedTags.includes(tag.id) ? "bg-gray-100" : ""
             }`}
           >
@@ -81,7 +81,7 @@ export default function TagDropdown({
         ))}
         <div className="flex">
           <input
-            className="px-4 w-[75%] py-2 outline-0 flex items-center hover:bg-gray-100 transition-all transition-300 cursor-text"
+            className="px-4 w-[75%] py-2 outline-0 flex items-center hover:bg-gray-100 transition-all duration-300 cursor-text"
             value={newTag}
             placeholder={chooseTextByLang("Добавить тэг", "Add tag", lang)}
             onChange={(e) => setNewTag(e.target.value)}
@@ -97,7 +97,7 @@ export default function TagDropdown({
               await handleAddTag(e);
               await refreshTags();
             }}
-            className="bg-gray-200 rounded-[10px] p-2 hover:bg-green-500 transition-all transition-300"
+            className="bg-gray-200 rounded-[10px] p-2 hover:bg-green-500 transition-all duration-300"
           >
             {chooseTextByLang("Добавить", "Add", lang)}
           </button>

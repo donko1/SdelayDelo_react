@@ -152,7 +152,7 @@ export default function NoteFormCreate({
               onClick={onClose}
               className="flex items-center justify-center w-8 h-8"
             >
-              <CrossIcon className="text-zinc-600/75 transition-all transition-300 hover:rotate-90 hover:text-red-500" />
+              <CrossIcon className="text-zinc-600/75 transition-all duration-300 hover:rotate-90 hover:text-red-500" />
             </button>
 
             <button
@@ -160,10 +160,10 @@ export default function NoteFormCreate({
               onClick={() => setTagDropdownOpen(!tagDropdownOpen)}
               className="group flex items-center gap-1 px-3 py-1 rounded-md"
             >
-              <span className="text-neutral-500 text-base font-medium font-['Inter'] group-hover:text-black transition-300 transition-all leading-tight">
+              <span className="text-neutral-500 text-base font-medium font-['Inter'] group-hover:text-black duration-300 transition-all leading-tight">
                 {chooseTextByLang("Добавить тэг", "Add tag", lang)}
               </span>
-              <div className="w-0 h-0 border-l-4 border-r-4 border-t-4 border-l-transparent group-hover:text-black transition-300 transition-all border-r-transparent border-t-neutral-500 "></div>
+              <div className="w-0 h-0 border-l-4 border-r-4 border-t-4 border-l-transparent group-hover:text-black duration-300 transition-all border-r-transparent border-t-neutral-500 "></div>
             </button>
 
             {tagDropdownOpen && (
@@ -181,7 +181,7 @@ export default function NoteFormCreate({
               onClick={() => setOpenedCalendar(!openedCalendar)}
             >
               <CalendarIcon
-                className={`w-[25px] h-[25px]   transition-all transition-300 ${
+                className={`w-[25px] h-[25px]   transition-all duration-300 ${
                   openedCalendar
                     ? "text-black hover:text-neutral-500"
                     : "text-neutral-500 hover:text-black"
@@ -192,7 +192,7 @@ export default function NoteFormCreate({
               type="submit"
               className="flex group-submit items-center justify-center w-8 h-8"
             >
-              <SendIcon className="[&>*]:!fill-none [shape-rendering:crispEdges] overflow-visible opacity-68 text-neutral-500 hover:text-black transition-300 transition-all" />
+              <SendIcon className="[&>*]:!fill-none [shape-rendering:crispEdges] overflow-visible opacity-68 text-neutral-500 hover:text-black duration-300 transition-all" />
             </button>
           </div>
         </form>

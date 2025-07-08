@@ -73,7 +73,7 @@ export default function DateDisplay({
   return (
     <button
       onClick={() => setShowCalendar(!showCalendar)}
-      className="text-black ml-[30px] text-base font-medium hover:scale-125 transition-all transition-300 cursor-pointer"
+      className="text-black ml-[30px] text-base font-medium hover:scale-125 transition-all duration-300 cursor-pointer"
     >
       {getDisplayDate()}
     </button>
