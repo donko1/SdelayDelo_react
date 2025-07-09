@@ -1,8 +1,10 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { useUser } from "@context/UserContext";
 import { useAuth } from "@context/AuthContext";
 import { chooseTextByLang } from "@utils/helpers/locale";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Navigation, Autoplay, Mousewheel, FreeMode } from "swiper/modules";
 import { useLang } from "@context/LangContext";
 import { create_demo } from "@utils/api/auth";
 
@@ -11,6 +13,40 @@ export default function HomeNotRegistered() {
   const [isAuthenticated, setIsAuthenticated] = useState(userToken != null);
   const { refreshUser } = useUser();
   const { lang } = useLang();
+
+  const slides = [
+    { id: 1, text: "Organize your\nstudy", img_style: "mx-[50px] my-[6px]" },
+    {
+      id: 2,
+      text: "Take control of\nyour day",
+      img_style: "my-[7px] ml-[83px] mr-[54px]",
+      text_style: "top-[5px]",
+    },
+    {
+      id: 3,
+      text: "Plan join\nevents",
+      img_style: "my-[8px] mx-[50px]",
+      text_style: "top-[0px]",
+    },
+    {
+      id: 4,
+      text: "Boost your\nProductivity",
+      img_style: "mx-[75px] my-[18px]",
+      text_style: "ml-[40px]",
+    },
+    {
+      id: 5,
+      text: "Accelerate your\ngrowth",
+      img_style: "mx-[60px] my-[9px]",
+      text_style: "top-[10px]",
+    },
+    {
+      id: 6,
+      text: "Plan smarter, achieve\nfaster",
+      img_style: "mx-[30px] my-[0px]",
+      text_style: "top-[35px]",
+    },
+  ];
 
   return (
     <div className="p-0 m-0 w-full h-full relative overflow-x-hidden">
@@ -82,6 +118,67 @@ export default function HomeNotRegistered() {
           <h1 className="text-black text-5xl font-bold font-['Inter']">
             Where we fit
           </h1>
+          <Swiper
+            modules={[Navigation, Autoplay, Mousewheel, FreeMode]}
+            spaceBetween={70}
+            slidesPerView={3}
+            navigation={{
+              nextEl: ".custom-next",
+              prevEl: ".custom-prev",
+            }}
+            autoplay={{ delay: 10000 }}
+            freeMode={{
+              enabled: true,
+              momentum: true,
+              momentumBounce: false,
+              momentumRatio: 0.5,
+            }}
+            mousewheel={{
+              forceToAxis: true,
+              sensitivity: 1,
+              releaseOnEdges: true,
+            }}
+            className="mt-[112px] relative !px-[90px]"
+          >
+            {slides.map((slide) => (
+              <SwiperSlide key={slide.id}>
+                <div className="bg-white flex justify-center items-center rounded-[57px] w-[500px] h-[500px] relative shadow-[0px_4px_4px_0px_rgba(0,0,0,0.25)] outline outline-1 outline-offset-[-1px] outline-black">
+                  <h2
+                    className={`justify-start text-center text-black text-4xl font-semibold font-['Inter'] mt-[25px] mx-[71px] absolute top-[20px] translate-0 ${slide.text_style}`}
+                  >
+                    {slide.text.split("\n").map((line, i) => (
+                      <React.Fragment key={i}>
+                        {line}
+                        <br />
+                      </React.Fragment>
+                    ))}
+                  </h2>
+                  <img
+                    src={`/images/home-not-registered/swiper-${slide.id}.png`}
+                    alt={`swiper-${slide.id}`}
+                    className={slide.img_style}
+                  />
+                </div>
+              </SwiperSlide>
+            ))}
+            <div className="custom-next absolute top-1/2 right-0 z-10 transform -translate-y-1/2 cursor-pointer">
+              <div className="w-20 h-20 rounded-full border-2 border-black flex items-center justify-center bg-transparent transition-colors">
+                <div className="relative w-7 h-6 flex justify-center items-center">
+                  <div className="absolute w-4 h-[3px] bg-black top-1/2 right-0 transform -translate-y-1/2 -translate-x-1/2 rotate-[45deg] origin-right"></div>
+                  <div className="absolute w-4 h-[3px] bg-black bottom-1/2 right-0 transform translate-y-1/2 -translate-x-1/2 rotate-[-45deg] origin-right"></div>
+                </div>
+              </div>
+            </div>
+
+            <div className="custom-prev absolute top-1/2 left-0 z-10 transform -translate-y-1/2 cursor-pointer">
+              <div className="w-20 h-20 rounded-full border-2 border-black flex items-center justify-center bg-transparent transition-colors">
+                <div className="relative w-8 h-6">
+                  <div className="absolute w-4 h-[3px] bg-black top-1/2 left-0 transform -translate-y-1/2 translate-x-1/2 rotate-[-45deg] origin-left"></div>
+                  <div className="absolute w-4 h-[3px] bg-black bottom-1/2 left-0 transform translate-y-1/2 translate-x-1/2 rotate-[45deg] origin-left"></div>
+                </div>
+              </div>
+            </div>
+          </Swiper>
         </div>
       </div>
     </div>
