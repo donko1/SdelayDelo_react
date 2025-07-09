@@ -13,20 +13,6 @@ export default function HomeNotRegistered() {
   const { lang } = useLang();
 
   return (
-    // {!isAuthenticated && (
-    //       <Link to="/login">{chooseTextByLang("Войти", "login", lang)}</Link>
-    //     )}
-    //     <Link to="/login" className="start-button">
-    //   <button>{chooseTextByLang("Начать", "Get started", lang)}</button>
-    // </Link>
-    //     <button
-    //   onClick={async () => {
-    //     let token = await create_demo();
-    //     login(token);
-    //   }}
-    // >
-    //   {chooseTextByLang("Демо", "Demo", lang)}
-    // </button>
     <div className="p-0 m-0 w-full h-full relative overflow-x-hidden">
       <div className="mx-[50px] overflow-hidden">
         <div className="mt-[34px] flex w-full justify-between">
