@@ -49,23 +49,23 @@ export default function HomeNotRegistered() {
   ];
 
   return (
-    <div className="p-0 m-0 w-full h-full relative overflow-x-hidden">
-      <div className="mx-[50px] overflow-hidden">
-        <div className="mt-[34px] flex w-full justify-between">
-          <span className="text-black text-4xl font-normal font-['Jockey_One']">
-            Sdelay delo
-          </span>
-          <Link
-            to="/login"
-            data-property-1="Default"
-            className="h-10 px-10 py-3.5 rounded-3xl outline outline-1 outline-offset-[-1px] outline-black inline-flex justify-center items-center gap-2.5"
-          >
-            <div className="justify-start text-black text-xl font-normal font-['Inter']">
-              Log in
-            </div>
-          </Link>
-        </div>
-        <div className="flex items-center justify-between mt-[48px]">
+    <div className="p-0 m-0 w-full h-full relative overflow-x-hidden overflow-y-hidden">
+      <div className="mt-[34px] flex mx-[50px] justify-between">
+        <span className="text-black text-4xl font-normal font-['Jockey_One']">
+          Sdelay delo
+        </span>
+        <Link
+          to="/login"
+          data-property-1="Default"
+          className="h-10 px-10 py-3.5 rounded-3xl outline outline-1 outline-offset-[-1px] outline-black inline-flex justify-center items-center gap-2.5"
+        >
+          <div className="justify-start text-black text-xl font-normal font-['Inter']">
+            Log in
+          </div>
+        </Link>
+      </div>
+      <div className="relative">
+        <div className="flex items-center justify-between mt-[48px] mx-[50px]">
           <img
             src="/images/home-not-registered/background-1.png"
             alt="background-1"
@@ -108,13 +108,16 @@ export default function HomeNotRegistered() {
             alt="background-2"
             className="max-w-[30%] h-auto"
           />
+
+          <img
+            src="/svg/home-not-registered/wave.svg"
+            alt="wave"
+            className="absolute w-full left-0 bottom-[-192px]"
+          />
         </div>
-        <img
-          src="/svg/home-not-registered/wave.svg"
-          alt="wave"
-          className="absolute w-full left-0 top-[100vh]"
-        />
-        <div className="mt-[500px]">
+      </div>
+      <div className="mt-[475px] relative">
+        <div className="mx-[50px]">
           <h1 className="text-black text-5xl font-bold font-['Inter']">
             Where we fit
           </h1>
@@ -180,7 +183,14 @@ export default function HomeNotRegistered() {
             </div>
           </Swiper>
         </div>
+
+        <img
+          src="/svg/home-not-registered/wave.svg"
+          alt="wave"
+          className="absolute w-full left-0 bottom-[-300px]"
+        />
       </div>
+      <h1 className="mt-[475px]">Continue in dev...</h1>
     </div>
   );
 }
