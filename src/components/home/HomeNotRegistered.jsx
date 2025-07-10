@@ -7,6 +7,7 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Autoplay, Mousewheel, FreeMode } from "swiper/modules";
 import { useLang } from "@context/LangContext";
 import { create_demo } from "@utils/api/auth";
+import VideoIcon from "@assets/video.svg?react";
 
 export default function HomeNotRegistered() {
   const { userToken, logout, login } = useAuth();
@@ -47,9 +48,26 @@ export default function HomeNotRegistered() {
       text_style: "top-[35px]",
     },
   ];
+  const offers = [
+    {
+      id: 1,
+      title: "Plan your week with calendar",
+      text: "See your tasks organized by day and drag them around to fit your schedule.",
+    },
+    {
+      id: 2,
+      title: "Find anything instantly with Smart Search",
+      text: "Just type a word, tag, or feeling — and boom, it’s there",
+    },
+    {
+      id: 3,
+      title: "Add structure with custom tags",
+      text: "Color-coded and totally personal — keep your chaos in check",
+    },
+  ];
 
   return (
-    <div className="p-0 m-0 w-full h-full relative overflow-x-hidden overflow-y-hidden">
+    <div className="p-0 m-0 w-full h-full relative overflow-x-hidden overflow-y-hidden bg-[#fcfcfc]">
       <div className="mt-[34px] flex mx-[50px] justify-between">
         <span className="text-black text-4xl font-normal font-['Jockey_One']">
           Sdelay delo
@@ -190,7 +208,36 @@ export default function HomeNotRegistered() {
           className="absolute w-full left-0 bottom-[-300px]"
         />
       </div>
-      <h1 className="mt-[475px]">Continue in dev...</h1>
+      <div className="mt-[475px] relative">
+        <div className="mx-[50px]">
+          <h1 className="text-black text-5xl font-bold font-['Inter']">
+            What we offer
+          </h1>
+          <div className="mt-[200px] flex justify-between items-center ml-[85px] gap-[284px]">
+            <div>
+              {offers.map((offer, index) => (
+                <div
+                  key={offer.id}
+                  className={`p-[40px] pr-[50%] bg-white rounded-[10px] shadow-[0px_2px_4px_0px_rgba(0,0,0,0.25)] ${
+                    index !== offers.length - 1 ? "mb-[55px]" : ""
+                  }`}
+                >
+                  <h2 className="text-black text-3xl font-medium font-['Inter']">
+                    {offer.title}
+                  </h2>
+                  <h3 className="justify-start mt-[10px] text-neutral-500 text-xl font-normal font-['Inter']">
+                    {offer.text}
+                  </h3>
+                </div>
+              ))}
+            </div>
+            <div className="w-[70%] outline outline-1 self-stretch rounded-xl flex justify-center items-center">
+              <VideoIcon className="[&>*]:!fill-none" />
+              {/* TODO: make a real video */}
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
