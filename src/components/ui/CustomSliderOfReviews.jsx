@@ -10,7 +10,7 @@ export default function SliderOfReviews() {
   const [isAnimating, setIsAnimating] = useState(false);
   const [direction, setDirection] = useState("forward");
   const animationRef = useRef(null);
-  const currentSlideRef = useRef(sliderN);
+  const [imgOpacity, setImgOpacity] = useState(1);
   const { ref, inView } = useInView({
     threshold: 0.5,
     triggerOnce: false,
@@ -53,12 +53,14 @@ export default function SliderOfReviews() {
 
   const handlePrev = () => {
     if (sliderN > 1) {
+      setImgOpacity(0);
       setSliderN(sliderN - 1);
     }
     return 0;
   };
   const handleNext = () => {
     if (sliderN < slides.length) {
+      setImgOpacity(0);
       setSliderN(sliderN + 1);
     }
     return 0;
@@ -149,6 +151,11 @@ export default function SliderOfReviews() {
 
     return () => clearTimeout(animationRef.current);
   }, [targetText, isAnimating, direction, inView]);
+
+  useEffect(() => {
+    setImgOpacity(1);
+  }, [sliderN]);
+
   return (
     <div ref={ref} className="w-full h-[900px] flex">
       <div className="w-[35%]">
