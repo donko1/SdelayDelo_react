@@ -7,8 +7,9 @@ export default function SliderOfReviews() {
   const [sliderN, setSliderN] = useState(1);
   const [displayText, setDisplayText] = useState("");
   const [targetText, setTargetText] = useState("");
-  const [isAnimating, setIsAnimating] = useState(false);
   const [direction, setDirection] = useState("forward");
+  const [canBeNext, setCanBeNext] = useState(true);
+  const [canBePrev, setCanBePrev] = useState(false);
   const animationRef = useRef(null);
   const { ref, inView } = useInView({
     threshold: 0.5,
@@ -50,18 +51,10 @@ export default function SliderOfReviews() {
     },
   ];
 
-  const handlePrev = () => {
-    if (sliderN > 1) {
-      setSliderN(sliderN - 1);
-    }
-    return 0;
-  };
-  const handleNext = () => {
-    if (sliderN < slides.length) {
-      setSliderN(sliderN + 1);
-    }
-    return 0;
-  };
+  useEffect(() => {
+    setCanBeNext(sliderN < slides.length);
+    setCanBePrev(sliderN > 1);
+  }, [sliderN]);
 
   useEffect(() => {
     if (!inView) return;
@@ -69,7 +62,6 @@ export default function SliderOfReviews() {
     if (displayText === "" && targetText === "") {
       const initialText = slides[sliderN - 1].text;
       setTargetText(initialText);
-      setIsAnimating(true);
 
       let currentText = "";
       const duration = 500;
@@ -83,7 +75,6 @@ export default function SliderOfReviews() {
           stepCount++;
           animationRef.current = setTimeout(animateInitial, stepTime);
         } else {
-          setIsAnimating(false);
         }
       };
 
@@ -101,11 +92,10 @@ export default function SliderOfReviews() {
     setDirection(isForward ? "forward" : "backward");
 
     setTargetText(newText);
-    setIsAnimating(true);
   }, [sliderN, inView]);
 
   useEffect(() => {
-    if (!isAnimating || !inView) return;
+    if (!inView) return;
 
     clearTimeout(animationRef.current);
 
@@ -124,7 +114,6 @@ export default function SliderOfReviews() {
           setDisplayText(currentText);
           animationRef.current = setTimeout(animate, stepTime);
         } else {
-          setIsAnimating(false);
         }
       } else {
         if (currentText.length > targetLength) {
@@ -133,21 +122,20 @@ export default function SliderOfReviews() {
           animationRef.current = setTimeout(animate, stepTime);
         } else {
           setDisplayText(targetText);
-          setIsAnimating(false);
         }
       }
     };
 
     if (currentLength === targetLength) {
       setDisplayText(targetText);
-      setIsAnimating(false);
+
       return;
     }
 
     animate();
 
     return () => clearTimeout(animationRef.current);
-  }, [targetText, isAnimating, direction, inView]);
+  }, [targetText, direction, inView]);
 
   return (
     <div ref={ref} className="w-full h-[900px] flex">
@@ -199,10 +187,10 @@ export default function SliderOfReviews() {
         <div className="flex justify-center">
           <div className="flex gap-[20px] items-center">
             <ButtonPrev
-              onClick={handlePrev}
+              onClick={() => setSliderN(sliderN - 1)}
               isAbsolute={false}
               color={slides[sliderN - 1].color}
-              disabled={isAnimating}
+              disabled={!canBePrev}
             />
             {slides.map((el) => (
               <div
@@ -213,15 +201,15 @@ export default function SliderOfReviews() {
                   el.id === sliderN
                     ? `bg-${slides[sliderN - 1].color}`
                     : "bg-transparent"
-                } ${isAnimating ? "opacity-50 cursor-not-allowed" : ""}`}
-                onClick={() => !isAnimating && setSliderN(el.id)}
+                } `}
+                onClick={() => setSliderN(el.id)}
               />
             ))}
             <ButtonNext
-              onClick={handleNext}
+              onClick={() => setSliderN(sliderN + 1)}
               isAbsolute={false}
               color={slides[sliderN - 1].color}
-              disabled={isAnimating}
+              disabled={!canBeNext}
             />
           </div>
         </div>
