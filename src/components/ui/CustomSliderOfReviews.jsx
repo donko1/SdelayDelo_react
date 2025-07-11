@@ -1,9 +1,20 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import QuotesIcon from "@assets/quotes.svg?react";
+import { useInView } from "react-intersection-observer";
 import { ButtonNext, ButtonPrev } from "@components/ui/CustomButtonsSwiper";
 
 export default function SliderOfReviews() {
   const [sliderN, setSliderN] = useState(1);
+  const [displayText, setDisplayText] = useState("");
+  const [targetText, setTargetText] = useState("");
+  const [isAnimating, setIsAnimating] = useState(false);
+  const [direction, setDirection] = useState("forward");
+  const animationRef = useRef(null);
+  const currentSlideRef = useRef(sliderN);
+  const { ref, inView } = useInView({
+    threshold: 0.5,
+    triggerOnce: false,
+  });
 
   const slides = [
     {
@@ -53,8 +64,93 @@ export default function SliderOfReviews() {
     return 0;
   };
 
+  useEffect(() => {
+    if (!inView) return;
+
+    if (displayText === "" && targetText === "") {
+      const initialText = slides[sliderN - 1].text;
+      setTargetText(initialText);
+      setIsAnimating(true);
+
+      let currentText = "";
+      const duration = 500;
+      const stepTime = Math.max(duration / initialText.length, 20);
+      let stepCount = 0;
+
+      const animateInitial = () => {
+        if (stepCount < initialText.length) {
+          currentText = initialText.substring(0, stepCount + 1);
+          setDisplayText(currentText);
+          stepCount++;
+          animationRef.current = setTimeout(animateInitial, stepTime);
+        } else {
+          setIsAnimating(false);
+        }
+      };
+
+      animateInitial();
+      return;
+    }
+
+    clearTimeout(animationRef.current);
+
+    const newText = slides[sliderN - 1].text;
+    const oldLength = displayText.length;
+    const newLength = newText.length;
+
+    const isForward = newLength >= oldLength;
+    setDirection(isForward ? "forward" : "backward");
+
+    setTargetText(newText);
+    setIsAnimating(true);
+  }, [sliderN, inView]);
+
+  useEffect(() => {
+    if (!isAnimating || !inView) return;
+
+    clearTimeout(animationRef.current);
+
+    let currentText = displayText;
+    const targetLength = targetText.length;
+    const currentLength = currentText.length;
+
+    const duration = 500;
+    const lengthDiff = Math.abs(targetLength - currentLength);
+    const stepTime = Math.max(duration / lengthDiff, 20);
+
+    const animate = () => {
+      if (direction === "forward") {
+        if (currentText.length < targetLength) {
+          currentText = targetText.substring(0, currentText.length + 1);
+          setDisplayText(currentText);
+          animationRef.current = setTimeout(animate, stepTime);
+        } else {
+          setIsAnimating(false);
+        }
+      } else {
+        if (currentText.length > targetLength) {
+          currentText = currentText.substring(0, currentText.length - 1);
+          setDisplayText(currentText);
+          animationRef.current = setTimeout(animate, stepTime);
+        } else {
+          setDisplayText(targetText);
+          setIsAnimating(false);
+        }
+      }
+    };
+
+    if (currentLength === targetLength) {
+      setDisplayText(targetText);
+      setIsAnimating(false);
+      return;
+    }
+
+    animate();
+
+    return () => clearTimeout(animationRef.current);
+  }, [targetText, isAnimating, direction, inView]);
   return (
-    <div className="w-full h-[900px] flex">
+    <div ref={ref} className="w-full h-[900px] flex">
       <div className="w-[35%]">
         <img
           src={`/images/home-not-registered/review-${sliderN}.png`}
@@ -79,7 +175,7 @@ export default function SliderOfReviews() {
                 slides[sliderN - 1].color
               } text-5xl font-semibold font-['Inter'] inline-block transition-all duration-500 relative`}
             >
-              {slides[sliderN - 1].text}
+              {displayText}
               <QuotesIcon
                 className={`${
                   slides[sliderN - 1].AreQuotesTop && "rotate-180"
@@ -106,6 +202,7 @@ export default function SliderOfReviews() {
               onClick={handlePrev}
               isAbsolute={false}
               color={slides[sliderN - 1].color}
+              disabled={isAnimating}
             />
             {slides.map((el) => (
               <div
@@ -116,14 +213,15 @@ export default function SliderOfReviews() {
                   el.id === sliderN
                     ? `bg-${slides[sliderN - 1].color}`
                     : "bg-transparent"
-                }`}
-                onClick={() => setSliderN(el.id)}
+                } ${isAnimating ? "opacity-50 cursor-not-allowed" : ""}`}
+                onClick={() => !isAnimating && setSliderN(el.id)}
               />
             ))}
             <ButtonNext
               onClick={handleNext}
               isAbsolute={false}
               color={slides[sliderN - 1].color}
+              disabled={isAnimating}
             />
           </div>
         </div>
