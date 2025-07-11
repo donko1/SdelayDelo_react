@@ -8,6 +8,8 @@ import { Navigation, Autoplay, Mousewheel, FreeMode } from "swiper/modules";
 import { useLang } from "@context/LangContext";
 import { create_demo } from "@utils/api/auth";
 import VideoIcon from "@assets/video.svg?react";
+import { ButtonNext, ButtonPrev } from "@components/ui/CustomButtonsSwiper";
+import SliderOfReviews from "@components/ui/CustomSliderOfReviews";
 
 export default function HomeNotRegistered() {
   const { userToken, logout, login } = useAuth();
@@ -136,7 +138,7 @@ export default function HomeNotRegistered() {
       </div>
       <div className="mt-[475px] relative">
         <div className="mx-[50px]">
-          <h1 className="text-black text-5xl font-bold font-['Inter']">
+          <h1 className="text-black ml-[90px] text-5xl font-bold font-['Inter']">
             Where we fit
           </h1>
           <Swiper
@@ -159,7 +161,7 @@ export default function HomeNotRegistered() {
               sensitivity: 1,
               releaseOnEdges: true,
             }}
-            className="mt-[112px] relative !px-[90px]"
+            className="mt-[112px] relative !px-[90px] cursor-grab active:cursor-grabbing"
           >
             {slides.map((slide) => (
               <SwiperSlide key={slide.id}>
@@ -182,23 +184,8 @@ export default function HomeNotRegistered() {
                 </div>
               </SwiperSlide>
             ))}
-            <div className="custom-next absolute top-1/2 right-0 z-10 transform -translate-y-1/2 cursor-pointer">
-              <div className="w-20 h-20 rounded-full border-2 border-black flex items-center justify-center bg-transparent transition-colors">
-                <div className="relative w-7 h-6 flex justify-center items-center">
-                  <div className="absolute w-4 h-[3px] bg-black top-1/2 right-0 transform -translate-y-1/2 -translate-x-1/2 rotate-[45deg] origin-right"></div>
-                  <div className="absolute w-4 h-[3px] bg-black bottom-1/2 right-0 transform translate-y-1/2 -translate-x-1/2 rotate-[-45deg] origin-right"></div>
-                </div>
-              </div>
-            </div>
-
-            <div className="custom-prev absolute top-1/2 left-0 z-10 transform -translate-y-1/2 cursor-pointer">
-              <div className="w-20 h-20 rounded-full border-2 border-black flex items-center justify-center bg-transparent transition-colors">
-                <div className="relative w-8 h-6">
-                  <div className="absolute w-4 h-[3px] bg-black top-1/2 left-0 transform -translate-y-1/2 translate-x-1/2 rotate-[-45deg] origin-left"></div>
-                  <div className="absolute w-4 h-[3px] bg-black bottom-1/2 left-0 transform translate-y-1/2 translate-x-1/2 rotate-[45deg] origin-left"></div>
-                </div>
-              </div>
-            </div>
+            <ButtonNext isAbsolute={true} color="black" />
+            <ButtonPrev isAbsolute={true} color="black" />
           </Swiper>
         </div>
 
@@ -210,7 +197,7 @@ export default function HomeNotRegistered() {
       </div>
       <div className="mt-[475px] relative">
         <div className="mx-[50px]">
-          <h1 className="text-black text-5xl font-bold font-['Inter']">
+          <h1 className="text-black text-5xl ml-[90px] font-bold font-['Inter']">
             What we offer
           </h1>
           <div className="mt-[200px] flex justify-between items-center ml-[85px] gap-[284px]">
@@ -237,6 +224,17 @@ export default function HomeNotRegistered() {
             </div>
           </div>
         </div>
+        <img
+          src="/svg/home-not-registered/wave.svg"
+          alt="wave"
+          className="absolute w-full left-0 bottom-[-300px]"
+        />
+      </div>
+      <div className="mt-[475px] relative">
+        <h1 className="ml-[140px] text-black text-5xl font-bold font-['Inter'] mb-[100px]">
+          Voices from our users
+        </h1>
+        <SliderOfReviews />
       </div>
     </div>
   );
