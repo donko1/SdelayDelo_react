@@ -22,6 +22,7 @@ export default function SliderOfReviews() {
       text: "I started using the tags feature to organize my notes, and wow — it makes everything so much easier to find. It’s such a small thing, but it saves me so much time",
       colorBG: "white-review",
       color: "black",
+      secondColor: "white",
       authorNick: "Ben Smith",
       AreQuotesTop: true,
     },
@@ -30,6 +31,7 @@ export default function SliderOfReviews() {
       text: "I didn’t think I’d use the search that much, but now I can’t imagine the site without it. I just type a word and boom — the task I was looking for pops up. Super handy when you have lots of notes.",
       colorBG: "black-review",
       color: "white",
+      secondColor: "black",
       authorNick: "Justin Mathew",
       AreQuotesTop: false,
     },
@@ -38,6 +40,7 @@ export default function SliderOfReviews() {
       text: "I’ve tried a bunch of planners before, but the calendar here feels different. It’s not overwhelming, and it actually helps me plan without overthinking. I like that it looks clean but still shows everything I need",
       colorBG: "white-review",
       color: "black",
+      secondColor: "white",
       authorNick: "Vin Donaldson",
       AreQuotesTop: true,
     },
@@ -46,6 +49,7 @@ export default function SliderOfReviews() {
       text: "The whole site just feels easy to use. I didn’t need a tutorial or anything — everything made sense from the start. It’s clean, not distracting, and somehow it makes me want to come back and keep using it",
       colorBG: "black-review",
       color: "white",
+      secondColor: "black",
       authorNick: "Mike Brown",
       AreQuotesTop: false,
     },
@@ -191,13 +195,16 @@ export default function SliderOfReviews() {
               isAbsolute={false}
               color={slides[sliderN - 1].color}
               disabled={!canBePrev}
+              secondColor={slides[sliderN - 1].secondColor}
             />
             {slides.map((el) => (
               <div
                 key={el.id}
                 className={`w-6 h-6 rounded-full outline outline-${
                   slides[sliderN - 1].color
-                } outline-1 cursor-pointer ${
+                } outline-1 transition-all duration-300 cursor-pointer hover:bg-${
+                  slides[sliderN - 1].color
+                } ${
                   el.id === sliderN
                     ? `bg-${slides[sliderN - 1].color}`
                     : "bg-transparent"
@@ -210,6 +217,7 @@ export default function SliderOfReviews() {
               isAbsolute={false}
               color={slides[sliderN - 1].color}
               disabled={!canBeNext}
+              secondColor={slides[sliderN - 1].secondColor}
             />
           </div>
         </div>

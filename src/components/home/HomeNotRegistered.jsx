@@ -77,9 +77,9 @@ export default function HomeNotRegistered() {
         <Link
           to="/login"
           data-property-1="Default"
-          className="h-10 px-10 py-3.5 rounded-3xl outline outline-1 outline-offset-[-1px] outline-black inline-flex justify-center items-center gap-2.5"
+          className="h-10 px-10 py-3.5 group/navbar-login hover:bg-black transition-all duration-300 rounded-3xl outline outline-1 outline-offset-[-1px] outline-black inline-flex justify-center items-center gap-2.5"
         >
-          <div className="justify-start text-black text-xl font-normal font-['Inter']">
+          <div className="justify-start group-hover/navbar-login:text-white duration-300 transition-all text-black text-xl font-normal font-['Inter']">
             Log in
           </div>
         </Link>
@@ -104,9 +104,9 @@ export default function HomeNotRegistered() {
             <div className="flex justify-center items-center mt-[50px] gap-[28px]">
               <Link
                 to="/login"
-                className="px-12 py-3.5 rounded-2xl outline outline-1 outline-offset-[-1px] outline-black inline-flex justify-center items-center gap-2.5"
+                className="px-12 py-3.5 rounded-2xl outline outline-1 outline-offset-[-1px] outline-black duration-300 transition-all group/get-started justify-center hover:bg-black hover:shadow-[0px_2px_10px_0px_rgba(151,71,255,1.00)] inline-flex items-center gap-2.5"
               >
-                <div className="justify-start text-black text-3xl font-medium font-['Inter']">
+                <div className="justify-start text-black text-3xl group-hover/get-started:text-white duration-300 transition-all font-medium font-['Inter'] ">
                   Get started
                 </div>
               </Link>
@@ -115,9 +115,9 @@ export default function HomeNotRegistered() {
                   let token = await create_demo();
                   login(token);
                 }}
-                className="px-12 py-3.5 rounded-2xl outline outline-1 outline-offset-[-1px] outline-black inline-flex justify-center items-center gap-2.5"
+                className="px-12 py-3.5 rounded-2xl outline outline-1 outline-offset-[-1px] outline-black  duration-300 transition-all group/login  hover:bg-black hover:shadow-[0px_2px_10px_0px_rgba(151,71,255,1.00)] inline-flex justify-center items-center gap-2.5"
               >
-                <div className="justify-start text-black text-3xl font-medium font-['Inter']">
+                <div className="justify-start text-black text-3xl group-hover/login:text-white duration-300 transition-all font-medium font-['Inter']">
                   View demo
                 </div>
               </button>
@@ -184,8 +184,8 @@ export default function HomeNotRegistered() {
                 </div>
               </SwiperSlide>
             ))}
-            <ButtonNext isAbsolute={true} color="black" />
-            <ButtonPrev isAbsolute={true} color="black" />
+            <ButtonNext isAbsolute={true} color="black" secondColor="white" />
+            <ButtonPrev isAbsolute={true} color="black" secondColor="white" />
           </Swiper>
         </div>
 
@@ -205,16 +205,19 @@ export default function HomeNotRegistered() {
               {offers.map((offer, index) => (
                 <div
                   key={offer.id}
-                  className={`p-[40px] pr-[50%] bg-white rounded-[10px] shadow-[0px_2px_4px_0px_rgba(0,0,0,0.25)] ${
+                  className={`group/offer pr-[35%] overflow-hidden bg-white relative rounded-[10px] shadow-[0px_2px_4px_0px_rgba(0,0,0,0.25)] ${
                     index !== offers.length - 1 ? "mb-[55px]" : ""
                   }`}
                 >
-                  <h2 className="text-black text-3xl font-medium font-['Inter']">
-                    {offer.title}
-                  </h2>
-                  <h3 className="justify-start mt-[10px] text-neutral-500 text-xl font-normal font-['Inter']">
-                    {offer.text}
-                  </h3>
+                  <div className="w-3 h-full transition-all duration-300 absolute left-[-100px] group-hover/offer:left-0  bg-blue-600"></div>
+                  <div className="p-[40px] transition-all duration-300 group-hover/offer:pl-[52px]  group-hover/offer:pr-[28px]">
+                    <h2 className="text-black text-3xl font-medium font-['Inter']">
+                      {offer.title}
+                    </h2>
+                    <h3 className="justify-start mt-[10px] text-neutral-500 text-xl font-normal font-['Inter']">
+                      {offer.text}
+                    </h3>
+                  </div>
                 </div>
               ))}
             </div>

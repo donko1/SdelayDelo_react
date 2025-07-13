@@ -9,6 +9,7 @@ module.exports = {
     "text-white-review",
     "outline-black",
     "outline-white",
+    "hover:bg-white",
   ],
 
   theme: {
