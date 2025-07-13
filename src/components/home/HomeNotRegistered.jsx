@@ -3,6 +3,13 @@ import { Link } from "react-router-dom";
 import { useUser } from "@context/UserContext";
 import { useAuth } from "@context/AuthContext";
 import { chooseTextByLang } from "@utils/helpers/locale";
+import {
+  FadeInLeft,
+  FadeInRight,
+  FadeInUp,
+  SlideLeft,
+  SlideRight,
+} from "@/animations";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Autoplay, Mousewheel, FreeMode } from "swiper/modules";
 import { useLang } from "@context/LangContext";
@@ -86,12 +93,14 @@ export default function HomeNotRegistered() {
       </div>
       <div className="relative">
         <div className="flex items-center justify-between mt-[48px] mx-[50px]">
-          <img
-            src="/images/home-not-registered/background-1.png"
-            alt="background-1"
-            className="max-w-[30%] h-auto"
-          />
-          <div className="h-full mx-4 flex-1">
+          <FadeInRight className="max-w-[30%] h-auto">
+            <img
+              src="/images/home-not-registered/background-1.png"
+              alt="background-1"
+              className=""
+            />
+          </FadeInRight>
+          <FadeInUp className="h-full mx-4 flex-1">
             <h1 className="text-center text-black text-7xl font-bold font-['Inter']">
               A simple to do list
               <br />
@@ -122,12 +131,14 @@ export default function HomeNotRegistered() {
                 </div>
               </button>
             </div>
-          </div>
-          <img
-            src="/images/home-not-registered/background-2.png"
-            alt="background-2"
-            className="max-w-[30%] h-auto"
-          />
+          </FadeInUp>
+          <FadeInLeft className="max-w-[30%] h-auto">
+            <img
+              src="/images/home-not-registered/background-2.png"
+              alt="background-2"
+              className=""
+            />
+          </FadeInLeft>
 
           <img
             src="/svg/home-not-registered/wave.svg"
@@ -138,9 +149,11 @@ export default function HomeNotRegistered() {
       </div>
       <div className="mt-[475px] relative">
         <div className="mx-[50px]">
-          <h1 className="text-black ml-[90px] text-5xl font-bold font-['Inter']">
-            Where we fit
-          </h1>
+          <SlideLeft>
+            <h1 className="text-black ml-[90px] text-5xl font-bold font-['Inter']">
+              Where we fit
+            </h1>
+          </SlideLeft>
           <Swiper
             modules={[Navigation, Autoplay, Mousewheel, FreeMode]}
             spaceBetween={70}
@@ -163,9 +176,12 @@ export default function HomeNotRegistered() {
             }}
             className="mt-[112px] relative !px-[90px] cursor-grab active:cursor-grabbing"
           >
-            {slides.map((slide) => (
+            {slides.map((slide, index) => (
               <SwiperSlide key={slide.id}>
-                <div className="bg-white flex justify-center items-center rounded-[57px] w-[500px] h-[500px] relative shadow-[0px_4px_4px_0px_rgba(0,0,0,0.25)] outline outline-1 outline-offset-[-1px] outline-black">
+                <FadeInUp
+                  slideIndex={index}
+                  className="bg-white flex justify-center items-center rounded-[57px] w-[500px] h-[500px] relative shadow-[0px_4px_4px_0px_rgba(0,0,0,0.25)] outline outline-1 outline-offset-[-1px] outline-black"
+                >
                   <h2
                     className={`justify-start text-center text-black text-4xl font-semibold font-['Inter'] mt-[25px] mx-[71px] absolute top-[20px] translate-0 ${slide.text_style}`}
                   >
@@ -181,7 +197,7 @@ export default function HomeNotRegistered() {
                     alt={`swiper-${slide.id}`}
                     className={slide.img_style}
                   />
-                </div>
+                </FadeInUp>
               </SwiperSlide>
             ))}
             <ButtonNext isAbsolute={true} color="black" secondColor="white" />
@@ -197,14 +213,18 @@ export default function HomeNotRegistered() {
       </div>
       <div className="mt-[475px] relative">
         <div className="mx-[50px]">
-          <h1 className="text-black text-5xl ml-[90px] font-bold font-['Inter']">
-            What we offer
-          </h1>
+          <FadeInRight>
+            <h1 className="text-black text-5xl ml-[90px] font-bold font-['Inter']">
+              What we offer
+            </h1>
+          </FadeInRight>
           <div className="mt-[200px] flex justify-between items-center ml-[85px] gap-[284px]">
             <div>
               {offers.map((offer, index) => (
-                <div
+                <SlideRight
                   key={offer.id}
+                  slideIndex={index}
+                  stepDelay={0.1}
                   className={`group/offer pr-[35%] overflow-hidden bg-white relative rounded-[10px] shadow-[0px_2px_4px_0px_rgba(0,0,0,0.25)] ${
                     index !== offers.length - 1 ? "mb-[55px]" : ""
                   }`}
@@ -218,7 +238,7 @@ export default function HomeNotRegistered() {
                       {offer.text}
                     </h3>
                   </div>
-                </div>
+                </SlideRight>
               ))}
             </div>
             <div className="w-[70%] outline outline-1 self-stretch rounded-xl flex justify-center items-center">
@@ -234,9 +254,11 @@ export default function HomeNotRegistered() {
         />
       </div>
       <div className="mt-[475px] relative">
-        <h1 className="ml-[140px] text-black text-5xl font-bold font-['Inter'] mb-[100px]">
-          Voices from our users
-        </h1>
+        <FadeInRight>
+          <h1 className="ml-[140px] text-black text-5xl font-bold font-['Inter'] mb-[100px]">
+            Voices from our users
+          </h1>
+        </FadeInRight>
         <SliderOfReviews />
       </div>
     </div>

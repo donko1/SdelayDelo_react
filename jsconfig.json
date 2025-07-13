@@ -7,7 +7,8 @@
       "@components/*": ["src/components/*"],
       "@utils/*": ["src/utils/*"],
       "@context/*": ["src/context/*"],
-      "@assets/*": ["src/assets/*"]
+      "@assets/*": ["src/assets/*"],
+      "@animations/*": ["src/animations/*"]
     }
   },
   "exclude": ["node_modules", "dist"]
