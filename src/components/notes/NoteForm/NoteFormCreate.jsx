@@ -7,7 +7,7 @@ import TagDropdown from "@components/notes/NoteForm/TagDropdown";
 import { formatDate, formatDateToApi } from "@utils/helpers/date";
 import { useLang } from "@context/LangContext";
 import { createNote } from "@utils/api/notes";
-import useAutoResizeTextarea from "@utils/hooks/useAutoResizeTextarea";
+import useAutoResizeTextarea from "@hooks/useAutoResizeTextarea";
 import CalendarForNoteForm from "@components/notes/NoteForm/Calendar";
 import CalendarIcon from "@assets/calendar.svg?react";
 

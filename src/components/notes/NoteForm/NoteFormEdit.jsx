@@ -5,7 +5,7 @@ import { useLang } from "@context/LangContext";
 import TagDropdown from "@components/notes/NoteForm/TagDropdown";
 import { addNoteToArchive, editNote, setNewDate } from "@utils/api/notes";
 import { useAuth } from "@context/AuthContext";
-import useAutoResizeTextarea from "@utils/hooks/useAutoResizeTextarea";
+import useAutoResizeTextarea from "@hooks/useAutoResizeTextarea";
 import NoteFormEditNavbar from "@components/notes/NoteForm/NoteFormEditNavbar";
 
 export default function NoteFormEdit({

@@ -8,7 +8,8 @@
       "@utils/*": ["src/utils/*"],
       "@context/*": ["src/context/*"],
       "@assets/*": ["src/assets/*"],
-      "@animations/*": ["src/animations/*"]
+      "@animations/*": ["src/animations/*"],
+      "@hooks/*": ["src/utils/hooks/*"]
     }
   },
   "exclude": ["node_modules", "dist"]
