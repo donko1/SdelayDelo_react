@@ -3,13 +3,7 @@ import { Link } from "react-router-dom";
 import { useUser } from "@context/UserContext";
 import { useAuth } from "@context/AuthContext";
 import { chooseTextByLang } from "@utils/helpers/locale";
-import {
-  FadeInLeft,
-  FadeInRight,
-  FadeInUp,
-  SlideLeft,
-  SlideRight,
-} from "@/animations";
+import { FadeInLeft, FadeInRight, FadeInUp, SlideRight } from "@/animations";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Autoplay, Mousewheel, FreeMode } from "swiper/modules";
 import { useLang } from "@context/LangContext";
@@ -149,11 +143,11 @@ export default function HomeNotRegistered() {
       </div>
       <div className="mt-[475px] relative">
         <div className="mx-[50px]">
-          <SlideLeft>
+          <SlideRight>
             <h1 className="text-black ml-[90px] text-5xl font-bold font-['Inter']">
               Where we fit
             </h1>
-          </SlideLeft>
+          </SlideRight>
           <Swiper
             modules={[Navigation, Autoplay, Mousewheel, FreeMode]}
             spaceBetween={70}
