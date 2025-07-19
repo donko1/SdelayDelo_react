@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import {
   fetchEmailByUsername,
   sendVerificationCode,
@@ -13,6 +13,7 @@ import { useAuth } from "@context/AuthContext";
 import { getUserLocaleInfo } from "@utils/helpers/locale";
 import { useUser } from "@context/UserContext";
 import { useNavigate } from "react-router-dom";
+import ArrowIcon from "@assets/arrow.svg?react";
 
 function AuthFlow() {
   const { login } = useAuth();
@@ -25,6 +26,7 @@ function AuthFlow() {
   const [identifier, setIdentifier] = useState("");
   const isEmail = (input) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(input);
   const [error, setError] = useState("");
+  const isRegistered = useRef(null);
   const [isLoading, setIsLoading] = useState(false);
   const [secretEmail, setSecretEmail] = useState("");
   const navigate = useNavigate();
@@ -39,9 +41,9 @@ function AuthFlow() {
         : await fetchEmailByUsername(identifier);
 
       setEmail(resolvedEmail);
-      const isRegistered = await check_if_email_registered(resolvedEmail);
+      isRegistered.current = await check_if_email_registered(resolvedEmail);
 
-      if (isRegistered) {
+      if (isRegistered.current) {
         setStep("login");
       } else {
         await sendVerificationCode(resolvedEmail);
@@ -156,10 +158,23 @@ function AuthFlow() {
       </div>
       <div className="flex justify-center items-center w-full h-full">
         <div className="relative flex justify-center max-w-[45vw] max-h-[60vh] bg-white rounded-2xl shadow-[0px_4px_10px_0px_rgba(0,0,0,0.25)] outline outline-1 outline-offset-[-1px] outline-black">
-          <div className="mt-[43px]  px-[15vw]">
-            <div className="text-center text-black text-4xl font-normal font-['Jockey_One']">
-              Sdelay delo
-            </div>
+          <div className="mt-[43px] justify-center px-[15vw]">
+            {step === "email" && (
+              <div className="text-center text-black text-4xl font-normal font-['Jockey_One']">
+                Sdelay delo
+              </div>
+            )}
+            {step !== "email" && (
+              <div className="flex gap-5 w-full items-center">
+                <ArrowIcon
+                  className="-rotate-90 w-8 h-8"
+                  onClick={() => setStep("email")}
+                />
+                <h2 className="text-black text-2xl font-normal font-['Inter']">
+                  {isRegistered.current ? "Welcome back!" : "Welcome to SD!"}
+                </h2>
+              </div>
+            )}
             <form className="mt-[30px] relative" onSubmit={handleEmailSubmit}>
               <input
                 type="text"
@@ -169,20 +184,41 @@ function AuthFlow() {
                   if (step !== "email") setStep("email");
                 }}
                 placeholder="Email/username"
-                className="placeholder:text-stone-400 text-2xl font-normal font-['Inter'] px-4 py-2.5 origin-top-left rounded-[20px] outline outline-1 outline-offset-[-1px] outline-black/90 inline-flex"
+                className="placeholder:text-stone-400 max-w-64 text-1/2xl font-normal font-['Inter'] px-4 py-2.5 origin-top-left rounded-[20px] outline outline-1 outline-offset-[-1px] outline-black/90 inline-flex"
                 required
               />
-              <button
-                type="submit"
-                disabled={isLoading}
-                className="absolute cursor-pointer w-9 h-9 rounded-full border border-zinc-600 right-0 top-1/2 transform -translate-x-1/2 -translate-y-1/2"
-              >
-                <div className="w-full h-full relative ">
-                  <div className="w-2.5 h-0 left-[22.38px] top-[17.05px] absolute origin-top-left rotate-[-138.93deg] outline outline-2 outline-offset-[-1px] outline-zinc-600"></div>
-                  <div className="w-2.5 h-0 left-[22.18px] top-[16.71px] absolute origin-top-left rotate-[128.94deg] outline outline-2 outline-offset-[-1px] outline-zinc-600"></div>
-                </div>
-              </button>
+              {step === "email" && (
+                <button
+                  type="submit"
+                  disabled={isLoading}
+                  className="absolute cursor-pointer w-9 h-9 rounded-full border border-zinc-600 right-0 top-1/2 transform -translate-x-1/2 -translate-y-1/2"
+                >
+                  <div className="w-full h-full relative ">
+                    <div className="w-2.5 h-0 left-[22.38px] top-[17.05px] absolute origin-top-left rotate-[-138.93deg] outline outline-1 outline-zinc-600"></div>
+                    <div className="w-2.5 h-0 left-[22.18px] top-[16.71px] absolute origin-top-left rotate-[128.94deg] outline outline-1  outline-zinc-600"></div>
+                  </div>
+                </button>
+              )}
             </form>
+            {step === "send_code" && (
+              <form onSubmit={handleCodeSubmit} className="mt-[20px]">
+                <input
+                  type="text"
+                  value={code}
+                  onChange={(e) => setCode(e.target.value)}
+                  placeholder="Code"
+                  className="placeholder:text-stone-400 max-w-64 text-1/2xl font-normal font-['Inter'] px-4 py-2.5 origin-top-left rounded-[20px] outline outline-1 outline-offset-[-1px] outline-black/90 inline-flex"
+                  required
+                />
+                <button
+                  type="submit"
+                  disabled={isLoading}
+                  className="mt-[20px] text-zinc-950 text-xl font-medium font-['Inter'] px-12 py-3.5 rounded-3xl outline outline-1 outline-offset-[-1px] outline-black inline-flex"
+                >
+                  Подтвердить код
+                </button>
+              </form>
+            )}
           </div>
         </div>
       </div>
