@@ -14,6 +14,7 @@ import { getUserLocaleInfo } from "@utils/helpers/locale";
 import { useUser } from "@context/UserContext";
 import { useNavigate } from "react-router-dom";
 import ArrowIcon from "@assets/arrow.svg?react";
+import EyeIcon from "@assets/eye.svg?react";
 
 function AuthFlow() {
   const { login } = useAuth();
@@ -28,9 +29,14 @@ function AuthFlow() {
   const [error, setError] = useState("");
   const isRegistered = useRef(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const [secretEmail, setSecretEmail] = useState("");
   const navigate = useNavigate();
   const { refreshUser } = useUser();
+
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
 
   const handleEmailSubmit = async (e) => {
     e.preventDefault();
@@ -184,7 +190,7 @@ function AuthFlow() {
                   if (step !== "email") setStep("email");
                 }}
                 placeholder="Email/username"
-                className="placeholder:text-stone-400 max-w-64 text-1/2xl font-normal font-['Inter'] px-4 py-2.5 origin-top-left rounded-[20px] outline outline-1 outline-offset-[-1px] outline-black/90 inline-flex"
+                className="login-input"
                 required
               />
               {step === "email" && (
@@ -207,16 +213,161 @@ function AuthFlow() {
                   value={code}
                   onChange={(e) => setCode(e.target.value)}
                   placeholder="Code"
-                  className="placeholder:text-stone-400 max-w-64 text-1/2xl font-normal font-['Inter'] px-4 py-2.5 origin-top-left rounded-[20px] outline outline-1 outline-offset-[-1px] outline-black/90 inline-flex"
+                  className="login-input"
                   required
                 />
+                <div className="flex justify-center">
+                  <button
+                    type="submit"
+                    disabled={isLoading}
+                    className="mt-[20px] text-zinc-950 text-xl font-medium font-['Inter'] px-12 py-3.5 rounded-3xl outline outline-1 outline-offset-[-1px] outline-black inline-flex"
+                  >
+                    submit code
+                  </button>
+                </div>
+              </form>
+            )}
+            {["login", "FA2"].includes(step) && (
+              <form className="mt-[20px]" onSubmit={handleLogin}>
+                <div className="relative">
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="Password"
+                    className="login-input pr-10"
+                    required
+                  />
+                  <button
+                    type="button"
+                    className="absolute right-3 top-1/2 transform -translate-y-1/2"
+                    onClick={togglePasswordVisibility}
+                  >
+                    <EyeIcon />
+                  </button>
+                </div>
+                {step === "login" && (
+                  <div className="mt-[18px]">
+                    <h1
+                      onClick={() => {
+                        setStep("change_password");
+                        if (!email) {
+                          setEmail(fetchEmailByUsername(username));
+                        }
+                        sendVerificationCode(email);
+                      }}
+                      className="text-neutral-500 text-2xl font-light font-['Inter'] text-center"
+                    >
+                      Forgot password?
+                    </h1>
+                    <div className="flex justify-center">
+                      <button
+                        type="submit"
+                        disabled={isLoading}
+                        className="mt-[60px] px-12 py-3.5 rounded-3xl outline outline-1 outline-offset-[-1px] outline-black inline-flex text-zinc-950 text-2xl font-medium font-['Inter']"
+                      >
+                        Sign in
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </form>
+            )}
+            {step === "change_password" && (
+              <form onSubmit={handleChangePassword} className="mt-[20px]">
+                <input
+                  type="text"
+                  value={code}
+                  onChange={(e) => setCode(e.target.value)}
+                  placeholder="Code"
+                  className="login-input"
+                  required
+                />
+                <div className="relative mt-[20px]">
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="New password"
+                    className="login-input pr-10"
+                    required
+                  />
+                  <button
+                    type="button"
+                    className="absolute right-3 top-1/2 transform -translate-y-1/2"
+                    onClick={togglePasswordVisibility}
+                  >
+                    <EyeIcon />
+                  </button>
+                </div>
+
                 <button
                   type="submit"
                   disabled={isLoading}
                   className="mt-[20px] text-zinc-950 text-xl font-medium font-['Inter'] px-12 py-3.5 rounded-3xl outline outline-1 outline-offset-[-1px] outline-black inline-flex"
                 >
-                  Подтвердить код
+                  Reset password
                 </button>
+              </form>
+            )}
+            {step === "FA2" && (
+              <form onSubmit={handleFA2Submit} className="mt-[20px]">
+                <input
+                  type="text"
+                  value={code}
+                  onChange={(e) => setCode(e.target.value)}
+                  placeholder="Code"
+                  className="login-input"
+                  required
+                />
+                <div className="flex justify-center">
+                  <button
+                    type="submit"
+                    disabled={isLoading}
+                    className="mt-[20px] text-zinc-950 text-xl font-medium font-['Inter'] px-12 py-3.5 rounded-3xl outline outline-1 outline-offset-[-1px] outline-black inline-flex"
+                  >
+                    submit code
+                  </button>
+                </div>
+              </form>
+            )}
+            {step === "register" && (
+              <form onSubmit={handleRegister} className="mt-[20px]">
+                <input
+                  type="text"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  placeholder="Username"
+                  className="login-input"
+                  required
+                />
+
+                <div className="relative mt-[20px]">
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="Password"
+                    className="login-input pr-10"
+                    required
+                  />
+                  <button
+                    type="button"
+                    className="absolute right-3 top-1/2 transform -translate-y-1/2"
+                    onClick={togglePasswordVisibility}
+                  >
+                    <EyeIcon />
+                  </button>
+                </div>
+                <div className="flex justify-center">
+                  <button
+                    type="submit"
+                    disabled={isLoading}
+                    className="mt-[20px] text-zinc-950 text-xl font-medium font-['Inter'] px-12 py-3.5 rounded-3xl outline outline-1 outline-offset-[-1px] outline-black inline-flex"
+                  >
+                    Create account
+                  </button>
+                </div>
               </form>
             )}
           </div>
@@ -229,31 +380,6 @@ function AuthFlow() {
 // Old functional(it will be deleted when new design will end)
 // ###########################################################
 
-// <div className="max-w-md mx-auto p-4 space-y-6">
-//   <form onSubmit={handleEmailSubmit} className="space-y-4">
-//     <div className="flex gap-2">
-//       <input
-//         type="text"
-// value={identifier}
-// onChange={(e) => {
-//   setIdentifier(e.target.value);
-//   if (step !== "email") setStep("email");
-// }}
-// placeholder="Email или username"
-// className="flex-1 p-2 border rounded"
-// required
-//       />
-
-//       <button
-// type="submit"
-// disabled={isLoading}
-//         className="px-4 bg-blue-500 text-white rounded disabled:opacity-50"
-//       >
-//         →
-//       </button>
-//     </div>
-//   </form>
-
 //   {error && (
 //     <div className="p-2 text-red-600 bg-red-100 rounded">{error}</div>
 //   )}
@@ -262,140 +388,6 @@ function AuthFlow() {
 //       Для входа введите код, отправленный на {secretEmail}
 //     </div>
 //   )}
-
-//   {(step === "login" || step === "FA2") && (
-//     <form onSubmit={handleLogin} className="space-y-4">
-//       <input
-//         type="password"
-//         value={password}
-//         onChange={(e) => setPassword(e.target.value)}
-//         placeholder="Пароль"
-//         className="w-full p-2 border rounded"
-//         required
-//       />
-//       {step === "login" && (
-//         <>
-//           <button
-//             type="submit"
-//             disabled={isLoading}
-//             className="w-full p-2 bg-green-500 text-white rounded disabled:opacity-50"
-//           >
-//             Войти
-//           </button>
-//           <button
-//             onClick={() => {
-//               setStep("change_password");
-//               if (!email) {
-//                 setEmail(fetchEmailByUsername(username));
-//               }
-//               sendVerificationCode(email);
-//             }}
-//             disabled={isLoading}
-//             className="w-full p-2 bg-yellow-500 text-white rounded disabled:opacity-50"
-//           >
-//             Сбросить пароль
-//           </button>
-//         </>
-//       )}
-//     </form>
-//   )}
-
-//   {step === "change_password" && (
-//     <form onSubmit={handleChangePassword} className="space-y-4">
-//       <input
-//         type="text"
-//         value={code}
-//         onChange={(e) => setCode(e.target.value)}
-//         placeholder="Код из письма"
-//         className="w-full p-2 border rounded"
-//         required
-//       />
-//       <input
-//         type="password"
-//         value={password}
-//         onChange={(e) => setPassword(e.target.value)}
-//         placeholder="Новый пароль"
-//         className="w-full p-2 border rounded"
-//         required
-//       />
-//       <button
-//         type="submit"
-//         disabled={isLoading}
-//         className="w-full p-2 bg-purple-500 text-white rounded disabled:opacity-50"
-//       >
-//         Сбросить пароль
-//       </button>
-//     </form>
-//   )}
-
-//   {step === "FA2" && (
-//     <form onSubmit={handleFA2Submit} className="space-y-4">
-//       <input
-//         type="text"
-//         value={code}
-//         onChange={(e) => setCode(e.target.value)}
-//         placeholder="Код из письма"
-//         className="w-full p-2 border rounded"
-//         required
-//       />
-//       <button
-//         type="submit"
-//         disabled={isLoading}
-//         className="w-full p-2 bg-yellow-500 text-white rounded disabled:opacity-50"
-//       >
-//         Подтвердить код
-//       </button>
-//     </form>
-//   )}
-
-//   {step === "send_code" && (
-//     <form onSubmit={handleCodeSubmit} className="space-y-4">
-//       <input
-//         type="text"
-//         value={code}
-//         onChange={(e) => setCode(e.target.value)}
-//         placeholder="Код из письма"
-//         className="w-full p-2 border rounded"
-//         required
-//       />
-//       <button
-//         type="submit"
-//         disabled={isLoading}
-//         className="w-full p-2 bg-yellow-500 text-white rounded disabled:opacity-50"
-//       >
-//         Подтвердить код
-//       </button>
-//     </form>
-//   )}
-
-//   {step === "register" && (
-//     <form onSubmit={handleRegister} className="space-y-4">
-//       <input
-//         type="text"
-//         value={username}
-//         onChange={(e) => setUsername(e.target.value)}
-//         placeholder="Имя пользователя"
-//         className="w-full p-2 border rounded"
-//         required
-//       />
-//       <input
-//         type="password"
-//         value={password}
-//         onChange={(e) => setPassword(e.target.value)}
-//         placeholder="Пароль"
-//         className="w-full p-2 border rounded"
-//         required
-//       />
-//       <button
-//         type="submit"
-//         disabled={isLoading}
-//         className="w-full p-2 bg-purple-500 text-white rounded disabled:opacity-50"
-//       >
-//         Зарегистрироваться
-//       </button>
-//     </form>
-//   )}
-// </div>
 
 export default function LoginPage() {
   return <AuthFlow />;

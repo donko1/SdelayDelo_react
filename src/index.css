@@ -1,6 +1,26 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer components {
+  .login-input {
+    @apply placeholder:text-stone-400 
+           max-w-64 
+           text-[1.2rem]  
+           font-normal 
+           font-[Inter] 
+           px-4 
+           py-2.5 
+           origin-top-left 
+           rounded-[20px] 
+           outline 
+           outline-1 
+           outline-offset-[-1px] 
+           outline-black/90 
+           inline-flex;
+  }
+}
+
 * {
   margin: 0;
   padding: 0;
