@@ -15,6 +15,7 @@ import { useUser } from "@context/UserContext";
 import { useNavigate } from "react-router-dom";
 import ArrowIcon from "@assets/arrow.svg?react";
 import EyeIcon from "@assets/eye.svg?react";
+import loading from "@assets/loading.gif";
 import SubmitButton from "@/components/ui/LoginButtonSubmit";
 
 function AuthFlow() {
@@ -132,6 +133,7 @@ function AuthFlow() {
     } finally {
       setIsLoading(false);
     }
+    setIsLoading(false);
   };
 
   const handleRegister = async (e) => {
@@ -201,10 +203,16 @@ function AuthFlow() {
                   disabled={isLoading}
                   className="absolute cursor-pointer w-9 h-9 rounded-full border border-zinc-600 right-0 top-1/2 transform -translate-x-1/2 -translate-y-1/2"
                 >
-                  <div className="w-full h-full relative hover:bg-black rounded-full group/email-continue transition-all duration-300 ">
-                    <div className="w-2.5 h-0 left-[22.38px] top-[17.05px] absolute origin-top-left rotate-[-138.93deg] outline outline-1 group-hover/email-continue:outline-white transition-all duration-300 outline-zinc-600"></div>
-                    <div className="w-2.5 h-0 left-[22.18px] top-[16.71px] absolute origin-top-left rotate-[128.94deg] outline outline-1  group-hover/email-continue:outline-white transition-all duration-300 outline-zinc-600"></div>
-                  </div>
+                  {!isLoading ? (
+                    <div className="w-full h-full relative hover:bg-black rounded-full group/email-continue transition-all duration-300 ">
+                      <div className="w-2.5 h-0 left-[22.38px] top-[17.05px] absolute origin-top-left rotate-[-138.93deg] outline outline-1 group-hover/email-continue:outline-white transition-all duration-300 outline-zinc-600"></div>
+                      <div className="w-2.5 h-0 left-[22.18px] top-[16.71px] absolute origin-top-left rotate-[128.94deg] outline outline-1  group-hover/email-continue:outline-white transition-all duration-300 outline-zinc-600"></div>
+                    </div>
+                  ) : (
+                    <div className="w-full h-full relative hover:bg-black rounded-full group/email-continue transition-all duration-300 ">
+                      <img className="w-full" src={loading} alt="loading..." />
+                    </div>
+                  )}
                 </button>
               )}
             </form>
@@ -265,6 +273,7 @@ function AuthFlow() {
                           setEmail(fetchEmailByUsername(username));
                         }
                         sendVerificationCode(email);
+                        setIsLoading(false);
                       }}
                       className="text-neutral-500 text-2xl font-light font-['Inter'] text-center cursor-pointer"
                     >
@@ -319,8 +328,9 @@ function AuthFlow() {
                     />
                   </button>
                 </div>
-
-                <SubmitButton disabled={isLoading} text="Reset password" />
+                <div className="flex justify-center">
+                  <SubmitButton disabled={isLoading} text="Reset password" />
+                </div>
               </form>
             )}
             {step === "FA2" && (
