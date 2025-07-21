@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   fetchEmailByUsername,
   sendVerificationCode,
@@ -16,7 +16,9 @@ import { useNavigate } from "react-router-dom";
 import ArrowIcon from "@assets/arrow.svg?react";
 import EyeIcon from "@assets/eye.svg?react";
 import loading from "@assets/loading.gif";
-import SubmitButton from "@/components/ui/LoginButtonSubmit";
+import SubmitButton from "@components/ui/LoginButtonSubmit";
+import { getErrorTypeByResponse } from "@utils/helpers/errors";
+import { useLang } from "@context/LangContext";
 
 function AuthFlow() {
   const { login } = useAuth();
@@ -34,6 +36,7 @@ function AuthFlow() {
   const [showPassword, setShowPassword] = useState(false);
   const [secretEmail, setSecretEmail] = useState("");
   const navigate = useNavigate();
+  const { lang } = useLang();
   const { refreshUser } = useUser();
 
   const togglePasswordVisibility = () => {
@@ -59,7 +62,7 @@ function AuthFlow() {
       }
       setError("");
     } catch (err) {
-      setError(err.message);
+      setError(getErrorTypeByResponse(err.message, lang));
     } finally {
       setIsLoading(false);
     }
@@ -77,7 +80,7 @@ function AuthFlow() {
       refreshUser();
       navigate("/");
     } catch (err) {
-      setError(err.message);
+      setError(getErrorTypeByResponse(err.message));
     } finally {
       setIsLoading(false);
     }
@@ -92,7 +95,7 @@ function AuthFlow() {
       setStep("register");
       setError("");
     } catch (err) {
-      setError(err.message);
+      setError(getErrorTypeByResponse(err.message));
     } finally {
       setIsLoading(false);
     }
@@ -104,10 +107,10 @@ function AuthFlow() {
     try {
       const { token: tkn } = await checkCode(email, code);
       await resetPassword(tkn, password);
-      setStep("");
+      setStep("login");
       setError("");
     } catch (err) {
-      setError(err.message);
+      setError(getErrorTypeByResponse(err.message));
     } finally {
       setIsLoading(false);
     }
@@ -129,12 +132,16 @@ function AuthFlow() {
       refreshUser();
       navigate("/");
     } catch (err) {
-      setError(err.message);
+      setError(getErrorTypeByResponse(err.message));
     } finally {
       setIsLoading(false);
     }
     setIsLoading(false);
   };
+
+  useEffect(() => {
+    setError("");
+  }, [password, username, code]);
 
   const handleRegister = async (e) => {
     e.preventDefault();
@@ -153,7 +160,7 @@ function AuthFlow() {
       refreshUser();
       navigate("/");
     } catch (err) {
-      setError(err.message);
+      setError(getErrorTypeByResponse(err.message));
     } finally {
       setIsLoading(false);
     }
@@ -166,8 +173,8 @@ function AuthFlow() {
         <img className="h-[100vh]" src="/svg/login/background-2.svg" alt="" />
       </div>
       <div className="flex justify-center items-center w-full h-full">
-        <div className="relative flex justify-center max-w-[45vw] min-h-[645px] bg-white rounded-2xl shadow-[0px_4px_10px_0px_rgba(0,0,0,0.25)] outline outline-1 outline-offset-[-1px] outline-black">
-          <div className="mt-[43px] justify-center px-[15vw]">
+        <div className="relative flex justify-center w-[45vw] min-h-[645px] bg-white rounded-2xl shadow-[0px_4px_10px_0px_rgba(0,0,0,0.25)] outline outline-1 outline-offset-[-1px] outline-black">
+          <div className="mt-[43px] justify-center px-[40%]">
             {step === "email" && (
               <div className="text-center text-black text-4xl font-normal font-['Jockey_One']">
                 Sdelay delo
@@ -185,6 +192,12 @@ function AuthFlow() {
                 </h2>
               </div>
             )}
+            {["unknown", "noUser"].includes(error.type) && (
+              <div className="p-2 text-red-600 text-xl text-center mt-2 rounded">
+                {error.text}
+              </div>
+            )}
+
             <form className="mt-[30px] relative" onSubmit={handleEmailSubmit}>
               <input
                 type="text"
@@ -223,9 +236,17 @@ function AuthFlow() {
                   value={code}
                   onChange={(e) => setCode(e.target.value)}
                   placeholder="Code"
-                  className="login-input"
+                  className={`login-input ${
+                    error.type === "code" && "outline-[#ff1b1b]"
+                  }`}
                   required
                 />
+                {error.type === "code" && (
+                  <h2 className="text-red-400 text-xl font-normal font-['Inter']">
+                    Incorrect code. Please try again
+                  </h2>
+                )}
+
                 <div className="flex justify-center">
                   <SubmitButton disabled={isLoading} text="Submit code" />
                 </div>
@@ -239,7 +260,9 @@ function AuthFlow() {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder="Password"
-                    className="login-input pr-10"
+                    className={`login-input pr-10 ${
+                      error.type === "password" && "outline-[#ff1b1b]"
+                    }`}
                     required
                   />
                   <button
@@ -264,6 +287,12 @@ function AuthFlow() {
                     />
                   </button>
                 </div>
+
+                {error.type === "password" && (
+                  <h2 className="text-red-400 text-xl font-normal font-['Inter']">
+                    Incorrect password. Please try again
+                  </h2>
+                )}
                 {step === "login" && (
                   <div className="mt-[18px]">
                     <h1
@@ -293,9 +322,17 @@ function AuthFlow() {
                   value={code}
                   onChange={(e) => setCode(e.target.value)}
                   placeholder="Code"
-                  className="login-input"
+                  className={`login-input ${
+                    error.type === "code" && "outline-[#ff1b1b]"
+                  }`}
                   required
                 />
+                {error.type === "code" && (
+                  <h2 className="text-red-400 text-xl font-normal font-['Inter']">
+                    Incorrect code. Please try again
+                  </h2>
+                )}
+
                 <div className="relative mt-[20px]">
                   <input
                     type={showPassword ? "text" : "password"}
@@ -335,14 +372,27 @@ function AuthFlow() {
             )}
             {step === "FA2" && (
               <form onSubmit={handleFA2Submit} className="mt-[20px]">
+                {step === "FA2" && (
+                  <div className=" text-yellow-600 text-xl mt-5 break-words mb-[20px]">
+                    To continue enter the code sent to {secretEmail}
+                  </div>
+                )}
                 <input
                   type="text"
                   value={code}
                   onChange={(e) => setCode(e.target.value)}
                   placeholder="Code"
-                  className="login-input"
+                  className={`login-input ${
+                    error.type === "code" && "outline-[#ff1b1b]"
+                  }`}
                   required
                 />
+                {error.type === "code" && (
+                  <h2 className="text-red-400 text-xl font-normal font-['Inter']">
+                    Incorrect code. Please try again
+                  </h2>
+                )}
+
                 <div className="flex justify-center">
                   <SubmitButton disabled={isLoading} text="Submit code" />
                 </div>
