@@ -15,6 +15,7 @@ import { useUser } from "@context/UserContext";
 import { useNavigate } from "react-router-dom";
 import ArrowIcon from "@assets/arrow.svg?react";
 import EyeIcon from "@assets/eye.svg?react";
+import SubmitButton from "@/components/ui/LoginButtonSubmit";
 
 function AuthFlow() {
   const { login } = useAuth();
@@ -163,7 +164,7 @@ function AuthFlow() {
         <img className="h-[100vh]" src="/svg/login/background-2.svg" alt="" />
       </div>
       <div className="flex justify-center items-center w-full h-full">
-        <div className="relative flex justify-center max-w-[45vw] max-h-[60vh] bg-white rounded-2xl shadow-[0px_4px_10px_0px_rgba(0,0,0,0.25)] outline outline-1 outline-offset-[-1px] outline-black">
+        <div className="relative flex justify-center max-w-[45vw] min-h-[645px] bg-white rounded-2xl shadow-[0px_4px_10px_0px_rgba(0,0,0,0.25)] outline outline-1 outline-offset-[-1px] outline-black">
           <div className="mt-[43px] justify-center px-[15vw]">
             {step === "email" && (
               <div className="text-center text-black text-4xl font-normal font-['Jockey_One']">
@@ -171,9 +172,10 @@ function AuthFlow() {
               </div>
             )}
             {step !== "email" && (
-              <div className="flex gap-5 w-full items-center">
+              <div className="flex gap-5 w-full items-center ">
                 <ArrowIcon
-                  className="-rotate-90 w-8 h-8"
+                  className="-rotate-90 w-8 h-8 cursor-pointer transition-all duration-300 hover:-translate-x-2"
+                  preserveAspectRatio="none"
                   onClick={() => setStep("email")}
                 />
                 <h2 className="text-black text-2xl font-normal font-['Inter']">
@@ -199,9 +201,9 @@ function AuthFlow() {
                   disabled={isLoading}
                   className="absolute cursor-pointer w-9 h-9 rounded-full border border-zinc-600 right-0 top-1/2 transform -translate-x-1/2 -translate-y-1/2"
                 >
-                  <div className="w-full h-full relative ">
-                    <div className="w-2.5 h-0 left-[22.38px] top-[17.05px] absolute origin-top-left rotate-[-138.93deg] outline outline-1 outline-zinc-600"></div>
-                    <div className="w-2.5 h-0 left-[22.18px] top-[16.71px] absolute origin-top-left rotate-[128.94deg] outline outline-1  outline-zinc-600"></div>
+                  <div className="w-full h-full relative hover:bg-black rounded-full group/email-continue transition-all duration-300 ">
+                    <div className="w-2.5 h-0 left-[22.38px] top-[17.05px] absolute origin-top-left rotate-[-138.93deg] outline outline-1 group-hover/email-continue:outline-white transition-all duration-300 outline-zinc-600"></div>
+                    <div className="w-2.5 h-0 left-[22.18px] top-[16.71px] absolute origin-top-left rotate-[128.94deg] outline outline-1  group-hover/email-continue:outline-white transition-all duration-300 outline-zinc-600"></div>
                   </div>
                 </button>
               )}
@@ -217,13 +219,7 @@ function AuthFlow() {
                   required
                 />
                 <div className="flex justify-center">
-                  <button
-                    type="submit"
-                    disabled={isLoading}
-                    className="mt-[20px] text-zinc-950 text-xl font-medium font-['Inter'] px-12 py-3.5 rounded-3xl outline outline-1 outline-offset-[-1px] outline-black inline-flex"
-                  >
-                    submit code
-                  </button>
+                  <SubmitButton disabled={isLoading} text="Submit code" />
                 </div>
               </form>
             )}
@@ -240,10 +236,24 @@ function AuthFlow() {
                   />
                   <button
                     type="button"
-                    className="absolute right-3 top-1/2 transform -translate-y-1/2"
+                    className="absolute group/eye right-3 top-1/2 transform -translate-y-1/2"
                     onClick={togglePasswordVisibility}
                   >
                     <EyeIcon />
+                    <div
+                      className={`w-full transition-all duration-300 outline outline-black absolute top-1/2 ${
+                        !showPassword
+                          ? "outline-0 group-hover/eye:rotate-45 group-hover/eye:outline-2"
+                          : "rotate-45 outline-2 pointer-events-none"
+                      }`}
+                    />
+                    <div
+                      className={`w-full transition-all duration-300 outline outline-black absolute top-1/2 ${
+                        !showPassword
+                          ? "outline-0 group-hover/eye:-rotate-45 group-hover/eye:outline-2"
+                          : "-rotate-45 outline-2 pointer-events-none"
+                      }`}
+                    />
                   </button>
                 </div>
                 {step === "login" && (
@@ -256,18 +266,12 @@ function AuthFlow() {
                         }
                         sendVerificationCode(email);
                       }}
-                      className="text-neutral-500 text-2xl font-light font-['Inter'] text-center"
+                      className="text-neutral-500 text-2xl font-light font-['Inter'] text-center cursor-pointer"
                     >
                       Forgot password?
                     </h1>
                     <div className="flex justify-center">
-                      <button
-                        type="submit"
-                        disabled={isLoading}
-                        className="mt-[60px] px-12 py-3.5 rounded-3xl outline outline-1 outline-offset-[-1px] outline-black inline-flex text-zinc-950 text-2xl font-medium font-['Inter']"
-                      >
-                        Sign in
-                      </button>
+                      <SubmitButton disabled={isLoading} text="Sign in" />
                     </div>
                   </div>
                 )}
@@ -294,20 +298,29 @@ function AuthFlow() {
                   />
                   <button
                     type="button"
-                    className="absolute right-3 top-1/2 transform -translate-y-1/2"
+                    className="absolute group/eye right-3 top-1/2 transform -translate-y-1/2"
                     onClick={togglePasswordVisibility}
                   >
                     <EyeIcon />
+
+                    <div
+                      className={`w-full transition-all duration-300 outline outline-black absolute top-1/2 ${
+                        !showPassword
+                          ? "outline-0 group-hover/eye:rotate-45 group-hover/eye:outline-2"
+                          : "rotate-45 outline-2 pointer-events-none"
+                      }`}
+                    />
+                    <div
+                      className={`w-full transition-all duration-300 outline outline-black absolute top-1/2 ${
+                        !showPassword
+                          ? "outline-0 group-hover/eye:-rotate-45 group-hover/eye:outline-2"
+                          : "-rotate-45 outline-2 pointer-events-none"
+                      }`}
+                    />
                   </button>
                 </div>
 
-                <button
-                  type="submit"
-                  disabled={isLoading}
-                  className="mt-[20px] text-zinc-950 text-xl font-medium font-['Inter'] px-12 py-3.5 rounded-3xl outline outline-1 outline-offset-[-1px] outline-black inline-flex"
-                >
-                  Reset password
-                </button>
+                <SubmitButton disabled={isLoading} text="Reset password" />
               </form>
             )}
             {step === "FA2" && (
@@ -321,13 +334,7 @@ function AuthFlow() {
                   required
                 />
                 <div className="flex justify-center">
-                  <button
-                    type="submit"
-                    disabled={isLoading}
-                    className="mt-[20px] text-zinc-950 text-xl font-medium font-['Inter'] px-12 py-3.5 rounded-3xl outline outline-1 outline-offset-[-1px] outline-black inline-flex"
-                  >
-                    submit code
-                  </button>
+                  <SubmitButton disabled={isLoading} text="Submit code" />
                 </div>
               </form>
             )}
@@ -353,20 +360,29 @@ function AuthFlow() {
                   />
                   <button
                     type="button"
-                    className="absolute right-3 top-1/2 transform -translate-y-1/2"
+                    className="absolute group/eye right-3 top-1/2 transform -translate-y-1/2"
                     onClick={togglePasswordVisibility}
                   >
                     <EyeIcon />
+
+                    <div
+                      className={`w-full transition-all duration-300 outline outline-black absolute top-1/2 ${
+                        !showPassword
+                          ? "outline-0 group-hover/eye:rotate-45 group-hover/eye:outline-2"
+                          : "rotate-45 outline-2 pointer-events-none"
+                      }`}
+                    />
+                    <div
+                      className={`w-full transition-all duration-300 outline outline-black absolute top-1/2 ${
+                        !showPassword
+                          ? "outline-0 group-hover/eye:-rotate-45 group-hover/eye:outline-2"
+                          : "-rotate-45 outline-2 pointer-events-none"
+                      }`}
+                    />
                   </button>
                 </div>
                 <div className="flex justify-center">
-                  <button
-                    type="submit"
-                    disabled={isLoading}
-                    className="mt-[20px] text-zinc-950 text-xl font-medium font-['Inter'] px-12 py-3.5 rounded-3xl outline outline-1 outline-offset-[-1px] outline-black inline-flex"
-                  >
-                    Create account
-                  </button>
+                  <SubmitButton disabled={isLoading} text="Create account" />
                 </div>
               </form>
             )}
