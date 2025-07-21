@@ -17,8 +17,7 @@ import ArrowIcon from "@assets/arrow.svg?react";
 import EyeIcon from "@assets/eye.svg?react";
 import loading from "@assets/loading.gif";
 import SubmitButton from "@components/ui/LoginButtonSubmit";
-import { getErrorTypeByResponse } from "@utils/helpers/errors";
-import { useLang } from "@context/LangContext";
+import useError from "@hooks/useError";
 
 function AuthFlow() {
   const { login } = useAuth();
@@ -30,13 +29,12 @@ function AuthFlow() {
   const [step, setStep] = useState("email");
   const [identifier, setIdentifier] = useState("");
   const isEmail = (input) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(input);
-  const [error, setError] = useState("");
+  const { error, setError } = useError();
   const isRegistered = useRef(null);
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [secretEmail, setSecretEmail] = useState("");
   const navigate = useNavigate();
-  const { lang } = useLang();
   const { refreshUser } = useUser();
 
   const togglePasswordVisibility = () => {
@@ -62,7 +60,7 @@ function AuthFlow() {
       }
       setError("");
     } catch (err) {
-      setError(getErrorTypeByResponse(err.message, lang));
+      setError(err.message);
     } finally {
       setIsLoading(false);
     }
@@ -80,7 +78,7 @@ function AuthFlow() {
       refreshUser();
       navigate("/");
     } catch (err) {
-      setError(getErrorTypeByResponse(err.message));
+      setError(err.message);
     } finally {
       setIsLoading(false);
     }
@@ -95,7 +93,7 @@ function AuthFlow() {
       setStep("register");
       setError("");
     } catch (err) {
-      setError(getErrorTypeByResponse(err.message));
+      setError(err.message);
     } finally {
       setIsLoading(false);
     }
@@ -110,7 +108,7 @@ function AuthFlow() {
       setStep("login");
       setError("");
     } catch (err) {
-      setError(getErrorTypeByResponse(err.message));
+      setError(err.message);
     } finally {
       setIsLoading(false);
     }
@@ -132,7 +130,7 @@ function AuthFlow() {
       refreshUser();
       navigate("/");
     } catch (err) {
-      setError(getErrorTypeByResponse(err.message));
+      setError(err.message);
     } finally {
       setIsLoading(false);
     }
@@ -141,7 +139,7 @@ function AuthFlow() {
 
   useEffect(() => {
     setError("");
-  }, [password, username, code]);
+  }, [password, username, code, email, identifier]);
 
   const handleRegister = async (e) => {
     e.preventDefault();
@@ -160,7 +158,7 @@ function AuthFlow() {
       refreshUser();
       navigate("/");
     } catch (err) {
-      setError(getErrorTypeByResponse(err.message));
+      setError(err.message);
     } finally {
       setIsLoading(false);
     }

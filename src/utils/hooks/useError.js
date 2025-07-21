@@ -1,4 +1,6 @@
-import { chooseTextByLang } from "./locale";
+import { useState } from "react";
+import { chooseTextByLang } from "@utils/helpers/locale";
+import { useLang } from "@context/LangContext";
 
 export function getErrorTypeByResponse(error, lang) {
   switch (error) {
@@ -19,5 +21,13 @@ export function getErrorTypeByResponse(error, lang) {
       console.log(error);
       return { text: "", type: "unknown" };
   }
-  console.log(error);
+}
+
+export default function useError() {
+  const { lang } = useLang();
+  const [error, setErrorState] = useState("");
+  const setError = (val) => {
+    setErrorState(getErrorTypeByResponse(val, lang));
+  };
+  return { error, setError };
 }
