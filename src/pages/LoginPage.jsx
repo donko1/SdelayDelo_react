@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   fetchEmailByUsername,
   sendVerificationCode,
@@ -18,6 +19,29 @@ import EyeIcon from "@assets/eye.svg?react";
 import loading from "@assets/loading.gif";
 import SubmitButton from "@components/ui/LoginButtonSubmit";
 import useError from "@hooks/useError";
+
+const stepVariants = {
+  initial: {
+    opacity: 0,
+    y: 20,
+  },
+  animate: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.3,
+      ease: "easeOut",
+    },
+  },
+  exit: {
+    opacity: 0,
+    y: -20,
+    transition: {
+      duration: 0.2,
+      ease: "easeIn",
+    },
+  },
+};
 
 function AuthFlow() {
   const { login } = useAuth();
@@ -50,6 +74,7 @@ function AuthFlow() {
         : await fetchEmailByUsername(identifier);
 
       setEmail(resolvedEmail);
+
       isRegistered.current = await check_if_email_registered(resolvedEmail);
 
       if (isRegistered.current) {
@@ -173,277 +198,352 @@ function AuthFlow() {
       <div className="flex justify-center items-center w-full h-full">
         <div className="relative flex justify-center w-[45vw] min-h-[645px] bg-white rounded-2xl shadow-[0px_4px_10px_0px_rgba(0,0,0,0.25)] outline outline-1 outline-offset-[-1px] outline-black">
           <div className="mt-[43px] justify-center px-[40%]">
-            {step === "email" && (
-              <div className="text-center text-black text-4xl font-normal font-['Jockey_One']">
-                Sdelay delo
-              </div>
-            )}
-            {step !== "email" && (
-              <div className="flex gap-5 w-full items-center ">
-                <ArrowIcon
-                  className="-rotate-90 w-8 h-8 cursor-pointer transition-all duration-300 hover:-translate-x-2"
-                  preserveAspectRatio="none"
-                  onClick={() => setStep("email")}
-                />
-                <h2 className="text-black text-2xl font-normal font-['Inter']">
-                  {isRegistered.current ? "Welcome back!" : "Welcome to SD!"}
-                </h2>
-              </div>
-            )}
+            <AnimatePresence mode="wait">
+              {step === "email" ? (
+                <motion.div
+                  key="title-email"
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="text-center text-black text-4xl font-normal font-['Jockey_One']"
+                >
+                  Sdelay delo
+                </motion.div>
+              ) : (
+                <motion.div
+                  key="title-back"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  className="flex gap-5 w-full items-center"
+                >
+                  <ArrowIcon
+                    className="-rotate-90 w-8 h-8 cursor-pointer transition-all duration-300 hover:-translate-x-2"
+                    preserveAspectRatio="none"
+                    onClick={() => setStep("email")}
+                  />
+                  <h2 className="text-black text-2xl font-normal font-['Inter']">
+                    {isRegistered.current ? `Welcome back!` : "Welcome to SD!"}
+                  </h2>
+                </motion.div>
+              )}
+            </AnimatePresence>
+
             {["unknown", "noUser"].includes(error.type) && (
               <div className="p-2 text-red-600 text-xl text-center mt-2 rounded">
                 {error.text}
               </div>
             )}
 
-            <form className="mt-[30px] relative" onSubmit={handleEmailSubmit}>
-              <input
-                type="text"
-                value={identifier}
-                onChange={(e) => {
-                  setIdentifier(e.target.value);
-                  if (step !== "email") setStep("email");
-                }}
-                placeholder="Email/username"
-                className="login-input"
-                required
-              />
+            <AnimatePresence mode="wait">
               {step === "email" && (
-                <button
-                  type="submit"
-                  disabled={isLoading}
-                  className="absolute cursor-pointer w-9 h-9 rounded-full border border-zinc-600 right-0 top-1/2 transform -translate-x-1/2 -translate-y-1/2"
+                <motion.form
+                  key="email-step"
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: "auto" }}
+                  exit={{ opacity: 0, height: 0 }}
+                  className="mt-[30px] relative"
+                  onSubmit={handleEmailSubmit}
                 >
-                  {!isLoading ? (
-                    <div className="w-full h-full relative hover:bg-black rounded-full group/email-continue transition-all duration-300 ">
-                      <div className="w-2.5 h-0 left-[22.38px] top-[17.05px] absolute origin-top-left rotate-[-138.93deg] outline outline-1 group-hover/email-continue:outline-white transition-all duration-300 outline-zinc-600"></div>
-                      <div className="w-2.5 h-0 left-[22.18px] top-[16.71px] absolute origin-top-left rotate-[128.94deg] outline outline-1  group-hover/email-continue:outline-white transition-all duration-300 outline-zinc-600"></div>
-                    </div>
-                  ) : (
-                    <div className="w-full h-full relative hover:bg-black rounded-full group/email-continue transition-all duration-300 ">
-                      <img className="w-full" src={loading} alt="loading..." />
-                    </div>
-                  )}
-                </button>
-              )}
-            </form>
-            {step === "send_code" && (
-              <form onSubmit={handleCodeSubmit} className="mt-[20px]">
-                <input
-                  type="text"
-                  value={code}
-                  onChange={(e) => setCode(e.target.value)}
-                  placeholder="Code"
-                  className={`login-input ${
-                    error.type === "code" && "outline-[#ff1b1b]"
-                  }`}
-                  required
-                />
-                {error.type === "code" && (
-                  <h2 className="text-red-400 text-xl font-normal font-['Inter']">
-                    Incorrect code. Please try again
-                  </h2>
-                )}
-
-                <div className="flex justify-center">
-                  <SubmitButton disabled={isLoading} text="Submit code" />
-                </div>
-              </form>
-            )}
-            {["login", "FA2"].includes(step) && (
-              <form className="mt-[20px]" onSubmit={handleLogin}>
-                <div className="relative">
                   <input
-                    type={showPassword ? "text" : "password"}
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    placeholder="Password"
-                    className={`login-input pr-10 ${
-                      error.type === "password" && "outline-[#ff1b1b]"
+                    type="text"
+                    value={identifier}
+                    onChange={(e) => {
+                      setIdentifier(e.target.value);
+                      if (step !== "email") setStep("email");
+                    }}
+                    placeholder="Email/username"
+                    className="login-input"
+                    required
+                  />
+                  <button
+                    type="submit"
+                    disabled={isLoading}
+                    className="absolute cursor-pointer w-9 h-9 rounded-full border border-zinc-600 right-0 top-1/2 transform -translate-x-1/2 -translate-y-1/2"
+                  >
+                    {!isLoading ? (
+                      <div className="w-full h-full relative hover:bg-black rounded-full group/email-continue transition-all duration-300 ">
+                        <div className="w-2.5 h-0 left-[22.38px] top-[17.05px] absolute origin-top-left rotate-[-138.93deg] outline outline-1 group-hover/email-continue:outline-white transition-all duration-300 outline-zinc-600"></div>
+                        <div className="w-2.5 h-0 left-[22.18px] top-[16.71px] absolute origin-top-left rotate-[128.94deg] outline outline-1  group-hover/email-continue:outline-white transition-all duration-300 outline-zinc-600"></div>
+                      </div>
+                    ) : (
+                      <div className="w-full h-full relative hover:bg-black rounded-full group/email-continue transition-all duration-300 ">
+                        <img
+                          className="w-full"
+                          src={loading}
+                          alt="loading..."
+                        />
+                      </div>
+                    )}
+                  </button>
+                </motion.form>
+              )}
+            </AnimatePresence>
+
+            <AnimatePresence mode="wait">
+              {step === "send_code" && (
+                <motion.form
+                  key="send_code-step"
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: "auto" }}
+                  exit={{ opacity: 0, height: 0 }}
+                  onSubmit={handleCodeSubmit}
+                  className="mt-[20px]"
+                >
+                  <input
+                    type="text"
+                    value={code}
+                    onChange={(e) => setCode(e.target.value)}
+                    placeholder="Code"
+                    className={`login-input ${
+                      error.type === "code" && "outline-[#ff1b1b]"
                     }`}
                     required
                   />
-                  <button
-                    type="button"
-                    className="absolute group/eye right-3 top-1/2 transform -translate-y-1/2"
-                    onClick={togglePasswordVisibility}
-                  >
-                    <EyeIcon />
-                    <div
-                      className={`w-full transition-all duration-300 outline outline-black absolute top-1/2 ${
-                        !showPassword
-                          ? "outline-0 group-hover/eye:rotate-45 group-hover/eye:outline-2"
-                          : "rotate-45 outline-2 pointer-events-none"
-                      }`}
-                    />
-                    <div
-                      className={`w-full transition-all duration-300 outline outline-black absolute top-1/2 ${
-                        !showPassword
-                          ? "outline-0 group-hover/eye:-rotate-45 group-hover/eye:outline-2"
-                          : "-rotate-45 outline-2 pointer-events-none"
-                      }`}
-                    />
-                  </button>
-                </div>
+                  {error.type === "code" && (
+                    <h2 className="text-red-400 text-xl font-normal font-['Inter']">
+                      Incorrect code. Please try again
+                    </h2>
+                  )}
 
-                {error.type === "password" && (
-                  <h2 className="text-red-400 text-xl font-normal font-['Inter']">
-                    Incorrect password. Please try again
-                  </h2>
-                )}
-                {step === "login" && (
-                  <div className="mt-[18px]">
-                    <h1
-                      onClick={() => {
-                        setStep("change_password");
-                        if (!email) {
-                          setEmail(fetchEmailByUsername(username));
-                        }
-                        sendVerificationCode(email);
-                        setIsLoading(false);
-                      }}
-                      className="text-neutral-500 text-2xl font-light font-['Inter'] text-center cursor-pointer"
+                  <div className="flex justify-center">
+                    <SubmitButton disabled={isLoading} text="Submit code" />
+                  </div>
+                </motion.form>
+              )}
+            </AnimatePresence>
+
+            <AnimatePresence mode="wait">
+              {["login", "FA2"].includes(step) && (
+                <motion.form
+                  key={`login-step-${step}`}
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: "auto" }}
+                  exit={{ opacity: 0, height: 0 }}
+                  className="mt-[20px]"
+                  onSubmit={handleLogin}
+                >
+                  <div className="relative">
+                    <input
+                      type={showPassword ? "text" : "password"}
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      placeholder="Password"
+                      className={`login-input pr-10 ${
+                        error.type === "password" && "outline-[#ff1b1b]"
+                      }`}
+                      required
+                    />
+                    <button
+                      type="button"
+                      className="absolute group/eye right-3 top-1/2 transform -translate-y-1/2"
+                      onClick={togglePasswordVisibility}
                     >
-                      Forgot password?
-                    </h1>
-                    <div className="flex justify-center">
-                      <SubmitButton disabled={isLoading} text="Sign in" />
+                      <EyeIcon />
+                      <div
+                        className={`w-full transition-all duration-300 outline outline-black absolute top-1/2 ${
+                          !showPassword
+                            ? "outline-0 group-hover/eye:rotate-45 group-hover/eye:outline-2"
+                            : "rotate-45 outline-2 pointer-events-none"
+                        }`}
+                      />
+                      <div
+                        className={`w-full transition-all duration-300 outline outline-black absolute top-1/2 ${
+                          !showPassword
+                            ? "outline-0 group-hover/eye:-rotate-45 group-hover/eye:outline-2"
+                            : "-rotate-45 outline-2 pointer-events-none"
+                        }`}
+                      />
+                    </button>
+                  </div>
+
+                  {error.type === "password" && (
+                    <h2 className="text-red-400 text-xl font-normal font-['Inter']">
+                      Incorrect password. Please try again
+                    </h2>
+                  )}
+                  {step === "login" && (
+                    <div className="mt-[18px]">
+                      <h1
+                        onClick={() => {
+                          setStep("change_password");
+                          if (!email) {
+                            setEmail(fetchEmailByUsername(username));
+                          }
+                          sendVerificationCode(email);
+                          setIsLoading(false);
+                        }}
+                        className="text-neutral-500 text-2xl font-light font-['Inter'] text-center cursor-pointer"
+                      >
+                        Forgot password?
+                      </h1>
+                      <div className="flex justify-center">
+                        <SubmitButton disabled={isLoading} text="Sign in" />
+                      </div>
                     </div>
-                  </div>
-                )}
-              </form>
-            )}
-            {step === "change_password" && (
-              <form onSubmit={handleChangePassword} className="mt-[20px]">
-                <input
-                  type="text"
-                  value={code}
-                  onChange={(e) => setCode(e.target.value)}
-                  placeholder="Code"
-                  className={`login-input ${
-                    error.type === "code" && "outline-[#ff1b1b]"
-                  }`}
-                  required
-                />
-                {error.type === "code" && (
-                  <h2 className="text-red-400 text-xl font-normal font-['Inter']">
-                    Incorrect code. Please try again
-                  </h2>
-                )}
+                  )}
+                </motion.form>
+              )}
+            </AnimatePresence>
 
-                <div className="relative mt-[20px]">
+            <AnimatePresence mode="wait">
+              {step === "change_password" && (
+                <motion.form
+                  key="change_password-step"
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: "auto" }}
+                  exit={{ opacity: 0, height: 0 }}
+                  onSubmit={handleChangePassword}
+                  className="mt-[20px]"
+                >
                   <input
-                    type={showPassword ? "text" : "password"}
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    placeholder="New password"
-                    className="login-input pr-10"
+                    type="text"
+                    value={code}
+                    onChange={(e) => setCode(e.target.value)}
+                    placeholder="Code"
+                    className={`login-input ${
+                      error.type === "code" && "outline-[#ff1b1b]"
+                    }`}
                     required
                   />
-                  <button
-                    type="button"
-                    className="absolute group/eye right-3 top-1/2 transform -translate-y-1/2"
-                    onClick={togglePasswordVisibility}
-                  >
-                    <EyeIcon />
+                  {error.type === "code" && (
+                    <h2 className="text-red-400 text-xl font-normal font-['Inter']">
+                      Incorrect code. Please try again
+                    </h2>
+                  )}
 
-                    <div
-                      className={`w-full transition-all duration-300 outline outline-black absolute top-1/2 ${
-                        !showPassword
-                          ? "outline-0 group-hover/eye:rotate-45 group-hover/eye:outline-2"
-                          : "rotate-45 outline-2 pointer-events-none"
-                      }`}
+                  <div className="relative mt-[20px]">
+                    <input
+                      type={showPassword ? "text" : "password"}
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      placeholder="New password"
+                      className="login-input pr-10"
+                      required
                     />
-                    <div
-                      className={`w-full transition-all duration-300 outline outline-black absolute top-1/2 ${
-                        !showPassword
-                          ? "outline-0 group-hover/eye:-rotate-45 group-hover/eye:outline-2"
-                          : "-rotate-45 outline-2 pointer-events-none"
-                      }`}
-                    />
-                  </button>
-                </div>
-                <div className="flex justify-center">
-                  <SubmitButton disabled={isLoading} text="Reset password" />
-                </div>
-              </form>
-            )}
-            {step === "FA2" && (
-              <form onSubmit={handleFA2Submit} className="mt-[20px]">
-                {step === "FA2" && (
-                  <div className=" text-yellow-600 text-xl mt-5 break-words mb-[20px]">
-                    To continue enter the code sent to {secretEmail}
+                    <button
+                      type="button"
+                      className="absolute group/eye right-3 top-1/2 transform -translate-y-1/2"
+                      onClick={togglePasswordVisibility}
+                    >
+                      <EyeIcon />
+
+                      <div
+                        className={`w-full transition-all duration-300 outline outline-black absolute top-1/2 ${
+                          !showPassword
+                            ? "outline-0 group-hover/eye:rotate-45 group-hover/eye:outline-2"
+                            : "rotate-45 outline-2 pointer-events-none"
+                        }`}
+                      />
+                      <div
+                        className={`w-full transition-all duration-300 outline outline-black absolute top-1/2 ${
+                          !showPassword
+                            ? "outline-0 group-hover/eye:-rotate-45 group-hover/eye:outline-2"
+                            : "-rotate-45 outline-2 pointer-events-none"
+                        }`}
+                      />
+                    </button>
                   </div>
-                )}
-                <input
-                  type="text"
-                  value={code}
-                  onChange={(e) => setCode(e.target.value)}
-                  placeholder="Code"
-                  className={`login-input ${
-                    error.type === "code" && "outline-[#ff1b1b]"
-                  }`}
-                  required
-                />
-                {error.type === "code" && (
-                  <h2 className="text-red-400 text-xl font-normal font-['Inter']">
-                    Incorrect code. Please try again
-                  </h2>
-                )}
+                  <div className="flex justify-center">
+                    <SubmitButton disabled={isLoading} text="Reset password" />
+                  </div>
+                </motion.form>
+              )}
+            </AnimatePresence>
 
-                <div className="flex justify-center">
-                  <SubmitButton disabled={isLoading} text="Submit code" />
-                </div>
-              </form>
-            )}
-            {step === "register" && (
-              <form onSubmit={handleRegister} className="mt-[20px]">
-                <input
-                  type="text"
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
-                  placeholder="Username"
-                  className="login-input"
-                  required
-                />
-
-                <div className="relative mt-[20px]">
+            <AnimatePresence mode="wait">
+              {step === "FA2" && (
+                <motion.form
+                  key="fa2-step"
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: "auto" }}
+                  exit={{ opacity: 0, height: 0 }}
+                  onSubmit={handleFA2Submit}
+                  className="mt-[20px]"
+                >
+                  {step === "FA2" && (
+                    <div className=" text-yellow-600 text-xl mt-5 break-words mb-[20px]">
+                      To continue enter the code sent to {secretEmail}
+                    </div>
+                  )}
                   <input
-                    type={showPassword ? "text" : "password"}
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    placeholder="Password"
-                    className="login-input pr-10"
+                    type="text"
+                    value={code}
+                    onChange={(e) => setCode(e.target.value)}
+                    placeholder="Code"
+                    className={`login-input ${
+                      error.type === "code" && "outline-[#ff1b1b]"
+                    }`}
                     required
                   />
-                  <button
-                    type="button"
-                    className="absolute group/eye right-3 top-1/2 transform -translate-y-1/2"
-                    onClick={togglePasswordVisibility}
-                  >
-                    <EyeIcon />
+                  {error.type === "code" && (
+                    <h2 className="text-red-400 text-xl font-normal font-['Inter']">
+                      Incorrect code. Please try again
+                    </h2>
+                  )}
 
-                    <div
-                      className={`w-full transition-all duration-300 outline outline-black absolute top-1/2 ${
-                        !showPassword
-                          ? "outline-0 group-hover/eye:rotate-45 group-hover/eye:outline-2"
-                          : "rotate-45 outline-2 pointer-events-none"
-                      }`}
+                  <div className="flex justify-center">
+                    <SubmitButton disabled={isLoading} text="Submit code" />
+                  </div>
+                </motion.form>
+              )}
+            </AnimatePresence>
+
+            <AnimatePresence mode="wait">
+              {step === "register" && (
+                <motion.form
+                  key="register-step"
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: "auto" }}
+                  exit={{ opacity: 0, height: 0 }}
+                  onSubmit={handleRegister}
+                  className="mt-[20px]"
+                >
+                  <input
+                    type="text"
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
+                    placeholder="Username"
+                    className="login-input"
+                    required
+                  />
+
+                  <div className="relative mt-[20px]">
+                    <input
+                      type={showPassword ? "text" : "password"}
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      placeholder="Password"
+                      className="login-input pr-10"
+                      required
                     />
-                    <div
-                      className={`w-full transition-all duration-300 outline outline-black absolute top-1/2 ${
-                        !showPassword
-                          ? "outline-0 group-hover/eye:-rotate-45 group-hover/eye:outline-2"
-                          : "-rotate-45 outline-2 pointer-events-none"
-                      }`}
-                    />
-                  </button>
-                </div>
-                <div className="flex justify-center">
-                  <SubmitButton disabled={isLoading} text="Create account" />
-                </div>
-              </form>
-            )}
+                    <button
+                      type="button"
+                      className="absolute group/eye right-3 top-1/2 transform -translate-y-1/2"
+                      onClick={togglePasswordVisibility}
+                    >
+                      <EyeIcon />
+
+                      <div
+                        className={`w-full transition-all duration-300 outline outline-black absolute top-1/2 ${
+                          !showPassword
+                            ? "outline-0 group-hover/eye:rotate-45 group-hover/eye:outline-2"
+                            : "rotate-45 outline-2 pointer-events-none"
+                        }`}
+                      />
+                      <div
+                        className={`w-full transition-all duration-300 outline outline-black absolute top-1/2 ${
+                          !showPassword
+                            ? "outline-0 group-hover/eye:-rotate-45 group-hover/eye:outline-2"
+                            : "-rotate-45 outline-2 pointer-events-none"
+                        }`}
+                      />
+                    </button>
+                  </div>
+                  <div className="flex justify-center">
+                    <SubmitButton disabled={isLoading} text="Create account" />
+                  </div>
+                </motion.form>
+              )}
+            </AnimatePresence>
           </div>
         </div>
       </div>

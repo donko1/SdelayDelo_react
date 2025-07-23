@@ -14,7 +14,11 @@ export default function SubmitButton({ text, disabled }) {
           <img className="w-8 mx-10" src={loading} alt="loading..." />
         )}
       </span>
-      <div className="rounded-3xl absolute inset-0 w-0 bg-black group-hover/button-submit-code:w-full transition-all duration-500 z-0"></div>
+      <div
+        className={`rounded-3xl absolute inset-0 w-0 bg-black group-hover/button-submit-code:w-full ${
+          disabled && "w-full"
+        } transition-all duration-500 z-0`}
+      ></div>
     </button>
   );
 }
