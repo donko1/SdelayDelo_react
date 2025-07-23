@@ -451,18 +451,6 @@ function AuthFlow() {
   );
 }
 
-// Old functional(it will be deleted when new design will end)
-// ###########################################################
-
-//   {error && (
-//     <div className="p-2 text-red-600 bg-red-100 rounded">{error}</div>
-//   )}
-//   {step === "FA2" && (
-//     <div className="p-2 text-yellow-600 bg-red-100 rounded">
-//       Для входа введите код, отправленный на {secretEmail}
-//     </div>
-//   )}
-
 export default function LoginPage() {
   return <AuthFlow />;
 }
