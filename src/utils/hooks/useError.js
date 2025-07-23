@@ -17,9 +17,19 @@ export function getErrorTypeByResponse(error, lang) {
         ),
         type: "noUser",
       };
+    case "":
+      return { text: "", type: "" };
+
     default:
       console.log(error);
-      return { text: "", type: "unknown" };
+      return {
+        text: chooseTextByLang(
+          "Неизвестная ошибка. Попробуйте позже",
+          "Unknown error. Try again later",
+          lang
+        ),
+        type: "unknown",
+      };
   }
 }
 
