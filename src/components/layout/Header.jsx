@@ -10,9 +10,52 @@ import XIcon from "@assets/x.svg?react";
 import calendarIcon from "@assets/calendar.svg?react";
 import { useLang } from "@context/LangContext";
 
+function ProfileSettings({ onClose }) {
+  const { username } = useUser();
+
+  return (
+    <div className="fixed top-0 left-0 p-[15px] rounded-br-[20px] pb-[170px] shadow-2xl shadow-gray-500/20 bg-white">
+      <h2
+        className="pt-[35px] pl-[100px] p-[40px] text-xl font-bold font-['Inter'] text-black cursor-pointer"
+        onClick={onClose}
+      >
+        {username}
+      </h2>
+      <div className="mt-[52px]">
+        <div className="relative py-[9px] px-[28px] flex gap-[180px] items-center justify-between">
+          <div className="absolute w-[calc(100%+30px)] top-0 -left-[15px] outline outline-1 outline-offset-[-0.50px] outline-neutral-900"></div>
+          <div className="absolute w-[calc(100%+30px)] bottom-0 -left-[15px] outline outline-1 outline-offset-[-0.50px] outline-neutral-900"></div>
+          <h1 className="text-zinc-600 text-xl font-medium font-['Inter']">
+            Account
+          </h1>
+          <div className="relative w-7 h-6 flex justify-center items-center">
+            <div className="absolute w-4 h-[3px] transition-colors duration-300 top-1/2 right-0 transform -translate-y-1/2 -translate-x-1/2 rotate-[45deg] origin-right bg-black"></div>
+            <div className="absolute w-4 h-[3px] transition-colors duration-300 bottom-1/2 right-0 transform translate-y-1/2 -translate-x-1/2 rotate-[-45deg] origin-right bg-black"></div>
+          </div>
+        </div>
+      </div>
+
+      <div className="mt-[25px]">
+        <div className="relative py-[9px] px-[28px] flex gap-[180px] items-center justify-between">
+          <div className="absolute w-[calc(100%+30px)] top-0 -left-[15px] outline outline-1 outline-offset-[-0.50px] outline-neutral-900"></div>
+          <div className="absolute w-[calc(100%+30px)] bottom-0 -left-[15px] outline outline-1 outline-offset-[-0.50px] outline-neutral-900"></div>
+          <h1 className="text-zinc-600 text-xl font-medium font-['Inter']">
+            Settings
+          </h1>
+          <div className="relative w-7 h-6 flex justify-center items-center">
+            <div className="absolute w-4 h-[3px] transition-colors duration-300 top-1/2 right-0 transform -translate-y-1/2 -translate-x-1/2 rotate-[45deg] origin-right bg-black"></div>
+            <div className="absolute w-4 h-[3px] transition-colors duration-300 bottom-1/2 right-0 transform translate-y-1/2 -translate-x-1/2 rotate-[-45deg] origin-right bg-black"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function Header({ activeElem, setAct, setOpenArchived, openForm, tags_data }) {
   const { username } = useUser();
   const { lang } = useLang();
+  const [ProfileSettingsOpened, setProfileSettingsOpened] = useState(false);
   const [tagsOpened, setTagsOpened] = useState(false);
 
   const dataForElems = [
@@ -59,8 +102,14 @@ function Header({ activeElem, setAct, setOpenArchived, openForm, tags_data }) {
 
   return (
     <div>
+      {ProfileSettingsOpened && (
+        <ProfileSettings onClose={() => setProfileSettingsOpened(false)} />
+      )}
       <div className="flex flex-col bg-transparent text-white">
-        <div className="h-24 flex items-center justify-center">
+        <div
+          className="h-24 flex items-center justify-center cursor-pointer"
+          onClick={() => setProfileSettingsOpened(!ProfileSettingsOpened)}
+        >
           <h1 className="justify-start text-stone-50 text-xl font-bold font-['Inter']">
             {username}
           </h1>
