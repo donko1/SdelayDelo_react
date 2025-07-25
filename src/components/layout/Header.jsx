@@ -9,43 +9,47 @@ import searchIcon from "@assets/search.svg?react";
 import XIcon from "@assets/x.svg?react";
 import calendarIcon from "@assets/calendar.svg?react";
 import { useLang } from "@context/LangContext";
+import AccountIcon from "@assets/Account.svg?react";
 
 function ProfileSettings({ onClose }) {
+  // TODO: Make russian language
+
   const { username } = useUser();
 
   return (
-    <div className="fixed top-0 left-0 p-[15px] rounded-br-[20px] pb-[170px] shadow-2xl shadow-gray-500/20 bg-white">
+    <div className="fixed top-0 left-0 p-[15px] rounded-br-[20px] shadow-2xl shadow-gray-500/20 bg-white">
       <h2
         className="pt-[35px] pl-[100px] p-[40px] text-xl font-bold font-['Inter'] text-black cursor-pointer"
         onClick={onClose}
       >
         {username}
       </h2>
-      <div className="mt-[52px]">
-        <div className="relative py-[9px] px-[28px] flex gap-[180px] items-center justify-between">
-          <div className="absolute w-[calc(100%+30px)] top-0 -left-[15px] outline outline-1 outline-offset-[-0.50px] outline-neutral-900"></div>
-          <div className="absolute w-[calc(100%+30px)] bottom-0 -left-[15px] outline outline-1 outline-offset-[-0.50px] outline-neutral-900"></div>
-          <h1 className="text-zinc-600 text-xl font-medium font-['Inter']">
+
+      <div className="mt-[52px] px-[52px] flex flex-col items-center gap-5">
+        <div className="px-12 py-2 bg-white rounded-2xl shadow-[1px_4px_4px_0px_rgba(0,0,0,0.21),0px_-1px_4px_0px_rgba(0,0,0,0.05)] inline-flex justify-center items-center gap-2 cursor-pointer">
+          <AccountIcon />
+          <span className="text-zinc-600 text-xl font-medium font-['Inter']">
             Account
-          </h1>
-          <div className="relative w-7 h-6 flex justify-center items-center">
-            <div className="absolute w-4 h-[3px] transition-colors duration-300 top-1/2 right-0 transform -translate-y-1/2 -translate-x-1/2 rotate-[45deg] origin-right bg-black"></div>
-            <div className="absolute w-4 h-[3px] transition-colors duration-300 bottom-1/2 right-0 transform translate-y-1/2 -translate-x-1/2 rotate-[-45deg] origin-right bg-black"></div>
-          </div>
+          </span>
+        </div>
+
+        <div className="px-12 py-2 bg-white rounded-2xl shadow-[1px_4px_4px_0px_rgba(0,0,0,0.21),0px_-1px_4px_0px_rgba(0,0,0,0.05)] inline-flex justify-center items-center gap-2 cursor-pointer">
+          <AccountIcon />
+          <span className="text-zinc-600 text-xl font-medium font-['Inter']">
+            Settings
+          </span>
         </div>
       </div>
 
-      <div className="mt-[25px]">
-        <div className="relative py-[9px] px-[28px] flex gap-[180px] items-center justify-between">
-          <div className="absolute w-[calc(100%+30px)] top-0 -left-[15px] outline outline-1 outline-offset-[-0.50px] outline-neutral-900"></div>
-          <div className="absolute w-[calc(100%+30px)] bottom-0 -left-[15px] outline outline-1 outline-offset-[-0.50px] outline-neutral-900"></div>
-          <h1 className="text-zinc-600 text-xl font-medium font-['Inter']">
-            Settings
-          </h1>
-          <div className="relative w-7 h-6 flex justify-center items-center">
-            <div className="absolute w-4 h-[3px] transition-colors duration-300 top-1/2 right-0 transform -translate-y-1/2 -translate-x-1/2 rotate-[45deg] origin-right bg-black"></div>
-            <div className="absolute w-4 h-[3px] transition-colors duration-300 bottom-1/2 right-0 transform translate-y-1/2 -translate-x-1/2 rotate-[-45deg] origin-right bg-black"></div>
-          </div>
+      <div className="mt-[30px] text-center">
+        <div
+          className="px-7 py-1.5 rounded-3xl outline outline-1 outline-offset-[-1px] outline-black inline-flex justify-center items-center gap-2.5 cursor-pointer"
+          onClick={onClose}
+        >
+          <span className="text-zinc-400 text-lg font-medium font-['Inter']">
+            Close
+          </span>
+          <XIcon color="black" className="rotate-45" />
         </div>
       </div>
     </div>

@@ -20,29 +20,7 @@ import loading from "@assets/loading.gif";
 import SubmitButton from "@components/ui/LoginButtonSubmit";
 import useError from "@hooks/useError";
 
-const stepVariants = {
-  initial: {
-    opacity: 0,
-    y: 20,
-  },
-  animate: {
-    opacity: 1,
-    y: 0,
-    transition: {
-      duration: 0.3,
-      ease: "easeOut",
-    },
-  },
-  exit: {
-    opacity: 0,
-    y: -20,
-    transition: {
-      duration: 0.2,
-      ease: "easeIn",
-    },
-  },
-};
-
+// TODO: Make russian language
 function AuthFlow() {
   const { login } = useAuth();
   const [email, setEmail] = useState("");
