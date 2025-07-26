@@ -19,6 +19,7 @@ import EyeIcon from "@assets/eye.svg?react";
 import loading from "@assets/loading.gif";
 import SubmitButton from "@components/ui/LoginButtonSubmit";
 import useError from "@hooks/useError";
+import { useLang } from "@/context/LangContext";
 
 // TODO: Make russian language
 function AuthFlow() {
@@ -36,6 +37,7 @@ function AuthFlow() {
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [secretEmail, setSecretEmail] = useState("");
+  const { updateLanguageFromServer } = useLang();
   const navigate = useNavigate();
   const { refreshUser } = useUser();
 
@@ -79,6 +81,7 @@ function AuthFlow() {
       const data = await loginUser(email, password, tkn);
       login(data.access_token);
       refreshUser();
+      updateLanguageFromServer({ Authorization: `Token ${data.access_token}` });
       navigate("/");
     } catch (err) {
       setError(err.message);
@@ -131,6 +134,7 @@ function AuthFlow() {
 
       login(data.access_token);
       refreshUser();
+      updateLanguageFromServer({ Authorization: `Token ${data.access_token}` });
       navigate("/");
     } catch (err) {
       setError(err.message);

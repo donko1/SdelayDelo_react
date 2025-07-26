@@ -10,48 +10,114 @@ import XIcon from "@assets/x.svg?react";
 import calendarIcon from "@assets/calendar.svg?react";
 import { useLang } from "@context/LangContext";
 import AccountIcon from "@assets/Account.svg?react";
+import BackIcon from "@assets/send.svg?react";
+import { useAuth } from "@/context/AuthContext";
+import { changeLanguageUser } from "@/utils/api/user";
+
+function ProfileHeader({ onClose, title }) {
+  return (
+    <div className="m-[10px] mt-0 ml-0 flex justify-center mb-[30px]">
+      <BackIcon
+        onClick={onClose}
+        className="absolute cursor-pointer left-[10px] top-[10px] padding-[30px] rotate-180 [&>*]:!fill-none [shape-rendering:crispEdges] text-black flex"
+      />
+      <h1 className="text-zinc-600 text-xl font-medium font-['Inter']">
+        {title}
+      </h1>
+    </div>
+  );
+}
 
 function ProfileSettings({ onClose }) {
   // TODO: Make russian language
 
   const { username } = useUser();
+  const [step, setStep] = useState("general");
+  const { lang, changeLanguage } = useLang();
+  const { headers } = useAuth();
+
+  const setLang = async (newLang) => {
+    if (newLang !== lang) {
+      changeLanguage(newLang);
+      await changeLanguageUser(headers, newLang);
+    }
+  };
 
   return (
-    <div className="fixed top-0 left-0 p-[15px] rounded-br-[20px] shadow-2xl shadow-gray-500/20 bg-white">
-      <h2
-        className="pt-[35px] pl-[100px] p-[40px] text-xl font-bold font-['Inter'] text-black cursor-pointer"
-        onClick={onClose}
-      >
-        {username}
-      </h2>
+    <div className="fixed min-w-[340px] min-h-[420px] top-0 left-0 p-[15px] rounded-br-[20px] shadow-2xl shadow-gray-500/20 bg-white">
+      {step === "general" && (
+        <>
+          <h2
+            className="pt-[35px] pl-[100px] p-[40px] text-xl font-bold font-['Inter'] text-black cursor-pointer"
+            onClick={onClose}
+          >
+            {username}
+          </h2>
+          <div className="mt-[10px] px-[52px] flex flex-col items-center gap-5">
+            <div className="px-12 py-2 bg-white rounded-2xl shadow-[1px_4px_4px_0px_rgba(0,0,0,0.21),0px_-1px_4px_0px_rgba(0,0,0,0.05)] inline-flex justify-center items-center gap-2 cursor-pointer">
+              <AccountIcon />
+              <span className="text-zinc-600 text-xl font-medium font-['Inter']">
+                Account
+              </span>
+            </div>
 
-      <div className="mt-[52px] px-[52px] flex flex-col items-center gap-5">
-        <div className="px-12 py-2 bg-white rounded-2xl shadow-[1px_4px_4px_0px_rgba(0,0,0,0.21),0px_-1px_4px_0px_rgba(0,0,0,0.05)] inline-flex justify-center items-center gap-2 cursor-pointer">
-          <AccountIcon />
-          <span className="text-zinc-600 text-xl font-medium font-['Inter']">
-            Account
-          </span>
-        </div>
+            <div
+              onClick={() => setStep("settings")}
+              className="px-12 py-2 bg-white rounded-2xl shadow-[1px_4px_4px_0px_rgba(0,0,0,0.21),0px_-1px_4px_0px_rgba(0,0,0,0.05)] inline-flex justify-center items-center gap-2 cursor-pointer"
+            >
+              <AccountIcon />
+              <span className="text-zinc-600 text-xl font-medium font-['Inter']">
+                Settings
+              </span>
+            </div>
+          </div>
 
-        <div className="px-12 py-2 bg-white rounded-2xl shadow-[1px_4px_4px_0px_rgba(0,0,0,0.21),0px_-1px_4px_0px_rgba(0,0,0,0.05)] inline-flex justify-center items-center gap-2 cursor-pointer">
-          <AccountIcon />
-          <span className="text-zinc-600 text-xl font-medium font-['Inter']">
-            Settings
-          </span>
+          <div className="mt-[30px] text-center">
+            <div
+              className="px-7 py-1.5 rounded-3xl outline outline-1 outline-offset-[-1px] outline-black inline-flex justify-center items-center gap-2.5 cursor-pointer"
+              onClick={onClose}
+            >
+              <span className="text-zinc-400 text-lg font-medium font-['Inter']">
+                Close
+              </span>
+              <XIcon color="black" className="rotate-45" />
+            </div>
+          </div>
+        </>
+      )}
+      {step === "settings" && (
+        <div className="mx-[30px]">
+          <ProfileHeader
+            onClose={() => setStep("general")}
+            title={"Settings"}
+          />
+          <h1 className="text-black text-xl font-semibold font-['Inter']">
+            Language
+          </h1>
+          <div className="flex max-w-[260px] justify-between items-center gap-[20px] w-full mt-[12px]">
+            <button
+              className={`px-[28px] py-1 ${
+                lang === "en"
+                  ? "bg-zinc-950 text-stone-50 text-lg font-medium font-['Inter']"
+                  : "text-zinc-400 text-lg font-medium font-['Inter']"
+              } rounded-3xl outline outline-1 outline-offset-[-1px] outline-black inline-flex   `}
+              onClick={async () => await setLang("en")}
+            >
+              English
+            </button>
+            <button
+              className={`px-[28px] py-1 ${
+                lang === "ru"
+                  ? "bg-zinc-950 text-stone-50 text-lg font-medium font-['Inter']"
+                  : "text-zinc-400 text-lg font-medium font-['Inter']"
+              } rounded-3xl outline outline-1 outline-offset-[-1px] outline-black inline-flex   `}
+              onClick={async () => await setLang("ru")}
+            >
+              Russian
+            </button>
+          </div>
         </div>
-      </div>
-
-      <div className="mt-[30px] text-center">
-        <div
-          className="px-7 py-1.5 rounded-3xl outline outline-1 outline-offset-[-1px] outline-black inline-flex justify-center items-center gap-2.5 cursor-pointer"
-          onClick={onClose}
-        >
-          <span className="text-zinc-400 text-lg font-medium font-['Inter']">
-            Close
-          </span>
-          <XIcon color="black" className="rotate-45" />
-        </div>
-      </div>
+      )}
     </div>
   );
 }
@@ -109,7 +175,7 @@ function Header({ activeElem, setAct, setOpenArchived, openForm, tags_data }) {
       {ProfileSettingsOpened && (
         <ProfileSettings onClose={() => setProfileSettingsOpened(false)} />
       )}
-      <div className="flex flex-col bg-transparent text-white">
+      <div className="flex flex-col bg-transparent text-white min-w-[270px]">
         <div
           className="h-24 flex items-center justify-center cursor-pointer"
           onClick={() => setProfileSettingsOpened(!ProfileSettingsOpened)}

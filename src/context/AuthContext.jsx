@@ -37,6 +37,7 @@ export function AuthProvider({ children }) {
 
   const logout = () => {
     Cookies.remove(USER_TOKEN_KEY, { path: "/" });
+    Cookies.remove("Lang", { path: "/" });
     setUserToken(null);
   };
 
