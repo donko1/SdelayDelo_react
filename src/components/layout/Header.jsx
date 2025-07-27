@@ -116,6 +116,9 @@ function ProfileSettings({ onClose }) {
               Russian
             </button>
           </div>
+          <h1 className="text-black text-xl font-semibold mt-[40px] font-['Inter']">
+            Time zone
+          </h1>
         </div>
       )}
     </div>

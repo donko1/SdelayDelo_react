@@ -1,6 +1,7 @@
 import { createContext, useState, useEffect, useContext } from "react";
 import Cookies from "js-cookie";
 import { get_COOKIE_EXPIRES_DAYS } from "@utils/helpers/settings";
+import { fetchTimezoneByUser } from "@utils/api/user";
 
 const COOKIE_EXPIRES_DAYS = get_COOKIE_EXPIRES_DAYS();
 
@@ -11,6 +12,7 @@ export function TimezoneProvider({ children }) {
 
   useEffect(() => {
     const savedUTC = Cookies.get("UTC");
+
     if (savedUTC) {
       setTimezone(savedUTC);
     } else {
@@ -24,6 +26,25 @@ export function TimezoneProvider({ children }) {
     }
   }, []);
 
+  const updateTimezoneFromServer = async (headers) => {
+    try {
+      const fetchedTimezone = await fetchTimezoneByUser(headers);
+
+      if (fetchedTimezone) {
+        setTimezone(fetchedTimezone);
+        Cookies.set("UTC", fetchedTimezone, {
+          expires: COOKIE_EXPIRES_DAYS,
+          path: "/",
+          sameSite: "strict",
+        });
+      }
+    } catch (error) {
+      console.error("Ошибка при обновлении часового пояса:", error);
+      const savedUTC = Cookies.get("UTC") || timezone;
+      if (savedUTC) setTimezone(savedUTC);
+    }
+  };
+
   const changeTimezone = (newTimezone) => {
     Cookies.set("UTC", newTimezone, {
       expires: COOKIE_EXPIRES_DAYS,
@@ -34,7 +55,13 @@ export function TimezoneProvider({ children }) {
   };
 
   return (
-    <TimezoneContext.Provider value={{ timezone, changeTimezone }}>
+    <TimezoneContext.Provider
+      value={{
+        timezone,
+        changeTimezone,
+        updateTimezoneFromServer,
+      }}
+    >
       {children}
     </TimezoneContext.Provider>
   );

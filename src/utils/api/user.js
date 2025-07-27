@@ -40,3 +40,22 @@ export async function fetchLangByUser(headers) {
     return 1;
   }
 }
+
+export async function fetchTimezoneByUser(headers) {
+  const url = isParallel() ? "/api/whoami" : "http://127.0.0.1:8000/api/whoami";
+  try {
+    const resp = await fetch(url, {
+      method: "GET",
+      headers: headers,
+    });
+    if (!resp.ok) {
+      console.log("Error on side of server");
+      return "";
+    }
+    const data = await resp.json();
+    return data["user"]["timezone"];
+  } catch (error) {
+    console.log(`Error! ${error}`);
+    return 1;
+  }
+}
