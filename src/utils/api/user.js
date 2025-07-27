@@ -22,6 +22,28 @@ export async function changeLanguageUser(headers, newLang) {
   }
 }
 
+export async function changeTimezoneUser(headers, newTZ) {
+  let url = isParallel()
+    ? "/api/change-userinfo/"
+    : "http://127.0.0.1:8000/api/change-userinfo/";
+  try {
+    const resp = await fetch(url, {
+      method: "PATCH",
+      headers: headers,
+      body: JSON.stringify({ timezone: newTZ }),
+    });
+    if (!resp.ok) {
+      console.log("Error on side of server");
+      return 1;
+    }
+    const data = await resp.json();
+    return data;
+  } catch (error) {
+    console.log(`Error! ${error}`);
+    return 1;
+  }
+}
+
 export async function fetchLangByUser(headers) {
   const url = isParallel() ? "/api/whoami" : "http://127.0.0.1:8000/api/whoami";
   try {

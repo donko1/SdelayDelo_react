@@ -1,6 +1,6 @@
 import { useUser } from "@context/UserContext";
 import { chooseTextByLang } from "@utils/helpers/locale";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import allNotesIcon from "@assets/allNotes.svg?react";
 import archiveIcon from "@assets/archive.svg?react";
 import myDayIcon from "@assets/myDay.svg?react";
@@ -12,7 +12,8 @@ import { useLang } from "@context/LangContext";
 import AccountIcon from "@assets/Account.svg?react";
 import BackIcon from "@assets/send.svg?react";
 import { useAuth } from "@/context/AuthContext";
-import { changeLanguageUser } from "@/utils/api/user";
+import { changeLanguageUser, changeTimezoneUser } from "@/utils/api/user";
+import { useTimezone } from "@/context/TimezoneContext";
 
 function ProfileHeader({ onClose, title }) {
   return (
@@ -28,12 +29,15 @@ function ProfileHeader({ onClose, title }) {
   );
 }
 
+// TODO: Make russian language
 function ProfileSettings({ onClose }) {
-  // TODO: Make russian language
-
   const { username } = useUser();
   const [step, setStep] = useState("general");
+  const [isTimezoneOpen, setIsTimezoneOpen] = useState(false);
+  const [timezoneFilter, setTimezoneFilter] = useState("");
+
   const { lang, changeLanguage } = useLang();
+  const { timezone, changeTimezone } = useTimezone();
   const { headers } = useAuth();
 
   const setLang = async (newLang) => {
@@ -42,6 +46,38 @@ function ProfileSettings({ onClose }) {
       await changeLanguageUser(headers, newLang);
     }
   };
+
+  const setTZ = async (newTZ) => {
+    if (newTZ !== timezone) {
+      changeTimezone(newTZ);
+      await changeTimezoneUser(headers, newTZ);
+    }
+  };
+
+  const mainTimezones = useMemo(
+    () => [
+      "Europe/Moscow",
+      "Europe/London",
+      "Europe/Paris",
+      "Europe/Berlin",
+      "America/New_York",
+      "America/Chicago",
+      "America/Los_Angeles",
+      "Asia/Tokyo",
+      "Asia/Shanghai",
+      "Asia/Dubai",
+      "Australia/Sydney",
+      "Pacific/Auckland",
+      "UTC",
+    ],
+    []
+  );
+
+  const filteredTimezones = useMemo(() => {
+    if (!timezoneFilter) return mainTimezones;
+    const query = timezoneFilter.toLowerCase();
+    return mainTimezones.filter((tz) => tz.toLowerCase().includes(query));
+  }, [timezoneFilter, mainTimezones]);
 
   return (
     <div className="fixed min-w-[340px] min-h-[420px] top-0 left-0 p-[15px] rounded-br-[20px] shadow-2xl shadow-gray-500/20 bg-white">
@@ -119,6 +155,70 @@ function ProfileSettings({ onClose }) {
           <h1 className="text-black text-xl font-semibold mt-[40px] font-['Inter']">
             Time zone
           </h1>
+          <div className="relative mt-2">
+            <button
+              className="w-full bg-white rounded-[10px] shadow-[0px_1px_4px_0px_rgba(0,0,0,0.25)] text-neutral-600 text-lg font-semibold font-['Inter'] flex justify-between items-center"
+              onClick={() => setIsTimezoneOpen(!isTimezoneOpen)}
+            >
+              <div className="mx-[10px] my-[6px] flex-1 text-left">
+                {timezone}
+              </div>
+              <div className="mx-2 w-4 h-4 flex items-center justify-center">
+                {/* Треугольник-индикатор */}
+                <svg
+                  className={`transform transition-transform ${
+                    isTimezoneOpen ? "rotate-180" : ""
+                  }`}
+                  width="12"
+                  height="8"
+                  viewBox="0 0 12 8"
+                  fill="none"
+                >
+                  <path
+                    d="M1 1.5L6 6.5L11 1.5"
+                    stroke="#666"
+                    strokeWidth="1.5"
+                  />
+                </svg>
+              </div>
+            </button>
+
+            {isTimezoneOpen && (
+              <div className="absolute top-full left-0 right-0 mt-1 max-h-[250px] bg-white rounded-[10px] shadow-[0px_2px_8px_0px_rgba(0,0,0,0.25)] z-10 overflow-hidden border border-gray-200">
+                <div className="p-2 border-b border-gray-100">
+                  <input
+                    type="text"
+                    placeholder="Search timezone..."
+                    className="w-full px-3 py-1.5 rounded-lg border border-gray-300 focus:outline-none focus:ring-1 focus:ring-blue-500 text-black"
+                    value={timezoneFilter}
+                    onChange={(e) => setTimezoneFilter(e.target.value)}
+                  />
+                </div>
+
+                <div className="max-h-[200px] overflow-y-auto">
+                  {filteredTimezones.map((tz) => (
+                    <div
+                      key={tz}
+                      className={`px-4 py-2 cursor-pointer hover:bg-gray-50 ${
+                        tz === timezone
+                          ? "bg-blue-50 text-blue-600 font-medium"
+                          : "text-neutral-600"
+                      }`}
+                      onClick={() => {
+                        setTZ(tz);
+                        setIsTimezoneOpen(false);
+                        setTimezoneFilter("");
+                      }}
+                    >
+                      <div className="text-base font-['Inter'] font-normal">
+                        {tz}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
         </div>
       )}
     </div>

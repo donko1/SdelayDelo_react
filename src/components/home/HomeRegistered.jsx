@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useMemo } from "react";
 import { useInView } from "react-intersection-observer";
 import { Link } from "react-router-dom";
 import Header from "@components/layout/Header";
@@ -17,6 +17,7 @@ import AddNoteButton from "@components/ui/AddNoteButton";
 import { useActElemContext } from "@context/ActElemContext";
 import { useLang } from "@context/LangContext";
 import NoteFormCreate from "@components/notes/NoteForm/NoteFormCreate";
+import { useTimezone } from "@/context/TimezoneContext";
 
 export default function HomeRegistered() {
   const { headers, userToken, logout } = useAuth();
@@ -31,6 +32,7 @@ export default function HomeRegistered() {
   const { actelem, setAct } = useActElemContext();
   const [isCreating, setIsCreating] = useState(false);
   const { refreshUser } = useUser();
+  const { timezone } = useTimezone();
   const [refreshTrigger, setRefreshTrigger] = useState(0);
   const [notesRef, notesInView] = useInView({
     triggerOnce: false,
@@ -57,6 +59,10 @@ export default function HomeRegistered() {
     },
     [headers]
   );
+
+  const greeting = useMemo(() => {
+    return generateGreetingByTime();
+  }, [timezone]);
 
   useEffect(() => {
     if (notesInView && notes.next && actelem === "myDay") {
@@ -217,7 +223,7 @@ export default function HomeRegistered() {
           </nav>
 
           <div className="justify-start text-zinc-900 text-5xl font-extrabold font-['Inter']">
-            {generateGreetingByTime()}
+            {greeting}
           </div>
           <div className="justify-start mt-[15px] text-neutral-500 text-5xl font-semibold font-['Inter']">
             {chooseTextByLang(
