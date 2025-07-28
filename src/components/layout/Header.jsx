@@ -14,6 +14,7 @@ import BackIcon from "@assets/send.svg?react";
 import { useAuth } from "@/context/AuthContext";
 import { changeLanguageUser, changeTimezoneUser } from "@/utils/api/user";
 import { useTimezone } from "@/context/TimezoneContext";
+import { useEscapeKey } from "@/utils/hooks/useEscapeKey";
 
 function ProfileHeader({ onClose, title }) {
   return (
@@ -33,12 +34,44 @@ function ProfileHeader({ onClose, title }) {
 function ProfileSettings({ onClose }) {
   const { username } = useUser();
   const [step, setStep] = useState("general");
-  const [isTimezoneOpen, setIsTimezoneOpen] = useState(false);
   const [timezoneFilter, setTimezoneFilter] = useState("");
 
   const { lang, changeLanguage } = useLang();
   const { timezone, changeTimezone } = useTimezone();
   const { headers } = useAuth();
+
+  const stepsTree = {
+    general: ["settings", "account"],
+    settings: ["timezone"],
+  };
+
+  const isStepInHierarchy = (currentStep, targetStep) => {
+    if (currentStep === targetStep) return true;
+
+    let parent = Object.keys(stepsTree).find((parent) =>
+      stepsTree[parent].includes(currentStep)
+    );
+
+    while (parent) {
+      if (parent === targetStep) return true;
+      parent = Object.keys(stepsTree).find((p) =>
+        stepsTree[p]?.includes(parent)
+      );
+    }
+
+    return false;
+  };
+
+  useEscapeKey(() => {
+    if (step !== "general") {
+      const parent = Object.keys(stepsTree).find((parentStep) =>
+        stepsTree[parentStep]?.includes(step)
+      );
+      setStep(parent || "general");
+    } else {
+      onClose();
+    }
+  });
 
   const setLang = async (newLang) => {
     if (newLang !== lang) {
@@ -90,7 +123,10 @@ function ProfileSettings({ onClose }) {
             {username}
           </h2>
           <div className="mt-[10px] px-[52px] flex flex-col items-center gap-5">
-            <div className="px-12 py-2 bg-white rounded-2xl shadow-[1px_4px_4px_0px_rgba(0,0,0,0.21),0px_-1px_4px_0px_rgba(0,0,0,0.05)] inline-flex justify-center items-center gap-2 cursor-pointer">
+            <div
+              onClick={() => setStep("account")}
+              className="px-12 py-2 bg-white rounded-2xl shadow-[1px_4px_4px_0px_rgba(0,0,0,0.21),0px_-1px_4px_0px_rgba(0,0,0,0.05)] inline-flex justify-center items-center gap-2 cursor-pointer"
+            >
               <AccountIcon />
               <span className="text-zinc-600 text-xl font-medium font-['Inter']">
                 Account
@@ -121,103 +157,113 @@ function ProfileSettings({ onClose }) {
           </div>
         </>
       )}
-      {step === "settings" && (
+
+      {isStepInHierarchy(step, "settings") && (
         <div className="mx-[30px]">
           <ProfileHeader
-            onClose={() => setStep("general")}
+            onClose={() =>
+              setStep(step === "settings" ? "general" : "settings")
+            }
             title={"Settings"}
           />
-          <h1 className="text-black text-xl font-semibold font-['Inter']">
-            Language
-          </h1>
-          <div className="flex max-w-[260px] justify-between items-center gap-[20px] w-full mt-[12px]">
-            <button
-              className={`px-[28px] py-1 ${
-                lang === "en"
-                  ? "bg-zinc-950 text-stone-50 text-lg font-medium font-['Inter']"
-                  : "text-zinc-400 text-lg font-medium font-['Inter']"
-              } rounded-3xl outline outline-1 outline-offset-[-1px] outline-black inline-flex   `}
-              onClick={async () => await setLang("en")}
-            >
-              English
-            </button>
-            <button
-              className={`px-[28px] py-1 ${
-                lang === "ru"
-                  ? "bg-zinc-950 text-stone-50 text-lg font-medium font-['Inter']"
-                  : "text-zinc-400 text-lg font-medium font-['Inter']"
-              } rounded-3xl outline outline-1 outline-offset-[-1px] outline-black inline-flex   `}
-              onClick={async () => await setLang("ru")}
-            >
-              Russian
-            </button>
+
+          <div>
+            <h1 className="text-black text-xl font-semibold font-['Inter']">
+              Language
+            </h1>
+            <div className="flex max-w-[260px] justify-between items-center gap-[20px] w-full mt-[12px]">
+              <button
+                className={`px-[28px] py-1 ${
+                  lang === "en"
+                    ? "bg-zinc-950 text-stone-50 text-lg font-medium font-['Inter']"
+                    : "text-zinc-400 text-lg font-medium font-['Inter']"
+                } rounded-3xl outline outline-1 outline-offset-[-1px] outline-black inline-flex`}
+                onClick={async () => await setLang("en")}
+              >
+                English
+              </button>
+              <button
+                className={`px-[28px] py-1 ${
+                  lang === "ru"
+                    ? "bg-zinc-950 text-stone-50 text-lg font-medium font-['Inter']"
+                    : "text-zinc-400 text-lg font-medium font-['Inter']"
+                } rounded-3xl outline outline-1 outline-offset-[-1px] outline-black inline-flex`}
+                onClick={async () => await setLang("ru")}
+              >
+                Russian
+              </button>
+            </div>
           </div>
+
           <h1 className="text-black text-xl font-semibold mt-[40px] font-['Inter']">
             Time zone
           </h1>
-          <div className="relative mt-2">
-            <button
-              className="w-full bg-white rounded-[10px] shadow-[0px_1px_4px_0px_rgba(0,0,0,0.25)] text-neutral-600 text-lg font-semibold font-['Inter'] flex justify-between items-center"
-              onClick={() => setIsTimezoneOpen(!isTimezoneOpen)}
-            >
-              <div className="mx-[10px] my-[6px] flex-1 text-left">
-                {timezone}
-              </div>
-              <div className="mx-2 w-4 h-4 flex items-center justify-center">
-                {/* Треугольник-индикатор */}
-                <svg
-                  className={`transform transition-transform ${
-                    isTimezoneOpen ? "rotate-180" : ""
-                  }`}
-                  width="12"
-                  height="8"
-                  viewBox="0 0 12 8"
-                  fill="none"
-                >
-                  <path
-                    d="M1 1.5L6 6.5L11 1.5"
-                    stroke="#666"
-                    strokeWidth="1.5"
-                  />
-                </svg>
-              </div>
-            </button>
 
-            {isTimezoneOpen && (
-              <div className="absolute top-full left-0 right-0 mt-1 max-h-[250px] bg-white rounded-[10px] shadow-[0px_2px_8px_0px_rgba(0,0,0,0.25)] z-10 overflow-hidden border border-gray-200">
-                <div className="p-2 border-b border-gray-100">
-                  <input
-                    type="text"
-                    placeholder="Search timezone..."
-                    className="w-full px-3 py-1.5 rounded-lg border border-gray-300 focus:outline-none focus:ring-1 focus:ring-blue-500 text-black"
-                    value={timezoneFilter}
-                    onChange={(e) => setTimezoneFilter(e.target.value)}
-                  />
-                </div>
+          {step === "timezone" ? (
+            <div className="mt-2">
+              <input
+                type="text"
+                placeholder="Search timezone..."
+                className="w-full px-3 py-1.5 rounded-lg border border-gray-300 focus:outline-none focus:ring-1 focus:ring-blue-500 text-black"
+                value={timezoneFilter}
+                onChange={(e) => setTimezoneFilter(e.target.value)}
+                autoFocus
+              />
 
-                <div className="max-h-[200px] overflow-y-auto">
-                  {filteredTimezones.map((tz) => (
-                    <div
-                      key={tz}
-                      className={`px-4 py-2 cursor-pointer hover:bg-gray-50 ${
-                        tz === timezone
-                          ? "bg-blue-50 text-blue-600 font-medium"
-                          : "text-neutral-600"
-                      }`}
-                      onClick={() => {
-                        setTZ(tz);
-                        setIsTimezoneOpen(false);
-                        setTimezoneFilter("");
-                      }}
-                    >
-                      <div className="text-base font-['Inter'] font-normal">
-                        {tz}
-                      </div>
+              <div className="mt-2 max-h-[250px] overflow-y-auto border border-gray-200 rounded-lg">
+                {filteredTimezones.map((tz) => (
+                  <div
+                    key={tz}
+                    className={`px-4 py-2 cursor-pointer hover:bg-gray-50 ${
+                      tz === timezone
+                        ? "bg-blue-50 text-blue-600 font-medium"
+                        : "text-neutral-600"
+                    }`}
+                    onClick={async () => {
+                      await setTZ(tz);
+                      setStep("settings");
+                      setTimezoneFilter("");
+                    }}
+                  >
+                    <div className="text-base font-['Inter'] font-normal">
+                      {tz}
                     </div>
-                  ))}
-                </div>
+                  </div>
+                ))}
               </div>
-            )}
+            </div>
+          ) : (
+            <div className="relative mt-2">
+              <button
+                className="w-full bg-white rounded-[10px] shadow-[0px_1px_4px_0px_rgba(0,0,0,0.25)] text-neutral-600 text-lg font-semibold font-['Inter'] flex justify-between items-center"
+                onClick={() => setStep("timezone")}
+              >
+                <div className="mx-[10px] my-[6px] flex-1 text-left">
+                  {timezone}
+                </div>
+                <div className="mx-2 w-4 h-4 flex items-center justify-center">
+                  <svg width="12" height="8" viewBox="0 0 12 8" fill="none">
+                    <path
+                      d="M1 1.5L6 6.5L11 1.5"
+                      stroke="#666"
+                      strokeWidth="1.5"
+                    />
+                  </svg>
+                </div>
+              </button>
+            </div>
+          )}
+        </div>
+      )}
+
+      {isStepInHierarchy(step, "account") && (
+        <div className="mx-[30px]">
+          <ProfileHeader
+            onClose={() => setStep(step === "account" ? "general" : "account")}
+            title={"Account"}
+          />
+          <div className="mt-4 text-center">
+            <p className="text-black">Account management UI will be here</p>
           </div>
         </div>
       )}
