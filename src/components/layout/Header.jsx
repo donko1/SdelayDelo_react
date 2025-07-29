@@ -1,6 +1,6 @@
 import { useUser } from "@context/UserContext";
 import { chooseTextByLang } from "@utils/helpers/locale";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import allNotesIcon from "@assets/allNotes.svg?react";
 import archiveIcon from "@assets/archive.svg?react";
 import myDayIcon from "@assets/myDay.svg?react";
@@ -11,8 +11,14 @@ import calendarIcon from "@assets/calendar.svg?react";
 import { useLang } from "@context/LangContext";
 import AccountIcon from "@assets/Account.svg?react";
 import BackIcon from "@assets/send.svg?react";
+import loading from "@assets/loading.gif";
 import { useAuth } from "@/context/AuthContext";
-import { changeLanguageUser, changeTimezoneUser } from "@/utils/api/user";
+import {
+  changeLanguageUser,
+  changeTimezoneUser,
+  fetchAccountDataByUser,
+  setFA2ByUser,
+} from "@/utils/api/user";
 import { useTimezone } from "@/context/TimezoneContext";
 import { useEscapeKey } from "@/utils/hooks/useEscapeKey";
 
@@ -34,16 +40,32 @@ function ProfileHeader({ onClose, title }) {
 function ProfileSettings({ onClose }) {
   const { username } = useUser();
   const [step, setStep] = useState("general");
+
   const [timezoneFilter, setTimezoneFilter] = useState("");
+  const [FA2, setFA2] = useState(false);
+  const [email, setEmail] = useState("");
+  const [isChangingFA2, setIsChangingFA2] = useState(false);
 
   const { lang, changeLanguage } = useLang();
   const { timezone, changeTimezone } = useTimezone();
-  const { headers } = useAuth();
+  const { headers, logout } = useAuth();
+  const { refreshUser } = useUser();
 
   const stepsTree = {
     general: ["settings", "account"],
     settings: ["timezone"],
   };
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const data = await fetchAccountDataByUser(headers);
+      const { email, FA2 } = data;
+      setEmail(email);
+      setFA2(FA2);
+    };
+
+    fetchData();
+  }, []);
 
   const isStepInHierarchy = (currentStep, targetStep) => {
     if (currentStep === targetStep) return true;
@@ -72,6 +94,22 @@ function ProfileSettings({ onClose }) {
       onClose();
     }
   });
+
+  const handleToggleFA2 = async () => {
+    if (!isChangingFA2) {
+      setIsChangingFA2(true);
+      const newValue = !FA2;
+
+      try {
+        await setFA2ByUser(headers, newValue);
+        setFA2(newValue);
+      } catch (error) {
+        console.error("Ошибка при изменении FA2:", error);
+      } finally {
+        setIsChangingFA2(false);
+      }
+    }
+  };
 
   const setLang = async (newLang) => {
     if (newLang !== lang) {
@@ -257,13 +295,73 @@ function ProfileSettings({ onClose }) {
       )}
 
       {isStepInHierarchy(step, "account") && (
-        <div className="mx-[30px]">
+        <div className="mx-[35px]">
           <ProfileHeader
             onClose={() => setStep(step === "account" ? "general" : "account")}
             title={"Account"}
           />
-          <div className="mt-4 text-center">
-            <p className="text-black">Account management UI will be here</p>
+          <h2 className="text-xl font-bold font-['Inter'] text-black cursor-pointer">
+            {username}
+          </h2>
+          <div className="my-[25px]">
+            <h1 className="text-black text-xl font-semibold font-['Inter']">
+              Email
+            </h1>
+            <h2 className="mt-[2px] text-zinc-950/80 text-xl font-normal font-['Inter']">
+              {email}
+            </h2>
+          </div>
+          <div className="my-[25px]">
+            <h1 className="text-black text-xl font-semibold font-['Inter']">
+              Password
+            </h1>
+          </div>
+          <div className="my-[25px]">
+            <h1 className="text-black text-xl font-semibold font-['Inter']">
+              Two-step authentication
+            </h1>
+            <label className="inline-block cursor-pointer">
+              <input
+                type="checkbox"
+                checked={FA2}
+                onChange={handleToggleFA2}
+                className="sr-only peer"
+              />
+
+              <div className="w-10 h-5 relative">
+                <div
+                  className={`
+      w-10 h-5 left-0 top-0 absolute rounded-[50px] transition-colors
+      ${FA2 ? "bg-black" : "bg-gray-300 "}
+    `}
+                />
+
+                <div
+                  className={`
+      w-4 h-4 absolute top-[2px] rounded-full bg-white transition-transform
+      ${FA2 ? "translate-x-[22px]" : "translate-x-[2px]"}
+    `}
+                />
+                <img
+                  className={`h-full absolute left-0 ${
+                    FA2 ? "translate-x-[20px]" : "translate-x-[2px]"
+                  } ${!isChangingFA2 && "opacity-0"}`}
+                  src={loading}
+                  alt="loading..."
+                />
+              </div>
+            </label>
+          </div>
+          <div className="flex justify-center">
+            <button
+              onClick={() => {
+                logout();
+                refreshUser();
+              }}
+              className="px-[30px] py-[8px] rounded-3xl outline outline-1 outline-offset-[-1px] outline-black inline-flex text-black text-xl font-normal font-['Inter'] cursor-pointer"
+            >
+              Log out
+            </button>
           </div>
         </div>
       )}

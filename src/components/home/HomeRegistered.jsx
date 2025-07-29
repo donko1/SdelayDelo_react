@@ -20,10 +20,9 @@ import NoteFormCreate from "@components/notes/NoteForm/NoteFormCreate";
 import { useTimezone } from "@/context/TimezoneContext";
 
 export default function HomeRegistered() {
-  const { headers, userToken, logout } = useAuth();
+  const { headers } = useAuth();
   const { lang } = useLang();
 
-  const [isAuthenticated, setIsAuthenticated] = useState(userToken != null);
   const [notes, setNotes] = useState({ results: [], next: null });
   const [allNotes, setAllNotes] = useState({ result: [], next: null });
   const [tags, setTags] = useState([]);
@@ -31,7 +30,6 @@ export default function HomeRegistered() {
   const [editingNote, setEditingNote] = useState(null);
   const { actelem, setAct } = useActElemContext();
   const [isCreating, setIsCreating] = useState(false);
-  const { refreshUser } = useUser();
   const { timezone } = useTimezone();
   const [refreshTrigger, setRefreshTrigger] = useState(0);
   const [notesRef, notesInView] = useInView({
@@ -62,7 +60,7 @@ export default function HomeRegistered() {
 
   const greeting = useMemo(() => {
     return generateGreetingByTime();
-  }, [timezone]);
+  }, [timezone, lang]);
 
   useEffect(() => {
     if (notesInView && notes.next && actelem === "myDay") {
@@ -206,22 +204,6 @@ export default function HomeRegistered() {
 
       {actelem === "myDay" && (
         <div className="ml-96 p-4">
-          <nav>
-            <Link to="/">Главная</Link>
-            {!isAuthenticated && <Link to="/login">Войти</Link>}
-            {isAuthenticated && (
-              <button
-                onClick={() => {
-                  logout();
-                  refreshUser();
-                  setIsAuthenticated(false);
-                }}
-              >
-                Выйти
-              </button>
-            )}
-          </nav>
-
           <div className="justify-start text-zinc-900 text-5xl font-extrabold font-['Inter']">
             {greeting}
           </div>
