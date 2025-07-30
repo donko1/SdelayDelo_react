@@ -20,7 +20,14 @@ import {
   setFA2ByUser,
 } from "@/utils/api/user";
 import { useTimezone } from "@/context/TimezoneContext";
+import EyeIcon from "@assets/eye.svg?react";
 import { useEscapeKey } from "@/utils/hooks/useEscapeKey";
+import {
+  checkCode,
+  resetPassword,
+  sendVerificationCode,
+} from "@/utils/api/login";
+import useError from "@/utils/hooks/useError";
 
 function ProfileHeader({ onClose, title }) {
   return (
@@ -37,6 +44,9 @@ function ProfileHeader({ onClose, title }) {
 }
 
 // TODO: Make russian language
+// TODO: make HOVER animations
+// TODO: make useError useful
+// TODO: make sure that passwords were written twice
 function ProfileSettings({ onClose }) {
   const { username } = useUser();
   const [step, setStep] = useState("general");
@@ -44,7 +54,14 @@ function ProfileSettings({ onClose }) {
   const [timezoneFilter, setTimezoneFilter] = useState("");
   const [FA2, setFA2] = useState(false);
   const [email, setEmail] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [password, setPassword] = useState();
+  const [passwordSecond, setPasswordSecond] = useState();
+  const [token, setToken] = useState();
+  const [code, setCode] = useState();
   const [isChangingFA2, setIsChangingFA2] = useState(false);
+
+  const { error, setError } = useError();
 
   const { lang, changeLanguage } = useLang();
   const { timezone, changeTimezone } = useTimezone();
@@ -54,6 +71,8 @@ function ProfileSettings({ onClose }) {
   const stepsTree = {
     general: ["settings", "account"],
     settings: ["timezone"],
+    account: ["code"],
+    code: ["reset"],
   };
 
   useEffect(() => {
@@ -82,6 +101,10 @@ function ProfileSettings({ onClose }) {
     }
 
     return false;
+  };
+
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
   };
 
   useEscapeKey(() => {
@@ -303,65 +326,189 @@ function ProfileSettings({ onClose }) {
           <h2 className="text-xl font-bold font-['Inter'] text-black cursor-pointer">
             {username}
           </h2>
-          <div className="my-[25px]">
-            <h1 className="text-black text-xl font-semibold font-['Inter']">
-              Email
-            </h1>
-            <h2 className="mt-[2px] text-zinc-950/80 text-xl font-normal font-['Inter']">
-              {email}
-            </h2>
-          </div>
-          <div className="my-[25px]">
-            <h1 className="text-black text-xl font-semibold font-['Inter']">
-              Password
-            </h1>
-          </div>
-          <div className="my-[25px]">
-            <h1 className="text-black text-xl font-semibold font-['Inter']">
-              Two-step authentication
-            </h1>
-            <label className="inline-block cursor-pointer">
-              <input
-                type="checkbox"
-                checked={FA2}
-                onChange={handleToggleFA2}
-                className="sr-only peer"
-              />
+          <div className="relative">
+            <div className="my-[25px]">
+              {step === "reset" && (
+                <div className="bg-white w-full h-full absolute z-50">
+                  <ProfileHeader title="" onClose={() => setStep("account")} />
+                  <h1 className="mt-[50px] text-black text-lg font-semibold font-['Inter']">
+                    Enter new password
+                  </h1>
+                  <div className="relative">
+                    <input
+                      type={showPassword ? "text" : "password"}
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      placeholder="Password"
+                      className="login-input pr-12 px-[13px] py-[7px] text-black/90 "
+                      required
+                    />
+                    <button
+                      type="button"
+                      className="absolute group/eye right-0 top-1/2 transform -translate-y-1/2"
+                      onClick={togglePasswordVisibility}
+                    >
+                      <EyeIcon className="text-black" />
+                      <div
+                        className={`w-full transition-all duration-300 outline outline-black absolute top-1/2 ${
+                          !showPassword
+                            ? "outline-0 group-hover/eye:rotate-45 group-hover/eye:outline-2"
+                            : "rotate-45 outline-2 pointer-events-none"
+                        }`}
+                      />
+                      <div
+                        className={`w-full transition-all duration-300 outline outline-black absolute top-1/2 ${
+                          !showPassword
+                            ? "outline-0 group-hover/eye:-rotate-45 group-hover/eye:outline-2"
+                            : "-rotate-45 outline-2 pointer-events-none"
+                        }`}
+                      />
+                    </button>
+                  </div>
+                  <h1 className="mt-[16px] text-black text-lg font-semibold font-['Inter']">
+                    Repeat password
+                  </h1>
+                  <div className="relative">
+                    <input
+                      type={showPassword ? "text" : "password"}
+                      value={passwordSecond}
+                      onChange={(e) => setPasswordSecond(e.target.value)}
+                      placeholder="Password"
+                      className="login-input px-[13px] py-[7px] pr-12 text-black/90 "
+                      required
+                    />
+                    <button
+                      type="button"
+                      className="absolute group/eye right-0 top-1/2 transform -translate-y-1/2"
+                      onClick={togglePasswordVisibility}
+                    >
+                      <EyeIcon className="text-black" />
+                      <div
+                        className={`w-full transition-all duration-300 outline outline-black absolute top-1/2 ${
+                          !showPassword
+                            ? "outline-0 group-hover/eye:rotate-45 group-hover/eye:outline-2"
+                            : "rotate-45 outline-2 pointer-events-none"
+                        }`}
+                      />
+                      <div
+                        className={`w-full transition-all duration-300 outline outline-black absolute top-1/2 ${
+                          !showPassword
+                            ? "outline-0 group-hover/eye:-rotate-45 group-hover/eye:outline-2"
+                            : "-rotate-45 outline-2 pointer-events-none"
+                        }`}
+                      />
+                    </button>
+                  </div>
+                  <div className="mt-[21px] flex justify-center">
+                    <button
+                      onClick={async () => {
+                        await resetPassword(token, password);
+                        setStep("account");
+                      }}
+                      className="px-[30px]  py-[8px] rounded-3xl outline outline-1 outline-offset-[-1px] outline-black inline-flex text-black text-xl font-normal font-['Inter'] cursor-pointer"
+                    >
+                      Confirm
+                    </button>
+                  </div>
+                </div>
+              )}
+              {step === "code" && (
+                <div className="bg-white w-full h-full absolute z-50">
+                  <ProfileHeader title="" onClose={() => setStep("account")} />
+                  <input
+                    type="text"
+                    value={code}
+                    onChange={(e) => setCode(e.target.value)}
+                    placeholder="Code"
+                    className="login-input mt-[40px] px-[13px] py-[7px] pr-12 text-black/90 "
+                    required
+                  />
+                  <div className="mt-[21px] flex justify-center">
+                    <button
+                      onClick={async () => {
+                        try {
+                          const { token: tkn } = await checkCode(email, code);
+                          setToken(tkn);
+                          setStep("reset");
+                        } catch (err) {
+                          setError(err.message);
+                        }
+                      }}
+                      className="px-[30px]  py-[8px] rounded-3xl outline outline-1 outline-offset-[-1px] outline-black inline-flex text-black text-xl font-normal font-['Inter'] cursor-pointer"
+                    >
+                      Confirm
+                    </button>
+                  </div>
+                </div>
+              )}
+              <h1 className="text-black text-xl font-semibold font-['Inter']">
+                Email
+              </h1>
+              <h2 className="mt-[2px] text-zinc-950/80 text-xl font-normal font-['Inter']">
+                {email}
+              </h2>
+            </div>
+            <div className="my-[25px]">
+              <h1 className="text-black text-xl font-semibold font-['Inter']">
+                Password
+              </h1>
+              <h2
+                onClick={async () => {
+                  await sendVerificationCode(email);
+                  setStep("code");
+                }}
+                className="p-[10px] pl-0 text-zinc-950/50 text-base font-normal font-['Inter']"
+              >
+                Reset password
+              </h2>
+            </div>
+            <div className="my-[25px]">
+              <h1 className="text-black text-xl font-semibold font-['Inter']">
+                Two-step authentication
+              </h1>
+              <label className="inline-block cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={FA2}
+                  onChange={handleToggleFA2}
+                  className="sr-only peer"
+                />
 
-              <div className="w-10 h-5 relative">
-                <div
-                  className={`
+                <div className="w-10 h-5 relative">
+                  <div
+                    className={`
       w-10 h-5 left-0 top-0 absolute rounded-[50px] transition-colors
       ${FA2 ? "bg-black" : "bg-gray-300 "}
     `}
-                />
+                  />
 
-                <div
-                  className={`
+                  <div
+                    className={`
       w-4 h-4 absolute top-[2px] rounded-full bg-white transition-transform
       ${FA2 ? "translate-x-[22px]" : "translate-x-[2px]"}
     `}
-                />
-                <img
-                  className={`h-full absolute left-0 ${
-                    FA2 ? "translate-x-[20px]" : "translate-x-[2px]"
-                  } ${!isChangingFA2 && "opacity-0"}`}
-                  src={loading}
-                  alt="loading..."
-                />
-              </div>
-            </label>
-          </div>
-          <div className="flex justify-center">
-            <button
-              onClick={() => {
-                logout();
-                refreshUser();
-              }}
-              className="px-[30px] py-[8px] rounded-3xl outline outline-1 outline-offset-[-1px] outline-black inline-flex text-black text-xl font-normal font-['Inter'] cursor-pointer"
-            >
-              Log out
-            </button>
+                  />
+                  <img
+                    className={`h-full absolute left-0 ${
+                      FA2 ? "translate-x-[20px]" : "translate-x-[2px]"
+                    } ${!isChangingFA2 && "opacity-0"}`}
+                    src={loading}
+                    alt="loading..."
+                  />
+                </div>
+              </label>
+            </div>
+            <div className="flex justify-center">
+              <button
+                onClick={() => {
+                  logout();
+                  refreshUser();
+                }}
+                className="px-[30px] py-[8px] rounded-3xl outline outline-1 outline-offset-[-1px] outline-black inline-flex text-black text-xl font-normal font-['Inter'] cursor-pointer"
+              >
+                Log out
+              </button>
+            </div>
           </div>
         </div>
       )}

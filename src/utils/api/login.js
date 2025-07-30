@@ -54,6 +54,7 @@ export const loginUser = async (email, password, token = null) => {
 };
 
 export const resetPassword = async (token, newPassword) => {
+  console.log(token);
   const url = `${getBaseUrl()}/api/reset_password`;
   const response = await fetch(url, {
     method: "POST",
