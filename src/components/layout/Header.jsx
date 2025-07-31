@@ -44,9 +44,6 @@ function ProfileHeader({ onClose, title }) {
 }
 
 // TODO: Make russian language
-// TODO: make HOVER animations
-// TODO: make useError useful
-// TODO: make sure that passwords were written twice
 function ProfileSettings({ onClose }) {
   const { username } = useUser();
   const [step, setStep] = useState("general");
