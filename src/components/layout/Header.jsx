@@ -60,6 +60,8 @@ function ProfileSettings({ onClose }) {
   const [token, setToken] = useState();
   const [code, setCode] = useState();
   const [isChangingFA2, setIsChangingFA2] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [resetLoading, setResetLoading] = useState(false);
 
   const { error, setError } = useError();
 
@@ -85,6 +87,17 @@ function ProfileSettings({ onClose }) {
 
     fetchData();
   }, []);
+
+  useEffect(() => {
+    setError("");
+  }, [code]);
+
+  const checkPasswords = () => {
+    if (password === passwordSecond) {
+      return 1;
+    }
+    throw new Error("Password arent equal");
+  };
 
   const isStepInHierarchy = (currentStep, targetStep) => {
     if (currentStep === targetStep) return true;
@@ -340,7 +353,9 @@ function ProfileSettings({ onClose }) {
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       placeholder="Password"
-                      className="login-input pr-12 px-[13px] py-[7px] text-black/90 "
+                      className={`login-input px-[13px] py-[7px] pr-12 text-black/90 ${
+                        error.type === "password" && "outline-[#ff1b1b]"
+                      }`}
                       required
                     />
                     <button
@@ -374,7 +389,9 @@ function ProfileSettings({ onClose }) {
                       value={passwordSecond}
                       onChange={(e) => setPasswordSecond(e.target.value)}
                       placeholder="Password"
-                      className="login-input px-[13px] py-[7px] pr-12 text-black/90 "
+                      className={`login-input px-[13px] py-[7px] pr-12 text-black/90 ${
+                        error.type === "password" && "outline-[#ff1b1b]"
+                      }`}
                       required
                     />
                     <button
@@ -399,15 +416,45 @@ function ProfileSettings({ onClose }) {
                       />
                     </button>
                   </div>
+                  {error.type === "password" && (
+                    <h2 className="text-red-400 text-sm font-normal font-['Inter']">
+                      {error.text}
+                    </h2>
+                  )}
+
                   <div className="mt-[21px] flex justify-center">
                     <button
                       onClick={async () => {
-                        await resetPassword(token, password);
+                        setIsLoading(true);
+                        try {
+                          checkPasswords();
+                          await resetPassword(token, password);
+                        } catch (err) {
+                          setError(err.message);
+                          setIsLoading(false);
+                          return;
+                        }
                         setStep("account");
+                        setIsLoading(false);
                       }}
-                      className="px-[30px]  py-[8px] rounded-3xl outline outline-1 outline-offset-[-1px] outline-black inline-flex text-black text-xl font-normal font-['Inter'] cursor-pointer"
+                      className="group/button-confirm relative px-[30px] py-[8px] rounded-3xl outline outline-1 outline-offset-[-1px] outline-black inline-flex text-black text-xl font-normal font-['Inter'] cursor-pointer"
                     >
-                      Confirm
+                      <span className="relative z-10 group-hover/button-confirm:text-white transition-colors duration-500">
+                        {!isLoading ? (
+                          "Confirm"
+                        ) : (
+                          <img
+                            className="w-8 mx-10"
+                            src={loading}
+                            alt="loading..."
+                          />
+                        )}
+                      </span>
+                      <div
+                        className={`rounded-3xl absolute inset-0 w-0 bg-black group-hover/button-confirm:w-full ${
+                          isLoading && "w-full"
+                        } transition-all duration-500 z-0`}
+                      ></div>
                     </button>
                   </div>
                 </div>
@@ -415,29 +462,54 @@ function ProfileSettings({ onClose }) {
               {step === "code" && (
                 <div className="bg-white w-full h-full absolute z-50">
                   <ProfileHeader title="" onClose={() => setStep("account")} />
+
                   <input
                     type="text"
                     value={code}
                     onChange={(e) => setCode(e.target.value)}
                     placeholder="Code"
-                    className="login-input mt-[40px] px-[13px] py-[7px] pr-12 text-black/90 "
+                    className={`login-input mt-[40px] px-[13px] py-[7px] pr-12 text-black/90 ${
+                      error.type === "code" && "outline-[#ff1b1b]"
+                    }`}
                     required
                   />
+                  {error.type === "code" && (
+                    <h2 className="text-red-400 text-xl font-normal font-['Inter']">
+                      Incorrect code. Please try again
+                    </h2>
+                  )}
                   <div className="mt-[21px] flex justify-center">
-                    <button
-                      onClick={async () => {
-                        try {
-                          const { token: tkn } = await checkCode(email, code);
-                          setToken(tkn);
-                          setStep("reset");
-                        } catch (err) {
-                          setError(err.message);
-                        }
-                      }}
-                      className="px-[30px]  py-[8px] rounded-3xl outline outline-1 outline-offset-[-1px] outline-black inline-flex text-black text-xl font-normal font-['Inter'] cursor-pointer"
-                    >
-                      Confirm
-                    </button>
+                    <div className="flex justify-center">
+                      <button
+                        onClick={async () => {
+                          try {
+                            const { token: tkn } = await checkCode(email, code);
+                            setToken(tkn);
+                            setStep("reset");
+                          } catch (err) {
+                            setError(err.message);
+                          }
+                        }}
+                        className="group/button-confirm relative px-[30px] py-[8px] rounded-3xl outline outline-1 outline-offset-[-1px] outline-black inline-flex text-black text-xl font-normal font-['Inter'] cursor-pointer"
+                      >
+                        <span className="relative z-10 group-hover/button-confirm:text-white transition-colors duration-500">
+                          {!isLoading ? (
+                            "Confirm"
+                          ) : (
+                            <img
+                              className="w-8 mx-10"
+                              src={loading}
+                              alt="loading..."
+                            />
+                          )}
+                        </span>
+                        <div
+                          className={`rounded-3xl absolute inset-0 w-0 bg-black group-hover/button-confirm:w-full ${
+                            isLoading && "w-full"
+                          } transition-all duration-500 z-0`}
+                        ></div>
+                      </button>
+                    </div>
                   </div>
                 </div>
               )}
@@ -452,15 +524,26 @@ function ProfileSettings({ onClose }) {
               <h1 className="text-black text-xl font-semibold font-['Inter']">
                 Password
               </h1>
-              <h2
-                onClick={async () => {
-                  await sendVerificationCode(email);
-                  setStep("code");
-                }}
-                className="p-[10px] pl-0 text-zinc-950/50 text-base font-normal font-['Inter']"
-              >
-                Reset password
-              </h2>
+              <div className="relative">
+                <h2
+                  onClick={async () => {
+                    if (!isLoading) {
+                      setResetLoading(true);
+                      await sendVerificationCode(email);
+                      setStep("code");
+                      setResetLoading(false);
+                    }
+                  }}
+                  className="p-[10px] relative pl-0 text-zinc-950/50 text-base font-normal font-['Inter']"
+                >
+                  Reset password
+                </h2>
+                {resetLoading && (
+                  <div className="flex items-center justify-center absolute top-1/2 transform -translate-y-1/2 left-16">
+                    <img className="w-10" src={loading} alt="loading..." />
+                  </div>
+                )}
+              </div>
             </div>
             <div className="my-[25px]">
               <h1 className="text-black text-xl font-semibold font-['Inter']">
@@ -501,12 +584,24 @@ function ProfileSettings({ onClose }) {
             <div className="flex justify-center">
               <button
                 onClick={() => {
+                  setIsLoading(true);
                   logout();
                   refreshUser();
                 }}
-                className="px-[30px] py-[8px] rounded-3xl outline outline-1 outline-offset-[-1px] outline-black inline-flex text-black text-xl font-normal font-['Inter'] cursor-pointer"
+                className="group/button-logout relative px-[30px] py-[8px] rounded-3xl outline outline-1 outline-offset-[-1px] outline-black inline-flex text-black text-xl font-normal font-['Inter'] cursor-pointer"
               >
-                Log out
+                <span className="relative z-10 group-hover/button-logout:text-white transition-colors duration-500">
+                  {!isLoading ? (
+                    "Log out"
+                  ) : (
+                    <img className="w-8 mx-10" src={loading} alt="loading..." />
+                  )}
+                </span>
+                <div
+                  className={`rounded-3xl absolute inset-0 w-0 bg-black group-hover/button-logout:w-full ${
+                    isLoading && "w-full"
+                  } transition-all duration-500 z-0`}
+                ></div>
               </button>
             </div>
           </div>

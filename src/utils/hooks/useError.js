@@ -17,6 +17,24 @@ export function getErrorTypeByResponse(error, lang) {
         ),
         type: "noUser",
       };
+    case "Password arent equal":
+      return {
+        text: chooseTextByLang(
+          "Пароли должны совпадать",
+          "Passwords should be equal",
+          lang
+        ),
+        type: "password",
+      };
+    case "Пароль слишком простой":
+      return {
+        text: chooseTextByLang(
+          "Пароль слишком простой",
+          "Password is too easy",
+          lang
+        ),
+        type: "password",
+      };
     case "":
       return { text: "", type: "" };
 
