@@ -11,7 +11,7 @@ import {
 } from "@utils/api/login";
 import { check_if_email_registered } from "@utils/api/auth";
 import { useAuth } from "@context/AuthContext";
-import { getUserLocaleInfo } from "@utils/helpers/locale";
+import { chooseTextByLang, getUserLocaleInfo } from "@utils/helpers/locale";
 import { useUser } from "@context/UserContext";
 import { useNavigate } from "react-router-dom";
 import ArrowIcon from "@assets/arrow.svg?react";
@@ -22,7 +22,7 @@ import useError from "@hooks/useError";
 import { useLang } from "@/context/LangContext";
 import { useTimezone } from "@/context/TimezoneContext";
 
-// TODO: Make russian language
+// TODO: Make redirect if is logined
 function AuthFlow() {
   const { login } = useAuth();
   const [email, setEmail] = useState("");
@@ -38,7 +38,7 @@ function AuthFlow() {
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [secretEmail, setSecretEmail] = useState("");
-  const { updateLanguageFromServer } = useLang();
+  const { lang, updateLanguageFromServer } = useLang();
   const { updateTimezoneFromServer } = useTimezone();
   const navigate = useNavigate();
   const { refreshUser } = useUser();
@@ -206,8 +206,18 @@ function AuthFlow() {
                     preserveAspectRatio="none"
                     onClick={() => setStep("email")}
                   />
-                  <h2 className="text-black text-2xl font-normal font-['Inter']">
-                    {isRegistered.current ? `Welcome back!` : "Welcome to SD!"}
+                  <h2 className="text-black text-[20px] font-normal font-['Inter']">
+                    {isRegistered.current
+                      ? chooseTextByLang(
+                          "С возвращением!",
+                          `Welcome back!`,
+                          lang
+                        )
+                      : chooseTextByLang(
+                          "Приветствуем в SD!",
+                          "Welcome to SD!",
+                          lang
+                        )}
                   </h2>
                 </motion.div>
               )}
@@ -278,7 +288,7 @@ function AuthFlow() {
                     type="text"
                     value={code}
                     onChange={(e) => setCode(e.target.value)}
-                    placeholder="Code"
+                    placeholder={chooseTextByLang("Код", "Code", lang)}
                     className={`login-input ${
                       error.type === "code" && "outline-[#ff1b1b]"
                     }`}
@@ -286,12 +296,23 @@ function AuthFlow() {
                   />
                   {error.type === "code" && (
                     <h2 className="text-red-400 text-xl font-normal font-['Inter']">
-                      Incorrect code. Please try again
+                      {chooseTextByLang(
+                        "Код неверный. Пожалуйста, повторите попытку",
+                        "Incorrect code. Please try again",
+                        lang
+                      )}
                     </h2>
                   )}
 
                   <div className="flex justify-center">
-                    <SubmitButton disabled={isLoading} text="Submit code" />
+                    <SubmitButton
+                      disabled={isLoading}
+                      text={chooseTextByLang(
+                        "Подтвердить код",
+                        "Submit code",
+                        lang
+                      )}
+                    />
                   </div>
                 </motion.form>
               )}
@@ -312,7 +333,7 @@ function AuthFlow() {
                       type={showPassword ? "text" : "password"}
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
-                      placeholder="Password"
+                      placeholder={chooseTextByLang("Пароль", "Password", lang)}
                       className={`login-input pr-10 ${
                         error.type === "password" && "outline-[#ff1b1b]"
                       }`}
@@ -343,7 +364,11 @@ function AuthFlow() {
 
                   {error.type === "password" && (
                     <h2 className="text-red-400 text-xl font-normal font-['Inter']">
-                      Incorrect password. Please try again
+                      {chooseTextByLang(
+                        "Пароль неверный. Пожалуйста, повторите попытку",
+                        "Incorrect password. Please try again",
+                        lang
+                      )}
                     </h2>
                   )}
                   {step === "login" && (
@@ -359,10 +384,17 @@ function AuthFlow() {
                         }}
                         className="text-neutral-500 text-2xl font-light font-['Inter'] text-center cursor-pointer"
                       >
-                        Forgot password?
+                        {chooseTextByLang(
+                          "Забыли пароль?",
+                          "Forgot password?",
+                          lang
+                        )}
                       </h1>
                       <div className="flex justify-center">
-                        <SubmitButton disabled={isLoading} text="Sign in" />
+                        <SubmitButton
+                          disabled={isLoading}
+                          text={chooseTextByLang("Войти", "Sign in", lang)}
+                        />
                       </div>
                     </div>
                   )}
@@ -384,7 +416,7 @@ function AuthFlow() {
                     type="text"
                     value={code}
                     onChange={(e) => setCode(e.target.value)}
-                    placeholder="Code"
+                    placeholder={chooseTextByLang("Код", "Code", lang)}
                     className={`login-input ${
                       error.type === "code" && "outline-[#ff1b1b]"
                     }`}
@@ -392,7 +424,11 @@ function AuthFlow() {
                   />
                   {error.type === "code" && (
                     <h2 className="text-red-400 text-xl font-normal font-['Inter']">
-                      Incorrect code. Please try again
+                      {chooseTextByLang(
+                        "Код неверный. Пожалуйста, повторите попытку",
+                        "Incorrect code. Please try again",
+                        lang
+                      )}
                     </h2>
                   )}
 
@@ -401,7 +437,11 @@ function AuthFlow() {
                       type={showPassword ? "text" : "password"}
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
-                      placeholder="New password"
+                      placeholder={chooseTextByLang(
+                        "Новый пароль",
+                        "New password",
+                        lang
+                      )}
                       className="login-input pr-10"
                       required
                     />
@@ -429,7 +469,14 @@ function AuthFlow() {
                     </button>
                   </div>
                   <div className="flex justify-center">
-                    <SubmitButton disabled={isLoading} text="Reset password" />
+                    <SubmitButton
+                      disabled={isLoading}
+                      text={chooseTextByLang(
+                        "Сбросить пароль",
+                        "Reset password",
+                        lang
+                      )}
+                    />
                   </div>
                 </motion.form>
               )}
@@ -447,14 +494,18 @@ function AuthFlow() {
                 >
                   {step === "FA2" && (
                     <div className=" text-yellow-600 text-xl mt-5 break-words mb-[20px]">
-                      To continue enter the code sent to {secretEmail}
+                      {chooseTextByLang(
+                        `Для продолжение введите код, отправленный на ${secretEmail}`,
+                        `To continue enter the code sent to ${secretEmail}`,
+                        lang
+                      )}
                     </div>
                   )}
                   <input
                     type="text"
                     value={code}
                     onChange={(e) => setCode(e.target.value)}
-                    placeholder="Code"
+                    placeholder={chooseTextByLang("Код", "Code", lang)}
                     className={`login-input ${
                       error.type === "code" && "outline-[#ff1b1b]"
                     }`}
@@ -462,12 +513,23 @@ function AuthFlow() {
                   />
                   {error.type === "code" && (
                     <h2 className="text-red-400 text-xl font-normal font-['Inter']">
-                      Incorrect code. Please try again
+                      {chooseTextByLang(
+                        "Код неверный. Пожалуйста, повторите попытку",
+                        "Incorrect code. Please try again",
+                        lang
+                      )}
                     </h2>
                   )}
 
                   <div className="flex justify-center">
-                    <SubmitButton disabled={isLoading} text="Submit code" />
+                    <SubmitButton
+                      disabled={isLoading}
+                      text={chooseTextByLang(
+                        "Подтвердить код",
+                        "Submit code",
+                        lang
+                      )}
+                    />
                   </div>
                 </motion.form>
               )}
@@ -497,7 +559,7 @@ function AuthFlow() {
                       type={showPassword ? "text" : "password"}
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
-                      placeholder="Password"
+                      placeholder={chooseTextByLang("Пароль", "Password", lang)}
                       className="login-input pr-10"
                       required
                     />
@@ -525,7 +587,14 @@ function AuthFlow() {
                     </button>
                   </div>
                   <div className="flex justify-center">
-                    <SubmitButton disabled={isLoading} text="Create account" />
+                    <SubmitButton
+                      disabled={isLoading}
+                      text={chooseTextByLang(
+                        "Создать аккаунт",
+                        "Create account",
+                        lang
+                      )}
+                    />
                   </div>
                 </motion.form>
               )}
