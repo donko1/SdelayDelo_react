@@ -43,7 +43,6 @@ function ProfileHeader({ onClose, title }) {
   );
 }
 
-// TODO: Make russian language
 function ProfileSettings({ onClose }) {
   const { username } = useUser();
   const [step, setStep] = useState("general");
@@ -200,7 +199,7 @@ function ProfileSettings({ onClose }) {
             >
               <AccountIcon />
               <span className="text-zinc-600 text-xl font-medium font-['Inter']">
-                Account
+                {chooseTextByLang("Аккаунт", "Account", lang)}
               </span>
             </div>
 
@@ -210,7 +209,7 @@ function ProfileSettings({ onClose }) {
             >
               <AccountIcon />
               <span className="text-zinc-600 text-xl font-medium font-['Inter']">
-                Settings
+                {chooseTextByLang("Настройки", "Settings", lang)}
               </span>
             </div>
           </div>
@@ -221,7 +220,7 @@ function ProfileSettings({ onClose }) {
               onClick={onClose}
             >
               <span className="text-zinc-400 text-lg font-medium font-['Inter']">
-                Close
+                {chooseTextByLang("Закрыть", "Close", lang)}
               </span>
               <XIcon color="black" className="rotate-45" />
             </div>
@@ -240,7 +239,7 @@ function ProfileSettings({ onClose }) {
 
           <div>
             <h1 className="text-black text-xl font-semibold font-['Inter']">
-              Language
+              {chooseTextByLang("Язык", "Language", lang)}
             </h1>
             <div className="flex max-w-[260px] justify-between items-center gap-[20px] w-full mt-[12px]">
               <button
@@ -261,13 +260,13 @@ function ProfileSettings({ onClose }) {
                 } rounded-3xl outline outline-1 outline-offset-[-1px] outline-black inline-flex`}
                 onClick={async () => await setLang("ru")}
               >
-                Russian
+                Русский
               </button>
             </div>
           </div>
 
           <h1 className="text-black text-xl font-semibold mt-[40px] font-['Inter']">
-            Time zone
+            {chooseTextByLang("Часовой пояс", "Time zone", lang)}
           </h1>
 
           {step === "timezone" ? (
@@ -342,22 +341,30 @@ function ProfileSettings({ onClose }) {
                 <div className="bg-white w-full h-full absolute z-50">
                   <ProfileHeader title="" onClose={() => setStep("account")} />
                   <h1 className="mt-[50px] text-black text-lg font-semibold font-['Inter']">
-                    Enter new password
+                    {chooseTextByLang(
+                      "Введите новый пароль",
+                      "Enter new password",
+                      lang
+                    )}
                   </h1>
                   <div className="relative">
                     <input
                       type={showPassword ? "text" : "password"}
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
-                      placeholder="Password"
-                      className={`login-input px-[13px] py-[7px] pr-12 text-black/90 ${
+                      placeholder={chooseTextByLang(
+                        "Новый пароль",
+                        "New password",
+                        lang
+                      )}
+                      className={`login-input px-[13px] py-[7px] pr-[50px] text-black/90 ${
                         error.type === "password" && "outline-[#ff1b1b]"
                       }`}
                       required
                     />
                     <button
                       type="button"
-                      className="absolute group/eye right-0 top-1/2 transform -translate-y-1/2"
+                      className="absolute group/eye right-[50px] top-1/2 transform -translate-y-1/2"
                       onClick={togglePasswordVisibility}
                     >
                       <EyeIcon className="text-black" />
@@ -378,22 +385,30 @@ function ProfileSettings({ onClose }) {
                     </button>
                   </div>
                   <h1 className="mt-[16px] text-black text-lg font-semibold font-['Inter']">
-                    Repeat password
+                    {chooseTextByLang(
+                      "Повторите новый пароль",
+                      "Repeat new password",
+                      lang
+                    )}
                   </h1>
                   <div className="relative">
                     <input
                       type={showPassword ? "text" : "password"}
                       value={passwordSecond}
                       onChange={(e) => setPasswordSecond(e.target.value)}
-                      placeholder="Password"
-                      className={`login-input px-[13px] py-[7px] pr-12 text-black/90 ${
+                      placeholder={chooseTextByLang(
+                        "Новый пароль",
+                        "New password",
+                        lang
+                      )}
+                      className={`login-input px-[13px] py-[7px] w-full pr-[50px] text-black/90 ${
                         error.type === "password" && "outline-[#ff1b1b]"
                       }`}
                       required
                     />
                     <button
                       type="button"
-                      className="absolute group/eye right-0 top-1/2 transform -translate-y-1/2"
+                      className="absolute group/eye top-1/2 right-[50px] transform -translate-y-1/2"
                       onClick={togglePasswordVisibility}
                     >
                       <EyeIcon className="text-black" />
@@ -438,7 +453,7 @@ function ProfileSettings({ onClose }) {
                     >
                       <span className="relative z-10 group-hover/button-confirm:text-white transition-colors duration-500">
                         {!isLoading ? (
-                          "Confirm"
+                          chooseTextByLang("Подтвердить", "Confirm", lang)
                         ) : (
                           <img
                             className="w-8 mx-10"
@@ -464,7 +479,7 @@ function ProfileSettings({ onClose }) {
                     type="text"
                     value={code}
                     onChange={(e) => setCode(e.target.value)}
-                    placeholder="Code"
+                    placeholder={chooseTextByLang("Код", "Code", lang)}
                     className={`login-input mt-[40px] px-[13px] py-[7px] pr-12 text-black/90 ${
                       error.type === "code" && "outline-[#ff1b1b]"
                     }`}
@@ -472,7 +487,11 @@ function ProfileSettings({ onClose }) {
                   />
                   {error.type === "code" && (
                     <h2 className="text-red-400 text-xl font-normal font-['Inter']">
-                      Incorrect code. Please try again
+                      {chooseTextByLang(
+                        "Код неверный. Пожалуйста, повторите попытку",
+                        "Incorrect code. Please try again",
+                        lang
+                      )}
                     </h2>
                   )}
                   <div className="mt-[21px] flex justify-center">
@@ -491,7 +510,7 @@ function ProfileSettings({ onClose }) {
                       >
                         <span className="relative z-10 group-hover/button-confirm:text-white transition-colors duration-500">
                           {!isLoading ? (
-                            "Confirm"
+                            chooseTextByLang("Подтвердить", "Confirm", lang)
                           ) : (
                             <img
                               className="w-8 mx-10"
@@ -511,7 +530,7 @@ function ProfileSettings({ onClose }) {
                 </div>
               )}
               <h1 className="text-black text-xl font-semibold font-['Inter']">
-                Email
+                {chooseTextByLang("Почта", "Email", lang)}
               </h1>
               <h2 className="mt-[2px] text-zinc-950/80 text-xl font-normal font-['Inter']">
                 {email}
@@ -519,7 +538,7 @@ function ProfileSettings({ onClose }) {
             </div>
             <div className="my-[25px]">
               <h1 className="text-black text-xl font-semibold font-['Inter']">
-                Password
+                {chooseTextByLang("Пароль", "Password", lang)}
               </h1>
               <div className="relative">
                 <h2
@@ -533,7 +552,7 @@ function ProfileSettings({ onClose }) {
                   }}
                   className="p-[10px] relative pl-0 text-zinc-950/50 text-base font-normal font-['Inter']"
                 >
-                  Reset password
+                  {chooseTextByLang("Сбросить пароль", "Reset password", lang)}
                 </h2>
                 {resetLoading && (
                   <div className="flex items-center justify-center absolute top-1/2 transform -translate-y-1/2 left-16">
@@ -544,7 +563,11 @@ function ProfileSettings({ onClose }) {
             </div>
             <div className="my-[25px]">
               <h1 className="text-black text-xl font-semibold font-['Inter']">
-                Two-step authentication
+                {chooseTextByLang(
+                  "Двухэтапная аутентификация",
+                  "Two-step authentication",
+                  lang
+                )}
               </h1>
               <label className="inline-block cursor-pointer">
                 <input
@@ -589,7 +612,7 @@ function ProfileSettings({ onClose }) {
               >
                 <span className="relative z-10 group-hover/button-logout:text-white transition-colors duration-500">
                   {!isLoading ? (
-                    "Log out"
+                    chooseTextByLang("Выйти", "Log out", lang)
                   ) : (
                     <img className="w-8 mx-10" src={loading} alt="loading..." />
                   )}
