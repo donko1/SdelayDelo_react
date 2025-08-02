@@ -36,8 +36,8 @@ function ContentNotes({
         ))}
       </div>
       {notes.count === 0 && (
-        <div class="fixed inset-0 ml-[300px] flex justify-center items-center pointer-events-none">
-          <div class="pointer-events-auto">
+        <div className="fixed inset-0 ml-[300px] mt-[100px] flex justify-center items-center pointer-events-none">
+          <div className="pointer-events-auto">
             <div className="flex justify-center ">
               <img
                 src="/images/content-notes/no_notes_base.svg"
