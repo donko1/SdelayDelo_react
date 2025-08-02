@@ -10,6 +10,7 @@ import XIcon from "@assets/x.svg?react";
 import calendarIcon from "@assets/calendar.svg?react";
 import { useLang } from "@context/LangContext";
 import AccountIcon from "@assets/Account.svg?react";
+import SettingsIcon from "@assets/settings.svg?react";
 import BackIcon from "@assets/send.svg?react";
 import loading from "@assets/loading.gif";
 import { useAuth } from "@/context/AuthContext";
@@ -207,22 +208,25 @@ function ProfileSettings({ onClose }) {
               onClick={() => setStep("settings")}
               className="px-12 py-2 bg-white rounded-2xl shadow-[1px_4px_4px_0px_rgba(0,0,0,0.21),0px_-1px_4px_0px_rgba(0,0,0,0.05)] inline-flex justify-center items-center gap-2 cursor-pointer"
             >
-              <AccountIcon />
+              <SettingsIcon className="w-[25px] h-[25px] text-black" />
               <span className="text-zinc-600 text-xl font-medium font-['Inter']">
                 {chooseTextByLang("Настройки", "Settings", lang)}
               </span>
             </div>
           </div>
 
-          <div className="mt-[30px] text-center">
+          <div className="mt-[30px] group/close text-center">
             <div
-              className="px-7 py-1.5 rounded-3xl outline outline-1 outline-offset-[-1px] outline-black inline-flex justify-center items-center gap-2.5 cursor-pointer"
+              className="px-7 py-1.5 group-hover/close:outline-red-500 transition-all duration-300 rounded-3xl outline outline-1 outline-offset-[-1px] outline-black inline-flex justify-center items-center gap-2.5 cursor-pointer"
               onClick={onClose}
             >
-              <span className="text-zinc-400 text-lg font-medium font-['Inter']">
+              <span className="text-zinc-400 group-hover/close:text-red-400 transition-all duration-300 text-lg font-medium font-['Inter']">
                 {chooseTextByLang("Закрыть", "Close", lang)}
               </span>
-              <XIcon color="black" className="rotate-45" />
+              <XIcon
+                color="black"
+                className="rotate-45 transition-all duration-300 group-hover/close:rotate-[225deg] group-hover/close:text-red-500"
+              />
             </div>
           </div>
         </>
