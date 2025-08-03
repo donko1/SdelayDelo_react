@@ -6,7 +6,7 @@ export function useToast() {
   const timerRef = useRef(null);
   const savedOnClose = useRef(null);
 
-  const showToast = (message, type = "info", onClose) => {
+  const showToast = (message, type = "success", onClose) => {
     if (timerRef.current) {
       clearTimeout(timerRef.current);
       timerRef.current = null;

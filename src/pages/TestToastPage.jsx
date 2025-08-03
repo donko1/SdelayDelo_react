@@ -15,9 +15,8 @@ export default function TestToastsPage() {
   };
 
   const showRandomToast = () => {
-    const types = ["info", "success", "error", "warning"];
+    const types = ["success", "delete", "warning"];
     const messages = [
-      "Это информационное сообщение",
       "Операция выполнена успешно!",
       "Произошла критическая ошибка!",
       "Внимание: требуется проверка",
@@ -55,15 +54,6 @@ export default function TestToastsPage() {
 
               <button
                 onClick={() =>
-                  showToast("Это информационное сообщение", "info")
-                }
-                className="w-full bg-gradient-to-r from-blue-500 to-indigo-600 text-white font-medium py-3 px-4 rounded-lg shadow hover:shadow-lg transition-all"
-              >
-                Показать Info Toast
-              </button>
-
-              <button
-                onClick={() =>
                   showToast("Операция выполнена успешно!", "success")
                 }
                 className="w-full bg-gradient-to-r from-green-500 to-emerald-600 text-white font-medium py-3 px-4 rounded-lg shadow hover:shadow-lg transition-all"
@@ -72,12 +62,10 @@ export default function TestToastsPage() {
               </button>
 
               <button
-                onClick={() =>
-                  showToast("Произошла критическая ошибка!", "error")
-                }
+                onClick={() => showToast("Удалено сообщение!", "delete")}
                 className="w-full bg-gradient-to-r from-red-500 to-rose-600 text-white font-medium py-3 px-4 rounded-lg shadow hover:shadow-lg transition-all"
               >
-                Показать Error Toast
+                Показать delete Toast
               </button>
 
               <button

@@ -1,14 +1,20 @@
 import { motion, AnimatePresence } from "framer-motion";
+import SuccessIcon from "@assets/toast_success.svg?react";
+import DeleteIcon from "@assets/toast_delete.svg?react";
+import WarningIcon from "@assets/toast_warning.svg?react";
+import { useLang } from "@context/LangContext";
+import { chooseTextByLang } from "@/utils/helpers/locale";
 
 export const Toast = ({ toast, onUndo }) => {
-  const toastStyles = {
-    info: "bg-blue-500 text-white",
-    success: "bg-green-500 text-white",
-    error: "bg-red-500 text-white",
-    warning: "bg-yellow-500 text-black",
+  const { lang } = useLang();
+
+  const toastIcons = {
+    success: SuccessIcon,
+    delete: DeleteIcon,
+    warning: WarningIcon,
   };
 
-  console.log(onUndo);
+  const IconComponent = toast ? toastIcons[toast.type] : "";
 
   return (
     <AnimatePresence>
@@ -19,21 +25,20 @@ export const Toast = ({ toast, onUndo }) => {
           exit={{ opacity: 0, y: 20 }}
           className="fixed inset-x-0 bottom-4 flex justify-center"
         >
-          <div
-            className={`px-6 py-3 rounded-md shadow-lg ${
-              toastStyles[toast.type]
-            }`}
-          >
+          <div className="bg-neutral-900 rounded-[30px] outline outline-1 outline-offset-[-1px] outline-black py-1 px-[15px] min-w-[300px] min-h-[80px] flex justify-center">
             <div className="flex items-center justify-between gap-4">
-              <span>{toast.message}</span>
+              <IconComponent />
+              <h2 className="text-white text-2xl font-bold font-['Inter'] ">
+                {toast.message}
+              </h2>
 
               {onUndo && (
-                <button
+                <h1
                   onClick={onUndo}
-                  className="px-3 py-1 ml-3 text-sm font-medium uppercase bg-white bg-opacity-20 rounded-md hover:bg-opacity-30 transition-colors"
+                  className="text-white text-2xl font-extrabold font-['Inter'] underline hover:no-underline hover:bg-opacity-30 transition-all duration-300"
                 >
-                  Undo
-                </button>
+                  {chooseTextByLang("Отменить", "Undo", lang)}
+                </h1>
               )}
             </div>
           </div>
