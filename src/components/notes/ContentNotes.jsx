@@ -19,22 +19,25 @@ function ContentNotes({
   return (
     <div className="h-full">
       {text && <TitleForBlock text={text} />}
-      <div className="flex flex-wrap gap-5 mt-[40px]">
-        {notes?.results?.map((note) => (
-          <NoteCard
-            key={note.id}
-            note={note}
-            tags={tags}
-            isEditing={editingNote?.id === note.id}
-            onEdit={onEdit}
-            onCloseEdit={onCloseEdit}
-            onSubmitSuccess={onSubmitSuccess}
-            onDelete={onDelete}
-            onArchivedSuccess={onArchivedSuccess}
-            refreshTags={refreshTags}
-          />
-        ))}
-      </div>
+      {notes.count > 0 && (
+        <div className="flex flex-wrap gap-5 mt-[40px]">
+          {notes?.results?.map((note) => (
+            <NoteCard
+              key={note.id}
+              note={note}
+              tags={tags}
+              isEditing={editingNote?.id === note.id}
+              onEdit={onEdit}
+              onCloseEdit={onCloseEdit}
+              onSubmitSuccess={onSubmitSuccess}
+              onDelete={onDelete}
+              onArchivedSuccess={onArchivedSuccess}
+              refreshTags={refreshTags}
+            />
+          ))}
+        </div>
+      )}
+
       {notes.count === 0 && (
         <div className="fixed inset-0 ml-[300px] mt-[100px] flex justify-center items-center pointer-events-none">
           <div className="pointer-events-auto">
