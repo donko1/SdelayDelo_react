@@ -5,6 +5,7 @@ import WarningIcon from "@assets/toast_warning.svg?react";
 import { useLang } from "@context/LangContext";
 import { chooseTextByLang } from "@/utils/helpers/locale";
 
+// TODO: make no close if hover
 export const Toast = ({ toast, onUndo }) => {
   const { lang } = useLang();
 
