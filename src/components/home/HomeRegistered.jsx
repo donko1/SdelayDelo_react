@@ -6,7 +6,11 @@ import ContentNotes from "@components/notes/ContentNotes";
 import NoteForm from "@components/notes/NoteForm/NoteForm";
 import ArchivedNotes from "@components/notes/ArchivedNotes";
 import { useAuth } from "@context/AuthContext";
-import { getMyDayByUser, getAllNotesByUser } from "@utils/api/notes";
+import {
+  getMyDayByUser,
+  getAllNotesByUser,
+  deleteNoteById,
+} from "@utils/api/notes";
 import { getAllTagsByUser } from "@utils/api/tags";
 import { generateGreetingByTime } from "@utils/helpers/interface";
 import { chooseTextByLang } from "@utils/helpers/locale";
@@ -18,10 +22,14 @@ import { useActElemContext } from "@context/ActElemContext";
 import { useLang } from "@context/LangContext";
 import NoteFormCreate from "@components/notes/NoteForm/NoteFormCreate";
 import { useTimezone } from "@/context/TimezoneContext";
+import { removeFromState } from "@/utils/helpers/states";
+import { useToast } from "@/utils/hooks/useToast";
 
 export default function HomeRegistered() {
   const { headers } = useAuth();
   const { lang } = useLang();
+
+  const { showToast, ToastContainer } = useToast();
 
   const [notes, setNotes] = useState({ results: [], next: null });
   const [allNotes, setAllNotes] = useState({ result: [], next: null });
@@ -124,6 +132,29 @@ export default function HomeRegistered() {
     }
   };
 
+  const onDelete = (note) => {
+    removeFromState(setNotes, note.id);
+    removeFromState(setAllNotes, note.id);
+    showToast(
+      chooseTextByLang("Заметка была удалена", "The note was deleted", lang),
+      "delete",
+      {
+        onClose: async () => {
+          try {
+            await deleteNoteById(note.id, headers);
+          } catch (e) {
+            console.error(e);
+          } finally {
+            handleRefresh();
+          }
+        },
+        onUndo: async () => {
+          handleRefresh();
+        },
+      }
+    );
+  };
+
   useEffect(() => {
     fetchTags();
   }, []);
@@ -194,7 +225,7 @@ export default function HomeRegistered() {
             onCloseEdit={() => setEditingNote(null)}
             onArchivedSuccess={handleRefresh}
             onSubmitSuccess={handleRefresh}
-            onDelete={handleRefresh}
+            onDelete={onDelete}
             text={chooseTextByLang("Все заметки", "All notes", lang)}
             refreshTags={fetchTags}
           />
@@ -224,7 +255,7 @@ export default function HomeRegistered() {
               onCloseEdit={() => setEditingNote(null)}
               onArchivedSuccess={handleRefresh}
               onSubmitSuccess={handleRefresh}
-              onDelete={handleRefresh}
+              onDelete={onDelete}
               refreshTags={fetchTags}
             />
             {notes.next && <div ref={notesRef} className="h-2" />}
@@ -248,6 +279,7 @@ export default function HomeRegistered() {
           )}
         </div>
       )}
+      <ToastContainer />
     </div>
   );
 }
