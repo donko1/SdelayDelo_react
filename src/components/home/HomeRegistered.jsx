@@ -144,8 +144,6 @@ export default function HomeRegistered() {
             await deleteNoteById(note.id, headers);
           } catch (e) {
             console.error(e);
-          } finally {
-            handleRefresh();
           }
         },
         onUndo: async () => {

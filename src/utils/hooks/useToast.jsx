@@ -8,6 +8,10 @@ export function useToast() {
 
   const showToast = (message, type = "success", callbacks = {}) => {
     if (timerRef.current) {
+      if (toast) {
+        handleClose(true);
+      }
+
       clearTimeout(timerRef.current);
       timerRef.current = null;
     }
