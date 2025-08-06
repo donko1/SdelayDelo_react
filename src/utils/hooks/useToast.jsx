@@ -3,6 +3,7 @@ import { Toast } from "@components/ui/Toast";
 
 export function useToast() {
   const [toast, setToast] = useState(null);
+  const [isToasting, setIsToasting] = useState(false);
   const timerRef = useRef(null);
   const savedCallbacks = useRef({ onClose: null, onUndo: null });
 
@@ -66,5 +67,5 @@ export function useToast() {
     />
   );
 
-  return { showToast, ToastContainer };
+  return { showToast, isToasting, ToastContainer };
 }

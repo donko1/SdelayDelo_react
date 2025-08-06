@@ -35,6 +35,7 @@ export default function HomeRegistered() {
   const [allNotes, setAllNotes] = useState({ result: [], next: null });
   const [tags, setTags] = useState([]);
   const [openArchived, setOpenArchived] = useState(false);
+  const [deletedNoteId, setDeletedNoteId] = useState(null);
   const [editingNote, setEditingNote] = useState(null);
   const { actelem, setAct } = useActElemContext();
   const [isCreating, setIsCreating] = useState(false);
@@ -132,9 +133,15 @@ export default function HomeRegistered() {
     }
   };
 
-  const onDelete = (note) => {
+  const onDelete = (note, states, refresh) => {
+    setDeletedNoteId(note.id);
     removeFromState(setNotes, note.id);
     removeFromState(setAllNotes, note.id);
+    if (states) {
+      for (const state of states) {
+        removeFromState(state["setState"], note.id, state["type"]);
+      }
+    }
     showToast(
       chooseTextByLang("Заметка была удалена", "The note was deleted", lang),
       "delete",
@@ -144,10 +151,19 @@ export default function HomeRegistered() {
             await deleteNoteById(note.id, headers);
           } catch (e) {
             console.error(e);
+          } finally {
+            setDeletedNoteId(null);
+            if (refresh) {
+              refresh();
+            }
           }
         },
         onUndo: async () => {
           handleRefresh();
+          if (refresh) {
+            refresh();
+          }
+          setDeletedNoteId(null);
         },
       }
     );
@@ -195,8 +211,9 @@ export default function HomeRegistered() {
           onCloseEdit={() => setEditingNote(null)}
           onArchivedSuccess={handleRefresh}
           onSubmitSuccess={handleRefresh}
-          onDelete={handleRefresh}
+          onDelete={onDelete}
           refreshTags={fetchTags}
+          deletedNoteId={deletedNoteId}
         />
       )}
       {actelem === "next7Days" && (

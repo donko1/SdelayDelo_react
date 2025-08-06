@@ -10,6 +10,7 @@ import { useTimezone } from "@context/TimezoneContext";
 import SendIcon from "@assets/send.svg?react";
 import AddNoteButton from "@components/ui/AddNoteButton";
 import { capitalizeFirstLetter } from "@utils/helpers/interface";
+import { removeFromState } from "@/utils/helpers/states";
 
 export default function Calendar({
   tags,
@@ -20,6 +21,7 @@ export default function Calendar({
   onDelete,
   refreshTags,
   onArchivedSuccess,
+  deletedNoteId,
 }) {
   const { headers } = useAuth();
   const { timezone } = useTimezone();
@@ -45,6 +47,12 @@ export default function Calendar({
   };
 
   useEffect(() => {
+    if (deletedNoteId) {
+      removeFromState(setNotes, deletedNoteId, "list");
+    }
+  }, [deletedNoteId]);
+
+  useEffect(() => {
     fetchNotes();
   }, [activeDate]);
 
@@ -52,8 +60,6 @@ export default function Calendar({
     if (!date1 || !date2) return false;
     return date1.toDateString() === date2.toDateString();
   };
-
-  console.log(days);
 
   const getWeekTitle = () => {
     if (offsetWeeks === 0) {
@@ -241,9 +247,12 @@ export default function Calendar({
                 onSubmitSuccess();
                 fetchNotes();
               }}
-              onDelete={async (deletedId) => {
-                onDelete(deletedId);
-                fetchNotes();
+              onDelete={async (note) => {
+                await onDelete(
+                  note,
+                  [{ type: "list", setState: setNotes }],
+                  fetchNotes
+                );
               }}
               onArchivedSuccess={async () => {
                 onArchivedSuccess();

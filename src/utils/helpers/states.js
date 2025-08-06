@@ -25,8 +25,9 @@ export function removeFromState(setState, id, type = "base") {
       if (index === -1) return prev;
 
       const newResults = [...prev.slice(0, index), ...prev.slice(index + 1)];
-      console.log(newResults);
-
+      if (newResults.length < 1) {
+        return null;
+      }
       return [newResults];
     });
   } else if (type === "date") {
