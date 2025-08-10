@@ -189,8 +189,8 @@ export default function NextWeek({
                       onSubmitSuccess?.();
                       refreshAllDays();
                     }}
-                    onDelete={() => {
-                      onDelete?.();
+                    onDelete={async () => {
+                      await onDelete(note.id);
                       refreshAllDays();
                     }}
                     onArchivedSuccess={async () => {

@@ -30,7 +30,7 @@ function ContentNotes({
               onEdit={onEdit}
               onCloseEdit={onCloseEdit}
               onSubmitSuccess={onSubmitSuccess}
-              onDelete={onDelete}
+              onDelete={(noteId) => onDelete(noteId)}
               onArchivedSuccess={onArchivedSuccess}
               refreshTags={refreshTags}
             />

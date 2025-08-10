@@ -242,7 +242,7 @@ export default function Calendar({
                 fetchNotes();
               }}
               onDelete={async (deletedId) => {
-                onDelete(deletedId);
+                await onDelete(deletedId);
                 fetchNotes();
               }}
               onArchivedSuccess={async () => {

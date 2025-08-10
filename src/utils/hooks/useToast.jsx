@@ -4,30 +4,45 @@ import { Toast } from "@components/ui/Toast";
 export function useToast() {
   const [toast, setToast] = useState(null);
   const timerRef = useRef(null);
-  const savedOnClose = useRef(null);
+  const savedCallbacks = useRef({ onClose: null, onUndo: null });
 
-  const showToast = (message, type = "success", onClose) => {
+  const showToast = (message, type = "success", callbacks = {}) => {
     if (timerRef.current) {
+      if (toast) {
+        handleClose(true);
+      }
+
       clearTimeout(timerRef.current);
       timerRef.current = null;
     }
 
-    savedOnClose.current = onClose;
+    savedCallbacks.current = {
+      onClose: callbacks.onClose || null,
+      onUndo: callbacks.onUndo || null,
+    };
+
     setToast({ message, type });
   };
 
-  const handleClose = (callOnClose = true) => {
+  const handleClose = (shouldCallOnClose = true) => {
     if (timerRef.current) {
       clearTimeout(timerRef.current);
       timerRef.current = null;
     }
 
-    if (callOnClose && savedOnClose.current) {
-      savedOnClose.current();
+    if (shouldCallOnClose && savedCallbacks.current.onClose) {
+      savedCallbacks.current.onClose();
     }
 
     setToast(null);
-    savedOnClose.current = null;
+    savedCallbacks.current = { onClose: null, onUndo: null };
+  };
+
+  const handleUndo = () => {
+    if (savedCallbacks.current.onUndo) {
+      savedCallbacks.current.onUndo();
+    }
+    handleClose(false);
   };
 
   useEffect(() => {
@@ -47,7 +62,7 @@ export function useToast() {
   const ToastContainer = () => (
     <Toast
       toast={toast}
-      onUndo={savedOnClose.current ? () => handleClose(false) : null}
+      onUndo={savedCallbacks.current.onUndo ? handleUndo : null}
     />
   );
 

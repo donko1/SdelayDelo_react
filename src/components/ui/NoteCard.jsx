@@ -58,8 +58,7 @@ const NoteCard = ({
           <CrossIcon
             onClick={async (e) => {
               e.stopPropagation();
-              await deleteNoteById(note.id, headers);
-              onDelete();
+              await onDelete(note.id);
             }}
             className="m-1 transition-all duration-500 ease-in-out transform opacity-0 group-hover/card:opacity-100 hover:rotate-[360deg] hover:text-red-500"
           />

@@ -190,7 +190,6 @@ export async function deleteNoteById(note, headers) {
 
     if (!response.ok) throw new Error("Ошибка при удалении");
     console.log("Заметка успешно удалена");
-    onDeleteSuccess(note.id);
   } catch (error) {
     console.error("Ошибка удаления заметки:", error);
   }
@@ -271,6 +270,36 @@ export async function createNote(headers, content) {
       "Content-Type": "application/json",
     },
     body: JSON.stringify(content),
+  });
+  if (!response.ok) throw new Error("Ошибка при отправке заметки");
+}
+
+export async function hideNote(headers, id) {
+  const url = isParallel()
+    ? `/api/v3/note/${id}/hide/`
+    : `http://localhost:8000/api/v3/note/${id}/hide/`;
+  const method = "DELETE";
+  const response = await fetch(url, {
+    method,
+    headers: {
+      ...headers,
+      "Content-Type": "application/json",
+    },
+  });
+  if (!response.ok) throw new Error("Ошибка при отправке заметки");
+}
+
+export async function undoHideNote(headers, id) {
+  const url = isParallel()
+    ? `/api/v3/note/${id}/undo/`
+    : `http://localhost:8000/api/v3/note/${id}/undo/`;
+  const method = "POST";
+  const response = await fetch(url, {
+    method,
+    headers: {
+      ...headers,
+      "Content-Type": "application/json",
+    },
   });
   if (!response.ok) throw new Error("Ошибка при отправке заметки");
 }
