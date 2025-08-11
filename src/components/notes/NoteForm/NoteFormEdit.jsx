@@ -64,6 +64,33 @@ export default function NoteFormEdit({
     valueRef: descriptionRef,
   } = useAutoResizeTextarea(note?.description || "");
 
+  const initialValuesRef = useRef({
+    title: note?.title || "",
+    description: note?.description || "",
+    tags: note?.tags || [],
+    date: note?.date_of_note || null,
+  });
+
+  const [isNoteChanged, setIsNoteChanged] = useState(false);
+  const isNoteChangedRef = useRef(isNoteChanged);
+
+  useEffect(() => {
+    isNoteChangedRef.current = isNoteChanged;
+  }, [isNoteChanged]);
+
+  useEffect(() => {
+    const isTitleChanged = title !== initialValuesRef.current.title;
+    const isDescChanged = description !== initialValuesRef.current.description;
+    const isTagsChanged =
+      JSON.stringify(selectedTags.sort()) !==
+      JSON.stringify(initialValuesRef.current.tags.sort());
+    const isDateChanged = currentNoteDate !== initialValuesRef.current.date;
+
+    setIsNoteChanged(
+      isTitleChanged || isDescChanged || isTagsChanged || isDateChanged
+    );
+  }, [title, description, selectedTags, currentNoteDate]);
+
   useEffect(() => {
     updateTitleHeight();
     updateDescriptionHeight();
@@ -94,6 +121,7 @@ export default function NoteFormEdit({
   };
 
   const handleSubmit = async (e) => {
+    console.log(isNoteChangedRef.current);
     e?.preventDefault();
     const content = {
       title: titleRef.current,
@@ -102,9 +130,11 @@ export default function NoteFormEdit({
     };
 
     try {
-      await editNote(headers, note.id, content);
+      if (isNoteChangedRef.current) {
+        await editNote(headers, note.id, content);
+      }
       await onSubmitSuccess();
-      await onClose();
+      await onClose(isNoteChangedRef.current);
     } catch (error) {
       console.error("Ошибка отправки заметки:", error);
     }

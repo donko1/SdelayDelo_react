@@ -119,6 +119,16 @@ export default function HomeRegistered() {
     }
   };
 
+  const onCloseEdit = (wasChanging) => {
+    setEditingNote(null);
+    if (wasChanging) {
+      showToast(
+        chooseTextByLang("Изменения сохранены!", "Changes saved!", lang),
+        "success"
+      );
+    }
+  };
+
   const onDelete = async (noteId) => {
     await hideNote(headers, noteId);
     handleRefresh();
@@ -194,7 +204,7 @@ export default function HomeRegistered() {
           tags={tags}
           editingNote={editingNote}
           onEdit={setEditingNote}
-          onCloseEdit={() => setEditingNote(null)}
+          onCloseEdit={onCloseEdit}
           onArchivedSuccess={handleRefresh}
           onSubmitSuccess={handleRefresh}
           onDelete={onDelete}
@@ -207,7 +217,7 @@ export default function HomeRegistered() {
             tags={tags}
             editingNote={editingNote}
             onEdit={setEditingNote}
-            onCloseEdit={() => setEditingNote(null)}
+            onCloseEdit={onCloseEdit}
             onArchivedSuccess={handleRefresh}
             onSubmitSuccess={handleRefresh}
             onDelete={onDelete}
@@ -222,7 +232,7 @@ export default function HomeRegistered() {
             tags={tags}
             editingNote={editingNote}
             onEdit={setEditingNote}
-            onCloseEdit={() => setEditingNote(null)}
+            onCloseEdit={onCloseEdit}
             onArchivedSuccess={handleRefresh}
             onSubmitSuccess={handleRefresh}
             onDelete={onDelete}
@@ -252,7 +262,7 @@ export default function HomeRegistered() {
               tags={tags}
               editingNote={editingNote}
               onEdit={setEditingNote}
-              onCloseEdit={() => setEditingNote(null)}
+              onCloseEdit={onCloseEdit}
               onArchivedSuccess={handleRefresh}
               onSubmitSuccess={handleRefresh}
               onDelete={onDelete}
