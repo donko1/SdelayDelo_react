@@ -53,8 +53,6 @@ export default function Calendar({
     return date1.toDateString() === date2.toDateString();
   };
 
-  console.log(days);
-
   const getWeekTitle = () => {
     if (offsetWeeks === 0) {
       return chooseTextByLang("Эта неделя", "This week", lang);

@@ -41,6 +41,9 @@ export default function HomeRegistered() {
   const [isCreating, setIsCreating] = useState(false);
   const { timezone } = useTimezone();
   const [refreshTrigger, setRefreshTrigger] = useState(0);
+  const calendarKey = useMemo(() => refreshTrigger, [refreshTrigger]);
+  const nextWeekKey = useMemo(() => refreshTrigger, [refreshTrigger]);
+
   const [notesRef, notesInView] = useInView({
     triggerOnce: false,
     rootMargin: "100px",
@@ -96,10 +99,10 @@ export default function HomeRegistered() {
     return 2;
   };
 
-  const handleRefresh = () => {
+  const handleRefresh = useCallback(() => {
     setRefreshTrigger((prev) => prev + 1);
     setEditingNote(null);
-  };
+  }, []);
 
   const fetchNotes = async () => {
     try {
@@ -144,8 +147,8 @@ export default function HomeRegistered() {
           }
         },
         onUndo: async () => {
-          handleRefresh();
           await undoHideNote(headers, noteId);
+          handleRefresh();
         },
       }
     );
@@ -201,6 +204,7 @@ export default function HomeRegistered() {
       )}
       {actelem === "Calendar" && (
         <Calendar
+          key={`calendar_${calendarKey}`}
           tags={tags}
           editingNote={editingNote}
           onEdit={setEditingNote}
@@ -214,6 +218,7 @@ export default function HomeRegistered() {
       {actelem === "next7Days" && (
         <div className="ml-96 p-4">
           <NextWeek
+            key={`nextweek_${nextWeekKey}`}
             tags={tags}
             editingNote={editingNote}
             onEdit={setEditingNote}
