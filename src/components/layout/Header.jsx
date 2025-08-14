@@ -44,7 +44,7 @@ function ProfileHeader({ onClose, title }) {
   );
 }
 
-function ProfileSettings({ onClose }) {
+function ProfileSettings({ onClose, onResetPasswordSuccess }) {
   const { username } = useUser();
   const [step, setStep] = useState("general");
 
@@ -450,6 +450,7 @@ function ProfileSettings({ onClose }) {
                           setIsLoading(false);
                           return;
                         }
+                        onResetPasswordSuccess();
                         setStep("account");
                         setIsLoading(false);
                       }}
@@ -635,7 +636,14 @@ function ProfileSettings({ onClose }) {
   );
 }
 
-function Header({ activeElem, setAct, setOpenArchived, openForm, tags_data }) {
+function Header({
+  activeElem,
+  setAct,
+  setOpenArchived,
+  openForm,
+  tags_data,
+  onResetPasswordSuccess,
+}) {
   const { username } = useUser();
   const { lang } = useLang();
   const [ProfileSettingsOpened, setProfileSettingsOpened] = useState(false);
@@ -686,7 +694,10 @@ function Header({ activeElem, setAct, setOpenArchived, openForm, tags_data }) {
   return (
     <div>
       {ProfileSettingsOpened && (
-        <ProfileSettings onClose={() => setProfileSettingsOpened(false)} />
+        <ProfileSettings
+          onClose={() => setProfileSettingsOpened(false)}
+          onResetPasswordSuccess={onResetPasswordSuccess}
+        />
       )}
       <div className="flex flex-col bg-transparent text-white min-w-[270px]">
         <div

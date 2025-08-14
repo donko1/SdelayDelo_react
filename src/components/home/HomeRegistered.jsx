@@ -132,6 +132,13 @@ export default function HomeRegistered() {
     }
   };
 
+  const onResetPasswordSuccess = () => {
+    showToast(
+      chooseTextByLang("Пароль сброшен!", "Password reset!", lang),
+      "success"
+    );
+  };
+
   const onDelete = async (noteId) => {
     await hideNote(headers, noteId);
     handleRefresh();
@@ -198,6 +205,7 @@ export default function HomeRegistered() {
           setOpenArchived={setOpenArchived}
           tags_data={tags}
           openForm={setIsCreating}
+          onResetPasswordSuccess={onResetPasswordSuccess}
         />
       </div>
 
