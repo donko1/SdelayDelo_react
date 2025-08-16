@@ -4,14 +4,21 @@ import { useEffect, useState } from "react";
 import SendIcon from "@assets/arrow.svg?react";
 import { useAuth } from "@context/AuthContext";
 import { createNoteCompact } from "@/utils/api/notes";
+import { chooseTextByLang } from "@/utils/helpers/locale";
+import { useToast } from "@/context/ToastContext";
 
 export default function NoteFormCompact({ onClose, onSubmitSuccess, day }) {
   const [noteTitle, SetNoteTitle] = useState();
   const { lang } = useLang();
   const { headers } = useAuth();
+  const { showToast } = useToast();
 
   const handleSubmit = async () => {
     await createNoteCompact(headers, noteTitle, day.dateStr);
+    showToast(
+      chooseTextByLang("Заметка создана!", "Note created!", lang),
+      "success"
+    );
     await onSubmitSuccess();
   };
 

@@ -10,6 +10,7 @@ import { createNote } from "@utils/api/notes";
 import useAutoResizeTextarea from "@hooks/useAutoResizeTextarea";
 import CalendarForNoteForm from "@components/notes/NoteForm/Calendar";
 import CalendarIcon from "@assets/calendar.svg?react";
+import { useToastHook } from "@/utils/hooks/useToast";
 
 export default function NoteFormCreate({
   tags,
@@ -23,6 +24,7 @@ export default function NoteFormCreate({
   const [tagDropdownOpen, setTagDropdownOpen] = useState(false);
   const { headers } = useAuth();
   const { lang } = useLang();
+  const { showToast } = useToastHook();
   const [calendarDate, setCalendarDate] = useState(() => {
     if (date_of_note) {
       return date_of_note;
@@ -83,6 +85,10 @@ export default function NoteFormCreate({
     }
     try {
       await createNote(headers, content);
+      showToast(
+        chooseTextByLang("Заметка создана!", "Note created!", lang),
+        "success"
+      );
       await onSubmitSuccess();
       onClose();
     } catch (error) {

@@ -182,13 +182,7 @@ export default function HomeRegistered() {
             setIsCreating(false);
           }}
           refreshTags={fetchTags}
-          onSubmitSuccess={async () => {
-            handleRefresh();
-            showToast(
-              chooseTextByLang("Заметка сохранена!", "Note saved!", lang),
-              "success"
-            );
-          }}
+          onSubmitSuccess={handleRefresh}
           fixedStyle={true}
         />
       )}
