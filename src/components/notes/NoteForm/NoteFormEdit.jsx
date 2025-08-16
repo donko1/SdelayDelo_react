@@ -7,6 +7,7 @@ import { addNoteToArchive, editNote, setNewDate } from "@utils/api/notes";
 import { useAuth } from "@context/AuthContext";
 import useAutoResizeTextarea from "@hooks/useAutoResizeTextarea";
 import NoteFormEditNavbar from "@components/notes/NoteForm/NoteFormEditNavbar";
+import { useToastHook } from "@/utils/hooks/useToast";
 
 export default function NoteFormEdit({
   note,
@@ -17,6 +18,7 @@ export default function NoteFormEdit({
   refreshTags,
 }) {
   const { lang } = useLang();
+  const { showToast } = useToastHook();
 
   const [selectedTags, setSelectedTags] = useState(note?.tags || []);
   const selectedTagsRef = useRef(selectedTags);
@@ -121,7 +123,6 @@ export default function NoteFormEdit({
   };
 
   const handleSubmit = async (e) => {
-    console.log(isNoteChangedRef.current);
     e?.preventDefault();
     const content = {
       title: titleRef.current,
@@ -134,7 +135,8 @@ export default function NoteFormEdit({
         await editNote(headers, note.id, content);
       }
       await onSubmitSuccess();
-      if (isNoteChangedRef.current) {
+      if (!isNoteChangedRef.current) {
+        console.log(123);
         showToast(
           chooseTextByLang("Изменения сохранены!", "Changes saved!", lang),
           "success"
