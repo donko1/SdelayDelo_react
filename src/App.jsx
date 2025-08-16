@@ -7,6 +7,7 @@ import HomePage from "@pages/HomePage";
 import TestToastsPage from "@pages/TestToastPage";
 import { UserProvider } from "@context/UserContext.jsx";
 import { ActElemContextProvider } from "@context/ActElemContext";
+import { ToastProvider } from "@context/ToastContext";
 import { LangProvider } from "@context/LangContext";
 import { TimezoneProvider } from "@context/TimezoneContext";
 import { AuthProvider } from "@context/AuthContext";
@@ -17,22 +18,33 @@ function App() {
       <UserProvider>
         <LangProvider>
           <TimezoneProvider>
-            <ActElemContextProvider>
-              <Router>
-                <Routes>
-                  <Route path="*" element={<h1>404: Страница не найдена</h1>} />
-                  {!isProduct() && (
-                    <>
-                      <Route path="/test/settings" element={<Getsettings />} />
-                      <Route path="/test/whoami" element={<WhoamI />} />
-                      <Route path="/test/toast" element={<TestToastsPage />} />
-                    </>
-                  )}
-                  <Route path="" element={<HomePage />} />
-                  <Route path="/login" element={<LoginPage />} />
-                </Routes>
-              </Router>
-            </ActElemContextProvider>
+            <ToastProvider>
+              <ActElemContextProvider>
+                <Router>
+                  <Routes>
+                    <Route
+                      path="*"
+                      element={<h1>404: Страница не найдена</h1>}
+                    />
+                    {!isProduct() && (
+                      <>
+                        <Route
+                          path="/test/settings"
+                          element={<Getsettings />}
+                        />
+                        <Route path="/test/whoami" element={<WhoamI />} />
+                        <Route
+                          path="/test/toast"
+                          element={<TestToastsPage />}
+                        />
+                      </>
+                    )}
+                    <Route path="" element={<HomePage />} />
+                    <Route path="/login" element={<LoginPage />} />
+                  </Routes>
+                </Router>
+              </ActElemContextProvider>
+            </ToastProvider>
           </TimezoneProvider>
         </LangProvider>
       </UserProvider>

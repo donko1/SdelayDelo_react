@@ -29,6 +29,7 @@ import {
   sendVerificationCode,
 } from "@/utils/api/login";
 import useError from "@/utils/hooks/useError";
+import { useToastHook } from "@/utils/hooks/useToast";
 
 function ProfileHeader({ onClose, title }) {
   return (
@@ -44,11 +45,12 @@ function ProfileHeader({ onClose, title }) {
   );
 }
 
-function ProfileSettings({ onClose, onResetPasswordSuccess }) {
+function ProfileSettings({ onClose }) {
   const { username } = useUser();
   const [step, setStep] = useState("general");
 
   const [timezoneFilter, setTimezoneFilter] = useState("");
+  const { showToast } = useToastHook();
   const [FA2, setFA2] = useState(false);
   const [email, setEmail] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -450,7 +452,14 @@ function ProfileSettings({ onClose, onResetPasswordSuccess }) {
                           setIsLoading(false);
                           return;
                         }
-                        onResetPasswordSuccess();
+                        showToast(
+                          chooseTextByLang(
+                            "Пароль сброшен!",
+                            "Password reset!",
+                            lang
+                          ),
+                          "success"
+                        );
                         setStep("account");
                         setIsLoading(false);
                       }}
@@ -636,14 +645,7 @@ function ProfileSettings({ onClose, onResetPasswordSuccess }) {
   );
 }
 
-function Header({
-  activeElem,
-  setAct,
-  setOpenArchived,
-  openForm,
-  tags_data,
-  onResetPasswordSuccess,
-}) {
+function Header({ activeElem, setAct, setOpenArchived, openForm, tags_data }) {
   const { username } = useUser();
   const { lang } = useLang();
   const [ProfileSettingsOpened, setProfileSettingsOpened] = useState(false);
@@ -694,10 +696,7 @@ function Header({
   return (
     <div>
       {ProfileSettingsOpened && (
-        <ProfileSettings
-          onClose={() => setProfileSettingsOpened(false)}
-          onResetPasswordSuccess={onResetPasswordSuccess}
-        />
+        <ProfileSettings onClose={() => setProfileSettingsOpened(false)} />
       )}
       <div className="flex flex-col bg-transparent text-white min-w-[270px]">
         <div

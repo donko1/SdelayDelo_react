@@ -24,13 +24,13 @@ import { useActElemContext } from "@context/ActElemContext";
 import { useLang } from "@context/LangContext";
 import NoteFormCreate from "@components/notes/NoteForm/NoteFormCreate";
 import { useTimezone } from "@/context/TimezoneContext";
-import { useToast } from "@/utils/hooks/useToast";
+import { useToastHook } from "@/utils/hooks/useToast";
 
 export default function HomeRegistered() {
   const { headers } = useAuth();
   const { lang } = useLang();
 
-  const { showToast, ToastContainer } = useToast();
+  const { showToast } = useToastHook();
 
   const [notes, setNotes] = useState({ results: [], next: null });
   const [allNotes, setAllNotes] = useState({ result: [], next: null });
@@ -122,33 +122,16 @@ export default function HomeRegistered() {
     }
   };
 
-  const onCloseEdit = (wasChanging) => {
-    setEditingNote(null);
-    if (wasChanging) {
-      showToast(
-        chooseTextByLang("Изменения сохранены!", "Changes saved!", lang),
-        "success"
-      );
-    }
-  };
-
-  const onResetPasswordSuccess = () => {
-    showToast(
-      chooseTextByLang("Пароль сброшен!", "Password reset!", lang),
-      "success"
-    );
-  };
-
-  const onConnectionError = () => {
-    showToast(
-      chooseTextByLang(
-        "Произошла ошибка! Пожалуйста, повторите попытку",
-        "Error occurred! Please try again ",
-        lang
-      ),
-      "warning"
-    );
-  };
+  // const onConnectionError = () => {
+  //   showToast(
+  //     chooseTextByLang(
+  //       "Произошла ошибка! Пожалуйста, повторите попытку",
+  //       "Error occurred! Please try again ",
+  //       lang
+  //     ),
+  //     "warning"
+  //   );
+  // };
 
   const onDelete = async (noteId) => {
     await hideNote(headers, noteId);
@@ -195,7 +178,6 @@ export default function HomeRegistered() {
       {isCreating && (
         <NoteFormCreate
           tags={tags}
-          onConnectionError={onConnectionError}
           onClose={() => {
             setIsCreating(false);
           }}
@@ -215,10 +197,8 @@ export default function HomeRegistered() {
           activeElem={actelem}
           setAct={setAct}
           setOpenArchived={setOpenArchived}
-          onConnectionError={onConnectionError}
           tags_data={tags}
           openForm={setIsCreating}
-          onResetPasswordSuccess={onResetPasswordSuccess}
         />
       </div>
 
@@ -226,7 +206,6 @@ export default function HomeRegistered() {
         <ArchivedNotes
           onClose={() => setOpenArchived(false)}
           onRefresh={handleRefresh}
-          onConnectionError={onConnectionError}
           tags={tags}
         />
       )}
@@ -236,8 +215,7 @@ export default function HomeRegistered() {
           tags={tags}
           editingNote={editingNote}
           onEdit={setEditingNote}
-          onCloseEdit={onCloseEdit}
-          onConnectionError={onConnectionError}
+          onCloseEdit={() => setEditingNote(null)}
           onArchivedSuccess={handleRefresh}
           onSubmitSuccess={async () => {
             handleRefresh();
@@ -256,9 +234,8 @@ export default function HomeRegistered() {
             key={`nextweek_${nextWeekKey}`}
             tags={tags}
             editingNote={editingNote}
-            onConnectionError={onConnectionError}
             onEdit={setEditingNote}
-            onCloseEdit={onCloseEdit}
+            onCloseEdit={() => setEditingNote(null)}
             onArchivedSuccess={handleRefresh}
             onSubmitSuccess={async () => {
               handleRefresh();
@@ -279,8 +256,7 @@ export default function HomeRegistered() {
             tags={tags}
             editingNote={editingNote}
             onEdit={setEditingNote}
-            onConnectionError={onConnectionError}
-            onCloseEdit={onCloseEdit}
+            onCloseEdit={() => setEditingNote(null)}
             onArchivedSuccess={handleRefresh}
             onSubmitSuccess={async () => {
               handleRefresh();
@@ -316,9 +292,8 @@ export default function HomeRegistered() {
               tags={tags}
               editingNote={editingNote}
               onEdit={setEditingNote}
-              onCloseEdit={onCloseEdit}
+              onCloseEdit={() => setEditingNote(null)}
               onArchivedSuccess={handleRefresh}
-              onConnectionError={onConnectionError}
               onSubmitSuccess={async () => {
                 handleRefresh();
                 showToast(
@@ -351,13 +326,11 @@ export default function HomeRegistered() {
                 );
               }}
               onDeleteSuccess={handleRefresh}
-              onConnectionError={onConnectionError}
               refreshTags={fetchTags}
             />
           )}
         </div>
       )}
-      <ToastContainer />
     </div>
   );
 }

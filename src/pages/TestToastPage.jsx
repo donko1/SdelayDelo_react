@@ -1,8 +1,8 @@
-import { useToast } from "@utils/hooks/useToast";
+import { useToastHook } from "@utils/hooks/useToast";
 import { useState } from "react";
 
 export default function TestToastsPage() {
-  const { showToast, ToastContainer } = useToast();
+  const { showToast } = useToastHook();
   const [comments, setComments] = useState([]);
   const [counter, setCounter] = useState(1);
 
@@ -180,8 +180,6 @@ export default function TestToastsPage() {
           </ul>
         </div>
       </div>
-
-      <ToastContainer />
     </div>
   );
 }
