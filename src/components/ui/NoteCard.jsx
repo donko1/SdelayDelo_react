@@ -5,6 +5,9 @@ import CheckIcon from "@assets/check.svg?react";
 import CrossIcon from "@assets/cross.svg?react";
 import PinIcon from "@assets/pin.svg?react";
 import { useAuth } from "@context/AuthContext";
+import { useToastHook } from "@/utils/hooks/useToast";
+import { useLang } from "@/context/LangContext";
+import { chooseTextByLang } from "@/utils/helpers/locale";
 
 const NoteCard = ({
   note,
@@ -18,6 +21,9 @@ const NoteCard = ({
   refreshTags,
 }) => {
   const { headers } = useAuth();
+  const { lang } = useLang();
+  const { showToast } = useToastHook();
+
   return (
     <div
       onClick={() => onEdit(note)}
@@ -66,6 +72,16 @@ const NoteCard = ({
             onClick={async (e) => {
               e.stopPropagation();
               await togglePin(note, headers);
+              showToast(
+                chooseTextByLang(
+                  note.is_pinned
+                    ? "Заметка откреплена!"
+                    : "Заметка закреплена!",
+                  note.is_pinned ? "Note unpinned!" : "Note pinned!",
+                  lang
+                ),
+                "success"
+              );
               onSubmitSuccess();
             }}
             className={`m-1 transition-all duration-300transform ${

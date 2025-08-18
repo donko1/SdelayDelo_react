@@ -211,13 +211,7 @@ export default function HomeRegistered() {
           onEdit={setEditingNote}
           onCloseEdit={() => setEditingNote(null)}
           onArchivedSuccess={handleRefresh}
-          onSubmitSuccess={async () => {
-            handleRefresh();
-            showToast(
-              chooseTextByLang("Заметка сохранена!", "Note saved!", lang),
-              "success"
-            );
-          }}
+          onSubmitSuccess={handleRefresh}
           onDelete={onDelete}
           refreshTags={fetchTags}
         />
@@ -231,13 +225,7 @@ export default function HomeRegistered() {
             onEdit={setEditingNote}
             onCloseEdit={() => setEditingNote(null)}
             onArchivedSuccess={handleRefresh}
-            onSubmitSuccess={async () => {
-              handleRefresh();
-              showToast(
-                chooseTextByLang("Заметка сохранена!", "Note saved!", lang),
-                "success"
-              );
-            }}
+            onSubmitSuccess={handleRefresh}
             onDelete={onDelete}
             refreshTags={fetchTags}
           />
@@ -252,13 +240,7 @@ export default function HomeRegistered() {
             onEdit={setEditingNote}
             onCloseEdit={() => setEditingNote(null)}
             onArchivedSuccess={handleRefresh}
-            onSubmitSuccess={async () => {
-              handleRefresh();
-              showToast(
-                chooseTextByLang("Заметка сохранена!", "Note saved!", lang),
-                "success"
-              );
-            }}
+            onSubmitSuccess={handleRefresh}
             onDelete={onDelete}
             text={chooseTextByLang("Все заметки", "All notes", lang)}
             refreshTags={fetchTags}
@@ -288,13 +270,7 @@ export default function HomeRegistered() {
               onEdit={setEditingNote}
               onCloseEdit={() => setEditingNote(null)}
               onArchivedSuccess={handleRefresh}
-              onSubmitSuccess={async () => {
-                handleRefresh();
-                showToast(
-                  chooseTextByLang("Заметка сохранена!", "Note saved!", lang),
-                  "success"
-                );
-              }}
+              onSubmitSuccess={handleRefresh}
               onDelete={onDelete}
               refreshTags={fetchTags}
             />
@@ -312,13 +288,7 @@ export default function HomeRegistered() {
               note={null}
               tags={tags}
               onClose={() => setEditingNote(null)}
-              onSubmitSuccess={async () => {
-                handleRefresh();
-                showToast(
-                  chooseTextByLang("Заметка сохранена!", "Note saved!", lang),
-                  "success"
-                );
-              }}
+              onSubmitSuccess={handleRefresh}
               onDeleteSuccess={handleRefresh}
               refreshTags={fetchTags}
             />
