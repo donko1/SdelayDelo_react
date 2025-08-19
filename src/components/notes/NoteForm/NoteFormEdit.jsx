@@ -133,15 +133,12 @@ export default function NoteFormEdit({
     try {
       if (isNoteChangedRef.current) {
         await editNote(headers, note.id, content);
-      }
-      await onSubmitSuccess();
-      if (!isNoteChangedRef.current) {
-        console.log(123);
         showToast(
           chooseTextByLang("Изменения сохранены!", "Changes saved!", lang),
           "success"
         );
       }
+      await onSubmitSuccess();
       onClose();
     } catch (error) {
       console.error("Ошибка отправки заметки:", error);
