@@ -12,6 +12,7 @@ import { isInThisWeek, isTodayOrYesterday } from "@utils/helpers/date";
 import { useTimezone } from "@context/TimezoneContext";
 import ReturnIcon from "@assets/return.svg?react";
 import TrashIcon from "@assets/trash.svg?react";
+import { useToast } from "@/context/ToastContext";
 
 export default function ArchivedNotes({ onClose, onRefresh, tags }) {
   const [archivedNotes, setArchivedNotes] = useState({
@@ -21,6 +22,7 @@ export default function ArchivedNotes({ onClose, onRefresh, tags }) {
   const { lang } = useLang();
   const { headers } = useAuth();
   const { timezone } = useTimezone();
+  const { showToast } = useToast();
   const [step, setStep] = useState(1);
   const [actELem, setActElem] = useState("all");
   const [isLoading, setIsLoading] = useState(false);
@@ -265,6 +267,10 @@ export default function ArchivedNotes({ onClose, onRefresh, tags }) {
           className="cursor-pointer absolute bottom-0 left-0 w-full h-24 bg-black flex items-center justify-center rounded-bl-3xl rounded-br-3xl"
           onClick={async () => {
             await clearArchive(headers);
+            showToast(
+              chooseTextByLang("Архив очищен!", "Archive cleared!", lang),
+              "success"
+            );
             await fetchArchivedNotes();
           }}
         >

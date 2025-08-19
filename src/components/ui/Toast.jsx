@@ -23,7 +23,7 @@ export const Toast = ({ toast, onUndo }) => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: 20 }}
-          className="fixed inset-x-0 bottom-4 flex justify-center"
+          className="fixed z-50 inset-x-0 bottom-4 flex justify-center"
         >
           <div className="bg-neutral-900 rounded-[30px] outline outline-1 outline-offset-[-1px] outline-black py-1 px-[15px] min-w-[300px] min-h-[80px] flex justify-center">
             <div className="flex items-center justify-between gap-4">
