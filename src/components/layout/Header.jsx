@@ -140,6 +140,14 @@ function ProfileSettings({ onClose }) {
         setFA2(newValue);
       } catch (error) {
         console.error("Ошибка при изменении FA2:", error);
+        showToast(
+          chooseTextByLang(
+            "Произошла ошибка! Пожалуйста, повторите попытку",
+            "Error occurred! Please try again ",
+            lang
+          ),
+          "warning"
+        );
       } finally {
         setIsChangingFA2(false);
       }
@@ -148,15 +156,37 @@ function ProfileSettings({ onClose }) {
 
   const setLang = async (newLang) => {
     if (newLang !== lang) {
-      changeLanguage(newLang);
-      await changeLanguageUser(headers, newLang);
+      try {
+        await changeLanguageUser(headers, newLang);
+        changeLanguage(newLang);
+      } catch (e) {
+        showToast(
+          chooseTextByLang(
+            "Произошла ошибка! Пожалуйста, повторите попытку",
+            "Error occurred! Please try again ",
+            lang
+          ),
+          "warning"
+        );
+      }
     }
   };
 
   const setTZ = async (newTZ) => {
     if (newTZ !== timezone) {
-      changeTimezone(newTZ);
-      await changeTimezoneUser(headers, newTZ);
+      try {
+        await changeTimezoneUser(headers, newTZ);
+        changeTimezone(newTZ);
+      } catch (e) {
+        showToast(
+          chooseTextByLang(
+            "Произошла ошибка! Пожалуйста, повторите попытку",
+            "Error occurred! Please try again ",
+            lang
+          ),
+          "warning"
+        );
+      }
     }
   };
 

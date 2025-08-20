@@ -23,7 +23,7 @@ export async function clearArchive(headers) {
     return data;
   } catch (error) {
     console.log(`Error! ${error}`);
-    return 1;
+    throw error;
   }
 }
 
@@ -109,7 +109,7 @@ export async function removeFromArchive(id, headers) {
     return data;
   } catch (error) {
     console.log(`Error! ${error}`);
-    return 1;
+    throw error;
   }
 }
 

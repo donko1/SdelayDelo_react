@@ -84,13 +84,25 @@ export default function NoteFormCreate({
       content.date_of_note = formatDate(noteDate);
     }
     try {
-      await createNote(headers, content);
-      showToast(
-        chooseTextByLang("Заметка создана!", "Note created!", lang),
-        "success"
-      );
-      await onSubmitSuccess();
-      onClose();
+      try {
+        await createNote(headers, content);
+        showToast(
+          chooseTextByLang("Заметка создана!", "Note created!", lang),
+          "success"
+        );
+        await onSubmitSuccess();
+        onClose();
+      } catch (e) {
+        console.log(e);
+        showToast(
+          chooseTextByLang(
+            "Произошла ошибка! Пожалуйста, повторите попытку",
+            "Error occurred! Please try again ",
+            lang
+          ),
+          "warning"
+        );
+      }
     } catch (error) {
       console.error("Ошибка отправки заметки:", error);
     }

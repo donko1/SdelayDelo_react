@@ -18,7 +18,7 @@ export async function changeLanguageUser(headers, newLang) {
     return data;
   } catch (error) {
     console.log(`Error! ${error}`);
-    return 1;
+    throw error;
   }
 }
 
@@ -40,7 +40,7 @@ export async function changeTimezoneUser(headers, newTZ) {
     return data;
   } catch (error) {
     console.log(`Error! ${error}`);
-    return 1;
+    throw error;
   }
 }
 
@@ -62,7 +62,7 @@ export async function setFA2ByUser(headers, FA2) {
     return data;
   } catch (error) {
     console.log(`Error! ${error}`);
-    return 1;
+    throw error;
   }
 }
 

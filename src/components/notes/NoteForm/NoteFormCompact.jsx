@@ -14,12 +14,23 @@ export default function NoteFormCompact({ onClose, onSubmitSuccess, day }) {
   const { showToast } = useToastHook();
 
   const handleSubmit = async () => {
-    await createNoteCompact(headers, noteTitle, day.dateStr);
-    showToast(
-      chooseTextByLang("Заметка создана!", "Note created!", lang),
-      "success"
-    );
-    await onSubmitSuccess();
+    try {
+      await createNoteCompact(headers, noteTitle, day.dateStr);
+      showToast(
+        chooseTextByLang("Заметка создана!", "Note created!", lang),
+        "success"
+      );
+      await onSubmitSuccess();
+    } catch (e) {
+      showToast(
+        chooseTextByLang(
+          "Произошла ошибка! Пожалуйста, повторите попытку",
+          "Error occurred! Please try again ",
+          lang
+        ),
+        "warning"
+      );
+    }
   };
 
   useEffect(() => {

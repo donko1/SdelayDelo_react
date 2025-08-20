@@ -142,6 +142,14 @@ export default function NoteFormEdit({
       onClose();
     } catch (error) {
       console.error("Ошибка отправки заметки:", error);
+      showToast(
+        chooseTextByLang(
+          "Произошла ошибка! Пожалуйста, повторите попытку",
+          "Error occurred! Please try again ",
+          lang
+        ),
+        "warning"
+      );
     }
   };
 

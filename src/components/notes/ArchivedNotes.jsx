@@ -229,6 +229,14 @@ export default function ArchivedNotes({ onClose, onRefresh, tags }) {
                     }));
                   } catch (error) {
                     console.error("Ошибка при удалении из архива:", error);
+                    showToast(
+                      chooseTextByLang(
+                        "Произошла ошибка! Пожалуйста, повторите попытку",
+                        "Error occurred! Please try again ",
+                        lang
+                      ),
+                      "warning"
+                    );
                   }
                 }}
                 className="relative group/archive flex items-center p-3 mb-2 bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow border border-gray-100"
@@ -266,12 +274,23 @@ export default function ArchivedNotes({ onClose, onRefresh, tags }) {
         <div
           className="cursor-pointer absolute bottom-0 left-0 w-full h-24 bg-black flex items-center justify-center rounded-bl-3xl rounded-br-3xl"
           onClick={async () => {
-            await clearArchive(headers);
-            showToast(
-              chooseTextByLang("Архив очищен!", "Archive cleared!", lang),
-              "success"
-            );
-            await fetchArchivedNotes();
+            try {
+              await clearArchive(headers);
+              showToast(
+                chooseTextByLang("Архив очищен!", "Archive cleared!", lang),
+                "success"
+              );
+              await fetchArchivedNotes();
+            } catch (e) {
+              showToast(
+                chooseTextByLang(
+                  "Произошла ошибка! Пожалуйста, повторите попытку",
+                  "Error occurred! Please try again ",
+                  lang
+                ),
+                "warning"
+              );
+            }
           }}
         >
           <TrashIcon className="text-white" />

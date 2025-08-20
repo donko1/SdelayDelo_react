@@ -122,17 +122,6 @@ export default function HomeRegistered() {
     }
   };
 
-  // const onConnectionError = () => {
-  //   showToast(
-  //     chooseTextByLang(
-  //       "Произошла ошибка! Пожалуйста, повторите попытку",
-  //       "Error occurred! Please try again ",
-  //       lang
-  //     ),
-  //     "warning"
-  //   );
-  // };
-
   const onDelete = async (noteId) => {
     await hideNote(headers, noteId);
     handleRefresh();
