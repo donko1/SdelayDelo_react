@@ -304,6 +304,31 @@ export async function undoHideNote(headers, id) {
   if (!response.ok) throw new Error("Ошибка при отправке заметки");
 }
 
+export async function search(headers, query) {
+  let baseUrl = isParallel()
+    ? "/api/v3/note/search/"
+    : "http://localhost:8000/api/v3/note/search/";
+
+  const urlParams = new URLSearchParams();
+  if (query) {
+    urlParams.append("query", query);
+  }
+
+  const urlWithParams = `${baseUrl}?${urlParams.toString()}`;
+
+  const method = "GET";
+  const response = await fetch(urlWithParams, {
+    method,
+    headers: {
+      ...headers,
+      "Content-Type": "application/json",
+    },
+  });
+
+  if (!response.ok) throw new Error("Ошибка при поиске заметок");
+  const data = await response.json();
+  return data;
+}
 export async function createNoteCompact(headers, title, day) {
   const content = {
     date_of_note: day,

@@ -675,7 +675,14 @@ function ProfileSettings({ onClose }) {
   );
 }
 
-function Header({ activeElem, setAct, setOpenArchived, openForm, tags_data }) {
+function Header({
+  activeElem,
+  setAct,
+  setOpenArchived,
+  setOpenSearch,
+  openForm,
+  tags_data,
+}) {
   const { username } = useUser();
   const { lang } = useLang();
   const [ProfileSettingsOpened, setProfileSettingsOpened] = useState(false);
@@ -748,6 +755,8 @@ function Header({ activeElem, setAct, setOpenArchived, openForm, tags_data }) {
                 setOpenArchived(true);
               } else if (item.id === "myTags") {
                 setTagsOpened(!tagsOpened);
+              } else if (item.id === "search") {
+                setOpenSearch(true);
               } else {
                 setAct(item.id);
               }

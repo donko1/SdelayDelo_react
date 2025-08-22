@@ -16,7 +16,6 @@ import {
 import { getAllTagsByUser } from "@utils/api/tags";
 import { generateGreetingByTime } from "@utils/helpers/interface";
 import { chooseTextByLang } from "@utils/helpers/locale";
-import { useUser } from "@context/UserContext";
 import Calendar from "@components/layout/Calendar";
 import NextWeek from "@components/layout/NextWeek";
 import AddNoteButton from "@components/ui/AddNoteButton";
@@ -25,6 +24,7 @@ import { useLang } from "@context/LangContext";
 import NoteFormCreate from "@components/notes/NoteForm/NoteFormCreate";
 import { useTimezone } from "@/context/TimezoneContext";
 import { useToastHook } from "@/utils/hooks/useToast";
+import { SearchWindow } from "@components/layout/Search";
 
 export default function HomeRegistered() {
   const { headers } = useAuth();
@@ -36,6 +36,7 @@ export default function HomeRegistered() {
   const [allNotes, setAllNotes] = useState({ result: [], next: null });
   const [tags, setTags] = useState([]);
   const [openArchived, setOpenArchived] = useState(false);
+  const [openSearch, setOpenSearch] = useState(false);
   const [editingNote, setEditingNote] = useState(null);
   const { actelem, setAct } = useActElemContext();
   const [isCreating, setIsCreating] = useState(false);
@@ -180,6 +181,7 @@ export default function HomeRegistered() {
           activeElem={actelem}
           setAct={setAct}
           setOpenArchived={setOpenArchived}
+          setOpenSearch={setOpenSearch}
           tags_data={tags}
           openForm={setIsCreating}
         />
@@ -205,6 +207,7 @@ export default function HomeRegistered() {
           refreshTags={fetchTags}
         />
       )}
+      {openSearch && <SearchWindow onClose={() => setOpenSearch(false)} />}
       {actelem === "next7Days" && (
         <div className="ml-96 p-4">
           <NextWeek
