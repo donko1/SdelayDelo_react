@@ -19,6 +19,7 @@ const NoteCard = ({
   onDelete,
   onArchivedSuccess,
   refreshTags,
+  wFull = false,
 }) => {
   const { headers } = useAuth();
   const { lang } = useLang();
@@ -27,7 +28,9 @@ const NoteCard = ({
   return (
     <div
       onClick={() => onEdit(note)}
-      className="min-w-[295px] group/card left-0 top-[-0.11px] bg-Frame-color rounded-[10px] shadow-[0px_0px_20px_0px_rgba(0,0,0,0.05)] border border-stone-300 cursor-pointer"
+      className={`min-w-[295px] group/card left-0 top-[-0.11px] bg-Frame-color rounded-[10px] shadow-[0px_0px_20px_0px_rgba(0,0,0,0.05)] border border-stone-300 cursor-pointer ${
+        wFull && "w-full"
+      }`}
     >
       <div className="p-[17px] flex">
         <div

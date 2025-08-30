@@ -207,7 +207,21 @@ export default function HomeRegistered() {
           refreshTags={fetchTags}
         />
       )}
-      {openSearch && <SearchWindow onClose={() => setOpenSearch(false)} />}
+      {openSearch && (
+        <SearchWindow
+          onClose={() => setOpenSearch(false)}
+          tags={tags}
+          editingNote={editingNote}
+          onEdit={setEditingNote}
+          onCloseEdit={() => {
+            setEditingNote(null);
+          }}
+          onArchivedSuccess={handleRefresh}
+          onSubmitSuccess={handleRefresh}
+          onDelete={onDelete}
+          refreshTags={fetchTags}
+        />
+      )}
       {actelem === "next7Days" && (
         <div className="ml-96 p-4">
           <NextWeek

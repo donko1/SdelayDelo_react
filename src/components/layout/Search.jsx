@@ -5,16 +5,28 @@ import { chooseTextByLang } from "@/utils/helpers/locale";
 import { useLang } from "@/context/LangContext";
 import { search } from "@/utils/api/notes";
 import { useAuth } from "@/context/AuthContext";
+import NoteCard from "../ui/NoteCard";
 
-export function SearchWindow({ onClose }) {
+export function SearchWindow({
+  onClose,
+  tags,
+  editingNote,
+  onEdit,
+  onCloseEdit,
+  onSubmitSuccess,
+  onDelete,
+  onArchivedSuccess,
+  refreshTags,
+}) {
   const { lang } = useLang();
   const { headers } = useAuth();
   const [query, setQuery] = useState("");
+  const [notes, setNotes] = useState({ results: [] });
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     const handleKeyDown = (e) => {
-      if (e.key === "Escape") {
+      if (e.key === "Escape" && !editingNote?.id) {
         onClose();
       }
     };
@@ -27,9 +39,14 @@ export function SearchWindow({ onClose }) {
   }, [onClose]);
 
   const fetchNotes = async (query) => {
+    console.log(query);
+    if (query === "") {
+      setNotes({ count: 0, results: [] });
+      return;
+    }
     try {
       const result = await search(headers, query);
-      console.log(result);
+      setNotes(result);
     } catch (error) {
       console.error("Ошибка при загрузке заметок моего дня:", error);
     }
@@ -68,8 +85,8 @@ export function SearchWindow({ onClose }) {
             onClick={onClose}
           />
         </div>
-        <div className="flex-1 flex justify-center items-center">
-          {isLoading && (
+        {isLoading && (
+          <div className="flex-1 flex justify-center items-center">
             <div className="lds-roller">
               <div></div>
               <div></div>
@@ -80,8 +97,37 @@ export function SearchWindow({ onClose }) {
               <div></div>
               <div></div>
             </div>
-          )}
-        </div>
+          </div>
+        )}
+        {notes?.results?.map((note) => (
+          <div className="mx-[20px] my-[15px]">
+            <NoteCard
+              key={note.id}
+              note={note}
+              tags={tags}
+              wFull={true}
+              isEditing={editingNote?.id === note.id}
+              onEdit={onEdit}
+              onCloseEdit={() => {
+                onCloseEdit();
+                fetchNotes(query);
+              }}
+              onSubmitSuccess={() => {
+                onSubmitSuccess();
+                fetchNotes(query);
+              }}
+              onDelete={(noteId) => {
+                onDelete(noteId);
+                fetchNotes(query);
+              }}
+              onArchivedSuccess={() => {
+                onArchivedSuccess();
+                fetchNotes(query);
+              }}
+              refreshTags={refreshTags}
+            />
+          </div>
+        ))}
       </div>
     </div>
   );
