@@ -139,7 +139,7 @@ export default function NoteFormEdit({
         );
       }
       await onSubmitSuccess();
-      onClose();
+      await onClose();
     } catch (error) {
       console.error("Ошибка отправки заметки:", error);
       showToast(
@@ -203,6 +203,7 @@ export default function NoteFormEdit({
           onClose={onClose}
           handleAddToArchive={handleAddToArchive}
           onCloseEdit={onCloseEdit}
+          handleSubmit={handleSubmit}
         />
         <div className="mt-[17px] ml-[30px] mr-[40px] mb-[100px]">
           <form onSubmit={handleSubmit} className="relative">

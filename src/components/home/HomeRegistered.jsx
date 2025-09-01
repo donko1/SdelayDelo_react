@@ -123,7 +123,7 @@ export default function HomeRegistered() {
     }
   };
 
-  const onDelete = async (noteId) => {
+  const onDelete = async (noteId, update) => {
     await hideNote(headers, noteId);
     handleRefresh();
     showToast(
@@ -139,6 +139,9 @@ export default function HomeRegistered() {
         },
         onUndo: async () => {
           await undoHideNote(headers, noteId);
+          if (update) {
+            await update();
+          }
           handleRefresh();
         },
       }

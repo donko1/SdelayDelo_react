@@ -21,6 +21,7 @@ export default function NoteFormEditNavbar({
   onClose,
   handleAddToArchive,
   onCloseEdit,
+  handleSubmit,
 }) {
   const { setAct } = useActElemContext();
   const { timezone } = useTimezone();
@@ -118,7 +119,10 @@ export default function NoteFormEditNavbar({
           className="[&>*]:!fill-none cursor-pointer [shape-rendering:crispEdges] text-zinc-500 h-[32px] w-[32px] transition-all duration-300 hover:text-yellow-600"
         />
         <CrossIcon
-          onClick={onCloseEdit}
+          onClick={() => {
+            onCloseEdit();
+            handleSubmit();
+          }}
           className="h-[32px] cursor-pointer text-zinc-500 w-[32px] transition-all duration-300 hover:text-black"
         />
       </div>

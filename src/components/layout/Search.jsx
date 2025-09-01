@@ -39,22 +39,24 @@ export function SearchWindow({
   }, [onClose]);
 
   const fetchNotes = async (query) => {
-    console.log(query);
     if (query === "") {
       setNotes({ count: 0, results: [] });
+      setIsLoading(false);
       return;
     }
     try {
+      setIsLoading(true);
       const result = await search(headers, query);
       setNotes(result);
     } catch (error) {
-      console.error("Ошибка при загрузке заметок моего дня:", error);
+      console.error("Ошибка при загрузке заметок:", error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
   useEffect(() => {
     fetchNotes(query);
-    setIsLoading(false);
   }, [query]);
 
   return (
@@ -71,7 +73,6 @@ export function SearchWindow({
             value={query}
             onChange={(e) => {
               setQuery(e.target.value);
-              setIsLoading(true);
             }}
             placeholder={chooseTextByLang(
               "Поиск заметок",
@@ -108,20 +109,20 @@ export function SearchWindow({
               wFull={true}
               isEditing={editingNote?.id === note.id}
               onEdit={onEdit}
-              onCloseEdit={() => {
-                onCloseEdit();
+              onCloseEdit={async () => {
+                await onCloseEdit?.();
                 fetchNotes(query);
               }}
-              onSubmitSuccess={() => {
-                onSubmitSuccess();
+              onSubmitSuccess={async () => {
+                await onSubmitSuccess?.();
                 fetchNotes(query);
               }}
-              onDelete={(noteId) => {
-                onDelete(noteId);
+              onDelete={async (noteId) => {
+                await onDelete?.(noteId, () => fetchNotes(query));
                 fetchNotes(query);
               }}
-              onArchivedSuccess={() => {
-                onArchivedSuccess();
+              onArchivedSuccess={async () => {
+                await onArchivedSuccess?.();
                 fetchNotes(query);
               }}
               refreshTags={refreshTags}
