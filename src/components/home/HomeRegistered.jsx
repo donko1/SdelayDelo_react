@@ -214,6 +214,7 @@ export default function HomeRegistered() {
         <SearchWindow
           onClose={() => setOpenSearch(false)}
           tags={tags}
+          refreshTrigger={refreshTrigger}
           editingNote={editingNote}
           onEdit={setEditingNote}
           onCloseEdit={() => {

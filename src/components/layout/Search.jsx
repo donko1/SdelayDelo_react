@@ -17,6 +17,7 @@ export function SearchWindow({
   onDelete,
   onArchivedSuccess,
   refreshTags,
+  refreshTrigger,
 }) {
   const { lang } = useLang();
   const { headers } = useAuth();
@@ -57,7 +58,7 @@ export function SearchWindow({
 
   useEffect(() => {
     fetchNotes(query);
-  }, [query]);
+  }, [query, refreshTrigger]);
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
@@ -115,6 +116,7 @@ export function SearchWindow({
               }}
               onSubmitSuccess={async () => {
                 await onSubmitSuccess?.();
+                console.log("SUBMIT_SEARCH");
                 fetchNotes(query);
               }}
               onDelete={async (noteId) => {

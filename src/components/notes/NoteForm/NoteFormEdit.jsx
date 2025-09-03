@@ -203,7 +203,6 @@ export default function NoteFormEdit({
           onClose={onClose}
           handleAddToArchive={handleAddToArchive}
           onCloseEdit={onCloseEdit}
-          handleSubmit={handleSubmit}
         />
         <div className="mt-[17px] ml-[30px] mr-[40px] mb-[100px]">
           <form onSubmit={handleSubmit} className="relative">
