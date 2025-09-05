@@ -242,8 +242,6 @@ export async function setNewDate(headers, id, date) {
 }
 
 export async function editNote(headers, id, content) {
-  console.log(id);
-  console.log(content);
   const baseUrl = isParallel()
     ? "/api/v3/note/"
     : "http://localhost:8000/api/v3/note/";

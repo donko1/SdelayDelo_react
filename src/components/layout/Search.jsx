@@ -26,8 +26,10 @@ export function SearchWindow({
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
+    if (editingNote?.id) return;
+
     const handleKeyDown = (e) => {
-      if (e.key === "Escape" && !editingNote?.id) {
+      if (e.key === "Escape") {
         onClose();
       }
     };
@@ -116,7 +118,6 @@ export function SearchWindow({
               }}
               onSubmitSuccess={async () => {
                 await onSubmitSuccess?.();
-                console.log("SUBMIT_SEARCH");
                 fetchNotes(query);
               }}
               onDelete={async (noteId) => {
