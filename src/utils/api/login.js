@@ -1,4 +1,5 @@
 import { isParallel } from "@utils/helpers/settings";
+import axios from "axios";
 
 const getBaseUrl = () => {
   return isParallel() ? "" : "http://localhost:8000";
@@ -9,71 +10,66 @@ export const fetchEmailByUsername = async (username) => {
   const url = new URL(endpoint, getBaseUrl() || window.location.origin);
   url.searchParams.append("username", username);
 
-  const response = await fetch(url.toString(), {
-    method: "GET",
-  });
+  const response = await axios.get(url.toString());
 
-  if (!response.ok) throw new Error("Пользователь не найден");
-  const data = await response.json();
-  return data.email;
+  if (response.status !== 200) throw new Error("Пользователь не найден");
+
+  return response.data.email;
 };
 
 export const sendVerificationCode = async (email) => {
   const url = `${getBaseUrl()}/api/send_code/`;
-  const response = await fetch(url, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ email }),
-  });
-  if (!response.ok) throw new Error("Ошибка отправки кода");
+
+  const response = await axios.post(url, { email });
+
+  if (response.status !== 200) throw new Error("Ошибка отправки кода");
 };
 
 export const checkCode = async (email, code) => {
   const url = `${getBaseUrl()}/api/check_code/`;
-  const response = await fetch(url, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ email, code }),
-  });
-  if (!response.ok) throw new Error("Неверный код");
-  return await response.json();
+
+  const response = await axios.post(url, { email, code });
+
+  if (response.status !== 200) throw new Error("Неверный код");
+
+  return response.data;
 };
 
 export const loginUser = async (email, password, token = null) => {
   const url = `${getBaseUrl()}/api/login`;
   const body = token ? { email, password, token } : { email, password };
 
-  const response = await fetch(url, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(body),
-  });
+  const response = await axios.post(url, body);
 
-  if (!response.ok) throw new Error("Неверные данные");
-  return await response.json();
+  if (response.status !== 200) throw new Error("Неверные данные");
+
+  return response.data;
 };
 
 export const resetPassword = async (token, newPassword) => {
   console.log(token);
   const url = `${getBaseUrl()}/api/reset_password`;
-  const response = await fetch(url, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ token, new_password: newPassword }),
+
+  const response = await axios.post(url, {
+    token,
+    new_password: newPassword,
   });
-  if (!response.ok) throw new Error("Пароль слишком простой");
+
+  if (response.status !== 200) throw new Error("Пароль слишком простой");
 };
 
 export const registerUser = async (email, username, password, token) => {
   const url = `${getBaseUrl()}/api/register/`;
-  const response = await fetch(url, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ email, username, password, token }),
+
+  const response = await axios.post(url, {
+    email,
+    username,
+    password,
+    token,
   });
 
-  if (!response.ok) {
-    const errorData = await response.json();
+  if (response.status !== 200) {
+    const errorData = response.data;
     switch (errorData.detail) {
       case "password_8_symbols":
         throw new Error("В пароле должно быть минимум 8 символов");
@@ -83,18 +79,22 @@ export const registerUser = async (email, username, password, token) => {
         throw new Error("Ошибка регистрации");
     }
   }
-  return await response.json();
+
+  return response.data;
 };
 
 export const updateUserInfo = async (token, language, timezone) => {
   const url = `${getBaseUrl()}/api/change-userinfo/`;
-  const response = await fetch(url, {
-    method: "PATCH",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Token ${token}`,
-    },
-    body: JSON.stringify({ language, timezone }),
-  });
-  if (!response.ok) throw new Error("Ошибка обновления данных");
+  const response = await axios.patch(
+    url,
+    { language, timezone },
+    {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Token ${token}`,
+      },
+    }
+  );
+
+  return response.data;
 };

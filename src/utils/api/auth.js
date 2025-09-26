@@ -1,55 +1,58 @@
 import { isParallel } from "@utils/helpers/settings";
+import axios from "axios";
 
 export async function check_if_email_registered(email) {
   let baseUrl = isParallel()
     ? "/api/check_if_email_registered"
     : "http://localhost:8000/api/check_if_email_registered";
 
-  const url = new URL(baseUrl);
-  url.searchParams.append("email", email);
-
   try {
-    const response = await fetch(url.toString(), {
-      method: "GET",
+    const response = await axios.get(baseUrl, {
+      params: { email },
     });
 
-    if (!response.ok) {
+    return response.data.email_is_registered;
+  } catch (error) {
+    if (error.response) {
       console.log("Error on side of server");
-      return 1;
+    } else if (error.request) {
+      console.log("Error! We can't check if email registered:", error.message);
+    } else {
+      console.log("Error:", error.message);
     }
 
-    const data = await response.json();
-    return data.email_is_registered;
-  } catch (error) {
-    console.log("Error! We can't check if email registered:", error);
     return 1;
   }
 }
 
 export async function create_demo() {
   let url = isParallel() ? "/api/demo" : "http://localhost:8000/api/demo";
-  console.log(navigator.language || navigator.userLanguage);
+
   try {
-    const response = await fetch(url, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
+    const response = await axios.post(
+      url,
+      {
         language: navigator.language || navigator.userLanguage,
         timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-      }),
-    });
-    if (!response.ok) {
+      },
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    console.log(response.data);
+    return response.data.token;
+  } catch (error) {
+    if (error.response) {
       console.log("Error on side of server");
-      return 1;
+    } else if (error.request) {
+      console.log("Error! We can't create demo:", error.message);
+    } else {
+      console.log("Error:", error.message);
     }
 
-    const data = await response.json();
-    console.log(data);
-    return data.token;
-  } catch (error) {
-    console.log("Error! We can't check if email registered:", error);
     return 1;
   }
 }

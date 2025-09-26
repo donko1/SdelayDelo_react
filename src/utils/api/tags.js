@@ -1,41 +1,37 @@
-
 import { isParallel } from "@utils/helpers/settings";
+import axios from "axios";
 
 export async function addNewTag(title, headers) {
-    let url = isParallel() ? "/api/tag/" : "http://127.0.0.1:8000/api/tag/"
-    try {
-        const resp = await fetch(url, {method:"POST",body:JSON.stringify({title}), headers:headers})
-        if (!resp.ok) {
-            console.log("Error on side of server");
-            return 1; 
-        }
-        const data = await resp.json()
-        return data;
-    }
-    catch (error) {
-        console.log(`Error! ${error}`)
-        return 1;
-    }
-    finally {
+  const url = isParallel() ? "/api/tag/" : "http://127.0.0.1:8000/api/tag/";
 
-    }
+  try {
+    const response = await axios.post(
+      url,
+      { title },
+      {
+        headers: {
+          ...headers,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.log(`Error! ${error}`);
+    return 1;
+  }
 }
-export async function getAllTagsByUser(headers) {
-    let url = isParallel() ? "/api/tag/" : "http://127.0.0.1:8000/api/tag/"
-    try {
-        const resp = await fetch(url, {method:"GET", headers:headers})
-        if (!resp.ok) {
-            console.log("Error on side of server");
-            return 1; 
-        }
-        const data = await resp.json()
-        return data;
-    }
-    catch (error) {
-        console.log(`Error! ${error}`)
-        return 1;
-    }
-    finally {
 
-    }
+export async function getAllTagsByUser(headers) {
+  const url = isParallel() ? "/api/tag/" : "http://127.0.0.1:8000/api/tag/";
+
+  try {
+    const response = await axios.get(url, {
+      headers: headers,
+    });
+    return response.data;
+  } catch (error) {
+    console.log(`Error! ${error}`);
+    return 1;
+  }
 }

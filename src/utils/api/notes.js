@@ -1,4 +1,5 @@
 import { isParallel } from "@utils/helpers/settings";
+import axios from "axios";
 
 export function getTagsForNote(note, tags) {
   if (!note.tags?.length) return [];
@@ -10,17 +11,10 @@ export async function clearArchive(headers) {
     ? "/api/v3/note/clear_archive/"
     : "http://localhost:8000/api/v3/note/clear_archive/";
   try {
-    const resp = await fetch(url, {
-      method: "DELETE",
+    const resp = await axios.delete(url, {
       headers: headers,
     });
-
-    if (!resp.ok) {
-      console.log("Error on side of server");
-      return 1;
-    }
-    const data = await resp.json();
-    return data;
+    return resp.data;
   } catch (error) {
     console.log(`Error! ${error}`);
     throw error;
@@ -34,27 +28,23 @@ export async function addNoteToArchive(id, headers) {
   const url = id ? `${baseUrl}${id}/` : baseUrl;
 
   try {
-    const resp = await fetch(url, {
-      method: "PATCH",
-      headers: {
-        ...headers,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        is_archived: true,
-      }),
-    });
-    if (!resp.ok) {
-      console.log("Error on side of server");
-      return 1;
-    }
-    const data = await resp.json();
-    return data;
+    const resp = await axios.patch(
+      url,
+      { is_archived: true },
+      {
+        headers: {
+          ...headers,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    return resp.data;
   } catch (error) {
     console.log(`Error! ${error}`);
     return 1;
   }
 }
+
 export async function togglePin(note, headers) {
   const baseUrl = isParallel()
     ? "/api/v3/note/"
@@ -62,27 +52,23 @@ export async function togglePin(note, headers) {
   const url = note.id ? `${baseUrl}${note.id}/` : baseUrl;
 
   try {
-    const resp = await fetch(url, {
-      method: "PATCH",
-      headers: {
-        ...headers,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        is_pinned: !note.is_pinned,
-      }),
-    });
-    if (!resp.ok) {
-      console.log("Error on side of server");
-      return 1;
-    }
-    const data = await resp.json();
-    return data;
+    const resp = await axios.patch(
+      url,
+      { is_pinned: !note.is_pinned },
+      {
+        headers: {
+          ...headers,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    return resp.data;
   } catch (error) {
     console.log(`Error! ${error}`);
     return 1;
   }
 }
+
 export async function removeFromArchive(id, headers) {
   const baseUrl = isParallel()
     ? "/api/v3/note/"
@@ -90,23 +76,20 @@ export async function removeFromArchive(id, headers) {
   const url = id ? `${baseUrl}${id}/` : baseUrl;
 
   try {
-    const resp = await fetch(url, {
-      method: "PATCH",
-      headers: {
-        ...headers,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
+    const resp = await axios.patch(
+      url,
+      {
         is_archived: false,
         date_of_note: null,
-      }),
-    });
-    if (!resp.ok) {
-      console.log("Error on side of server");
-      return 1;
-    }
-    const data = await resp.json();
-    return data;
+      },
+      {
+        headers: {
+          ...headers,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    return resp.data;
   } catch (error) {
     console.log(`Error! ${error}`);
     throw error;
@@ -114,34 +97,25 @@ export async function removeFromArchive(id, headers) {
 }
 
 export async function getMyDayByUser(headers) {
-  let url = isParallel()
+  const url = isParallel()
     ? "/api/v3/note/my_day/"
     : "http://127.0.0.1:8000/api/v3/note/my_day/";
   try {
-    const resp = await fetch(url, { method: "GET", headers: headers });
-    if (!resp.ok) {
-      console.log("Error on side of server");
-      return 1;
-    }
-    const data = await resp.json();
-    return data;
+    const resp = await axios.get(url, { headers: headers });
+    return resp.data;
   } catch (error) {
     console.log(`Error! ${error}`);
     return 1;
   }
 }
+
 export async function getAllNotesByUser(headers) {
-  let url = isParallel()
+  const url = isParallel()
     ? "/api/v3/note"
     : "http://127.0.0.1:8000/api/v3/note/";
   try {
-    const resp = await fetch(url, { method: "GET", headers: headers });
-    if (!resp.ok) {
-      console.log("Error on side of server");
-      return 1;
-    }
-    const data = await resp.json();
-    return data;
+    const resp = await axios.get(url, { headers: headers });
+    return resp.data;
   } catch (error) {
     console.log(`Error! ${error}`);
     return 1;
@@ -149,8 +123,8 @@ export async function getAllNotesByUser(headers) {
 }
 
 export async function getNotesByDate(headers, day) {
-  let url = isParallel()
-    ? "api/v3/note/by_date/"
+  const baseUrl = isParallel()
+    ? "/api/v3/note/by_date/"
     : "http://127.0.0.1:8000/api/v3/note/by_date/";
 
   const year = day.getFullYear();
@@ -158,54 +132,42 @@ export async function getNotesByDate(headers, day) {
   const date = String(day.getDate()).padStart(2, "0");
   const dateString = `${year}-${month}-${date}`;
 
-  const params = new URLSearchParams({ date: dateString });
-
   try {
-    const resp = await fetch(`${url}?${params}`, {
-      method: "GET",
+    const resp = await axios.get(baseUrl, {
+      params: { date: dateString },
       headers: headers,
     });
-    if (!resp.ok) {
-      console.log("Error on side of server");
-      return 1;
-    }
-    const data = await resp.json();
-    return data;
+    return resp.data;
   } catch (error) {
     console.log(`Error! ${error}`);
     return 1;
   }
 }
-export async function deleteNoteById(note, headers) {
+
+export async function deleteNoteById(noteId, headers) {
   try {
     const baseUrl = isParallel()
       ? "/api/v3/note/"
       : "http://localhost:8000/api/v3/note/";
-    const url = `${baseUrl}${note}/`;
+    const url = `${baseUrl}${noteId}/`;
 
-    const response = await fetch(url, {
-      method: "DELETE",
-      headers,
+    const response = await axios.delete(url, {
+      headers: headers,
     });
-
-    if (!response.ok) throw new Error("Ошибка при удалении");
-    console.log("Заметка успешно удалена");
+    return response.data;
   } catch (error) {
     console.error("Ошибка удаления заметки:", error);
+    throw error;
   }
 }
+
 export async function getArchivedNotesByUser(headers, step) {
-  let url = isParallel()
+  const url = isParallel()
     ? `/api/v3/note/archived/?page=${step}`
     : `http://127.0.0.1:8000/api/v3/note/archived/?page=${step}`;
   try {
-    const resp = await fetch(url, { method: "GET", headers: headers });
-    if (!resp.ok) {
-      console.log("Error on side of server");
-      return 1;
-    }
-    const data = await resp.json();
-    return data;
+    const resp = await axios.get(url, { headers: headers });
+    return resp.data;
   } catch (error) {
     console.log(`Error! ${error}`);
     return 1;
@@ -219,22 +181,14 @@ export async function setNewDate(headers, id, date) {
   const url = id ? `${baseUrl}${id}/` : baseUrl;
 
   try {
-    const resp = await fetch(url, {
-      method: "PATCH",
-      headers: {
-        ...headers,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        date_of_note: date,
-      }),
-    });
-    if (!resp.ok) {
-      console.log("Error on side of server");
-      return 1;
-    }
-    const data = await resp.json();
-    return data;
+    const resp = await axios.patch(
+      url,
+      { date_of_note: date },
+      {
+        headers: { ...headers, "Content-Type": "application/json" },
+      }
+    );
+    return resp.data;
   } catch (error) {
     console.log(`Error! ${error}`);
     return 1;
@@ -246,89 +200,98 @@ export async function editNote(headers, id, content) {
     ? "/api/v3/note/"
     : "http://localhost:8000/api/v3/note/";
   const url = `${baseUrl}${id}/`;
-  const method = "PUT";
-  const response = await fetch(url, {
-    method,
-    headers: {
-      ...headers,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(content),
-  });
-  if (!response.ok) throw new Error("Ошибка при отправке заметки");
+
+  try {
+    const response = await axios.put(url, content, {
+      headers: {
+        ...headers,
+        "Content-Type": "application/json",
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Ошибка при редактировании заметки:", error);
+    throw error;
+  }
 }
 
 export async function createNote(headers, content) {
   const url = isParallel()
     ? "/api/v3/note/"
     : "http://localhost:8000/api/v3/note/";
-  const method = "POST";
-  const response = await fetch(url, {
-    method,
-    headers: {
-      ...headers,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(content),
-  });
-  if (!response.ok) throw new Error("Ошибка при отправке заметки");
+
+  try {
+    const response = await axios.post(url, content, {
+      headers: {
+        ...headers,
+        "Content-Type": "application/json",
+      },
+    });
+    return response.data;
+  } catch (error) {
+    throw new Error("Ошибка при создании заметки: " + error.message);
+  }
 }
 
 export async function hideNote(headers, id) {
   const url = isParallel()
     ? `/api/v3/note/${id}/hide/`
     : `http://localhost:8000/api/v3/note/${id}/hide/`;
-  const method = "DELETE";
-  const response = await fetch(url, {
-    method,
-    headers: {
-      ...headers,
-      "Content-Type": "application/json",
-    },
-  });
-  if (!response.ok) throw new Error("Ошибка при отправке заметки");
+
+  try {
+    const response = await axios.delete(url, {
+      headers: {
+        ...headers,
+        "Content-Type": "application/json",
+      },
+    });
+    return response.data;
+  } catch (error) {
+    throw new Error("Ошибка при скрытии заметки: " + error.message);
+  }
 }
 
 export async function undoHideNote(headers, id) {
   const url = isParallel()
     ? `/api/v3/note/${id}/undo/`
     : `http://localhost:8000/api/v3/note/${id}/undo/`;
-  const method = "POST";
-  const response = await fetch(url, {
-    method,
-    headers: {
-      ...headers,
-      "Content-Type": "application/json",
-    },
-  });
-  if (!response.ok) throw new Error("Ошибка при отправке заметки");
+
+  try {
+    const response = await axios.post(
+      url,
+      {},
+      {
+        headers: {
+          ...headers,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    throw new Error("Ошибка при восстановлении заметки: " + error.message);
+  }
 }
 
 export async function search(headers, query) {
-  let baseUrl = isParallel()
+  const baseUrl = isParallel()
     ? "/api/v3/note/search/"
     : "http://localhost:8000/api/v3/note/search/";
 
-  const urlParams = new URLSearchParams();
-  if (query) {
-    urlParams.append("query", query);
+  try {
+    const response = await axios.get(baseUrl, {
+      params: { query },
+      headers: {
+        ...headers,
+        "Content-Type": "application/json",
+      },
+    });
+    return response.data;
+  } catch (error) {
+    throw new Error("Ошибка при поиске заметок: " + error.message);
   }
-
-  const urlWithParams = `${baseUrl}?${urlParams.toString()}`;
-
-  const method = "GET";
-  const response = await fetch(urlWithParams, {
-    method,
-    headers: {
-      ...headers,
-      "Content-Type": "application/json",
-    },
-  });
-
-  if (!response.ok) throw new Error("Ошибка при поиске заметок");
-  const data = await response.json();
-  return data;
 }
+
 export async function createNoteCompact(headers, title, day) {
   const content = {
     date_of_note: day,
@@ -336,5 +299,11 @@ export async function createNoteCompact(headers, title, day) {
     description: ":)",
     tags: [],
   };
-  await createNote(headers, content);
+
+  try {
+    const result = await createNote(headers, content);
+    return result;
+  } catch (error) {
+    throw new Error("Ошибка при создании компактной заметки: " + error.message);
+  }
 }
