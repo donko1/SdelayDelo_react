@@ -5,7 +5,6 @@ import TitleForBlock from "@components/ui/Title";
 
 function ContentNotes({
   notes,
-  tags,
   editingNote,
   onEdit,
   onCloseEdit,
@@ -13,7 +12,6 @@ function ContentNotes({
   onDelete,
   onArchivedSuccess,
   text,
-  refreshTags,
 }) {
   const { lang } = useLang();
   return (
@@ -25,14 +23,12 @@ function ContentNotes({
             <NoteCard
               key={note.id}
               note={note}
-              tags={tags}
               isEditing={editingNote?.id === note.id}
               onEdit={onEdit}
               onCloseEdit={onCloseEdit}
               onSubmitSuccess={onSubmitSuccess}
               onDelete={(noteId) => onDelete(noteId)}
               onArchivedSuccess={onArchivedSuccess}
-              refreshTags={refreshTags}
             />
           ))}
         </div>

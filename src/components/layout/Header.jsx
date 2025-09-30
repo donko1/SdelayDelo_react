@@ -30,6 +30,7 @@ import {
 } from "@/utils/api/login";
 import useError from "@/utils/hooks/useError";
 import { useToastHook } from "@/utils/hooks/useToast";
+import { useTags } from "@/utils/hooks/useTags";
 
 function ProfileHeader({ onClose, title }) {
   return (
@@ -681,10 +682,10 @@ function Header({
   setOpenArchived,
   setOpenSearch,
   openForm,
-  tags_data,
 }) {
   const { username } = useUser();
   const { lang } = useLang();
+  const { tags } = useTags();
   const [ProfileSettingsOpened, setProfileSettingsOpened] = useState(false);
   const [tagsOpened, setTagsOpened] = useState(false);
 
@@ -798,7 +799,7 @@ function Header({
           </div>
         ))}
         {tagsOpened &&
-          tags_data.map((item) => (
+          tags.map((item) => (
             <div key={item.id} className="h-12 w-full cursor-pointer">
               <span className="text-[25px] text-left block pl-4">
                 #{item.title}

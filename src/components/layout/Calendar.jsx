@@ -18,7 +18,6 @@ export default function Calendar({
   onCloseEdit,
   onSubmitSuccess,
   onDelete,
-  refreshTags,
   onArchivedSuccess,
 }) {
   const { headers } = useAuth();
@@ -271,7 +270,6 @@ export default function Calendar({
           onClose={() => setCreating(false)}
           onArchivedSuccess={onArchivedSuccess}
           date_of_note={activeDate}
-          refreshTags={refreshTags}
         />
       )}
     </div>

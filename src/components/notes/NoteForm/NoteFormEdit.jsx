@@ -11,11 +11,9 @@ import { useToastHook } from "@/utils/hooks/useToast";
 
 export default function NoteFormEdit({
   note,
-  tags,
   onClose,
   onSubmitSuccess,
   onArchivedSuccess,
-  refreshTags,
 }) {
   const { lang } = useLang();
   const { showToast } = useToastHook();
@@ -231,9 +229,7 @@ export default function NoteFormEdit({
 
               {tagDropdownOpen && (
                 <TagDropdown
-                  tags={tags}
                   selectedTags={selectedTags}
-                  refreshTags={refreshTags}
                   handleTagToggle={handleTagToggle}
                   variant="edit"
                 />

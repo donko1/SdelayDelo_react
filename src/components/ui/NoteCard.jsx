@@ -11,19 +11,18 @@ import { chooseTextByLang } from "@/utils/helpers/locale";
 
 const NoteCard = ({
   note,
-  tags,
   onEdit,
   isEditing,
   onCloseEdit,
   onSubmitSuccess,
   onDelete,
   onArchivedSuccess,
-  refreshTags,
   wFull = false,
 }) => {
   const { headers } = useAuth();
   const { lang } = useLang();
   const { showToast } = useToastHook();
+  const { tags } = useTags();
 
   return (
     <div
@@ -98,12 +97,10 @@ const NoteCard = ({
       {isEditing && (
         <NoteForm
           note={note}
-          tags={tags}
           onClose={onCloseEdit}
           onSubmitSuccess={onSubmitSuccess}
           onDeleteSuccess={onDelete}
           onArchivedSuccess={onArchivedSuccess}
-          refreshTags={refreshTags}
         />
       )}
     </div>

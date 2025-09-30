@@ -1,20 +1,21 @@
 import { useAuth } from "@context/AuthContext";
-import { addNewTag } from "@utils/api/tags";
 import { chooseTextByLang } from "@utils/helpers/locale";
 import { useState } from "react";
 import { useLang } from "@context/LangContext";
+import { useTags } from "@/utils/hooks/useTags";
 
 export default function TagDropdown({
-  tags,
   selectedTags,
-  refreshTags,
   handleTagToggle,
   variant,
 }) {
   const { headers } = useAuth();
+  const { tags, createTagMutation } = useTags();
+
   const handleAddTag = async (e) => {
     e.preventDefault();
-    await addNewTag(newTag, headers);
+    await createTagMutation.mutateAsync(newTag);
+    setNewTag("");
   };
 
   const { lang } = useLang();
@@ -31,14 +32,12 @@ export default function TagDropdown({
             onKeyDown={async (e) => {
               if (e.key === "Enter") {
                 await handleAddTag(e);
-                await refreshTags();
               }
             }}
           />
           <button
             onClick={async (e) => {
               await handleAddTag(e);
-              await refreshTags();
             }}
             className="ml-2 px-3 bg-gray-200 rounded-[10px] hover:bg-green-500 transition-all duration-300"
           >
@@ -88,14 +87,12 @@ export default function TagDropdown({
             onKeyDown={async (e) => {
               if (e.key === "Enter") {
                 await handleAddTag(e);
-                await refreshTags();
               }
             }}
           />
           <button
             onClick={async (e) => {
               await handleAddTag(e);
-              await refreshTags();
             }}
             className="bg-gray-200 rounded-[10px] p-2 hover:bg-green-500 transition-all duration-300"
           >

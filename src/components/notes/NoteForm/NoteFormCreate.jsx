@@ -13,14 +13,13 @@ import CalendarIcon from "@assets/calendar.svg?react";
 import { useToastHook } from "@/utils/hooks/useToast";
 
 export default function NoteFormCreate({
-  tags,
   onClose,
-  refreshTags,
   onSubmitSuccess,
   date_of_note,
   fixedStyle,
 }) {
   const [selectedTags, setSelectedTags] = useState([]);
+
   const [tagDropdownOpen, setTagDropdownOpen] = useState(false);
   const { headers } = useAuth();
   const { lang } = useLang();
@@ -186,9 +185,7 @@ export default function NoteFormCreate({
 
             {tagDropdownOpen && (
               <TagDropdown
-                tags={tags}
                 selectedTags={selectedTags}
-                refreshTags={refreshTags}
                 handleTagToggle={handleTagToggle}
                 variant="create"
               />

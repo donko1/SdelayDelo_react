@@ -1,6 +1,5 @@
 import { useEffect, useState, useCallback, useMemo } from "react";
 import { useInView } from "react-intersection-observer";
-import { Link } from "react-router-dom";
 import Header from "@components/layout/Header";
 import ContentNotes from "@components/notes/ContentNotes";
 import NoteForm from "@components/notes/NoteForm/NoteForm";
@@ -23,7 +22,7 @@ import { useActElemContext } from "@context/ActElemContext";
 import { useLang } from "@context/LangContext";
 import NoteFormCreate from "@components/notes/NoteForm/NoteFormCreate";
 import { useTimezone } from "@/context/TimezoneContext";
-import { useToastHook } from "@/utils/hooks/useToast";
+import { useToastHook } from "@hooks/useToast";
 import { SearchWindow } from "@components/layout/Search";
 
 export default function HomeRegistered() {
@@ -34,7 +33,7 @@ export default function HomeRegistered() {
 
   const [notes, setNotes] = useState({ results: [], next: null });
   const [allNotes, setAllNotes] = useState({ result: [], next: null });
-  const [tags, setTags] = useState([]);
+
   const [openArchived, setOpenArchived] = useState(false);
   const [openSearch, setOpenSearch] = useState(false);
   const [editingNote, setEditingNote] = useState(null);
@@ -153,28 +152,13 @@ export default function HomeRegistered() {
     fetchAllNotes();
   }, [refreshTrigger]);
 
-  const fetchTags = async () => {
-    try {
-      const result = await getAllTagsByUser(headers);
-      setTags(result);
-    } catch (error) {
-      console.log("Ошибка при загрузке тэгов: ", error);
-    }
-  };
-
-  useEffect(() => {
-    fetchTags();
-  }, []);
-
   return (
     <div className="relative">
       {isCreating && (
         <NoteFormCreate
-          tags={tags}
           onClose={() => {
             setIsCreating(false);
           }}
-          refreshTags={fetchTags}
           onSubmitSuccess={handleRefresh}
           fixedStyle={true}
         />
@@ -185,7 +169,6 @@ export default function HomeRegistered() {
           setAct={setAct}
           setOpenArchived={setOpenArchived}
           setOpenSearch={setOpenSearch}
-          tags_data={tags}
           openForm={setIsCreating}
         />
       </div>
@@ -194,26 +177,22 @@ export default function HomeRegistered() {
         <ArchivedNotes
           onClose={() => setOpenArchived(false)}
           onRefresh={handleRefresh}
-          tags={tags}
         />
       )}
       {actelem === "Calendar" && (
         <Calendar
           key={`calendar_${calendarKey}`}
-          tags={tags}
           editingNote={editingNote}
           onEdit={setEditingNote}
           onCloseEdit={() => setEditingNote(null)}
           onArchivedSuccess={handleRefresh}
           onSubmitSuccess={handleRefresh}
           onDelete={onDelete}
-          refreshTags={fetchTags}
         />
       )}
       {openSearch && (
         <SearchWindow
           onClose={() => setOpenSearch(false)}
-          tags={tags}
           refreshTrigger={refreshTrigger}
           editingNote={editingNote}
           onEdit={setEditingNote}
@@ -223,21 +202,18 @@ export default function HomeRegistered() {
           onArchivedSuccess={handleRefresh}
           onSubmitSuccess={handleRefresh}
           onDelete={onDelete}
-          refreshTags={fetchTags}
         />
       )}
       {actelem === "next7Days" && (
         <div className="ml-96 p-4">
           <NextWeek
             key={`nextweek_${nextWeekKey}`}
-            tags={tags}
             editingNote={editingNote}
             onEdit={setEditingNote}
             onCloseEdit={() => setEditingNote(null)}
             onArchivedSuccess={handleRefresh}
             onSubmitSuccess={handleRefresh}
             onDelete={onDelete}
-            refreshTags={fetchTags}
           />
         </div>
       )}
@@ -245,7 +221,6 @@ export default function HomeRegistered() {
         <div className="ml-96 p-4">
           <ContentNotes
             notes={allNotes}
-            tags={tags}
             editingNote={editingNote}
             onEdit={setEditingNote}
             onCloseEdit={() => setEditingNote(null)}
@@ -253,7 +228,6 @@ export default function HomeRegistered() {
             onSubmitSuccess={handleRefresh}
             onDelete={onDelete}
             text={chooseTextByLang("Все заметки", "All notes", lang)}
-            refreshTags={fetchTags}
           />
           {allNotes.next && <div ref={allNotesRef} className="h-2" />}
         </div>
@@ -275,14 +249,12 @@ export default function HomeRegistered() {
           <div className="mt-[40px]">
             <ContentNotes
               notes={notes}
-              tags={tags}
               editingNote={editingNote}
               onEdit={setEditingNote}
               onCloseEdit={() => setEditingNote(null)}
               onArchivedSuccess={handleRefresh}
               onSubmitSuccess={handleRefresh}
               onDelete={onDelete}
-              refreshTags={fetchTags}
             />
             {notes.next && <div ref={notesRef} className="h-2" />}
           </div>
@@ -296,11 +268,9 @@ export default function HomeRegistered() {
           {editingNote && !editingNote.id && (
             <NoteForm
               note={null}
-              tags={tags}
               onClose={() => setEditingNote(null)}
               onSubmitSuccess={handleRefresh}
               onDeleteSuccess={handleRefresh}
-              refreshTags={fetchTags}
             />
           )}
         </div>

@@ -13,14 +13,16 @@ import { useTimezone } from "@context/TimezoneContext";
 import ReturnIcon from "@assets/return.svg?react";
 import TrashIcon from "@assets/trash.svg?react";
 import { useToast } from "@/context/ToastContext";
+import { useTags } from "@/utils/hooks/useTags";
 
-export default function ArchivedNotes({ onClose, onRefresh, tags }) {
+export default function ArchivedNotes({ onClose, onRefresh }) {
   const [archivedNotes, setArchivedNotes] = useState({
     results: [],
     next: null,
   });
   const { lang } = useLang();
   const { headers } = useAuth();
+  const { tags } = useTags();
   const { timezone } = useTimezone();
   const { showToast } = useToast();
   const [step, setStep] = useState(1);

@@ -9,14 +9,12 @@ import NoteCard from "../ui/NoteCard";
 
 export function SearchWindow({
   onClose,
-  tags,
   editingNote,
   onEdit,
   onCloseEdit,
   onSubmitSuccess,
   onDelete,
   onArchivedSuccess,
-  refreshTags,
   refreshTrigger,
 }) {
   const { lang } = useLang();
@@ -108,7 +106,6 @@ export function SearchWindow({
             <NoteCard
               key={note.id}
               note={note}
-              tags={tags}
               wFull={true}
               isEditing={editingNote?.id === note.id}
               onEdit={onEdit}
@@ -128,7 +125,6 @@ export function SearchWindow({
                 await onArchivedSuccess?.();
                 fetchNotes(query);
               }}
-              refreshTags={refreshTags}
             />
           </div>
         ))}

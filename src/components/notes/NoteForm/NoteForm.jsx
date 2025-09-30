@@ -4,12 +4,10 @@ import NoteFormCompact from "@components/notes/NoteForm/NoteFormCompact";
 
 function NoteForm({
   note,
-  tags,
   onClose,
   onSubmitSuccess,
   onArchivedSuccess,
   date_of_note,
-  refreshTags,
   compact,
   day,
 }) {
@@ -28,19 +26,15 @@ function NoteForm({
     return (
       <NoteFormEdit
         note={note}
-        tags={tags}
         onClose={onClose}
         onSubmitSuccess={onSubmitSuccess}
         onArchivedSuccess={onArchivedSuccess}
-        refreshTags={refreshTags}
       />
     );
   }
   return (
     <NoteFormCreate
-      tags={tags}
       onClose={onClose}
-      refreshTags={refreshTags}
       onSubmitSuccess={onSubmitSuccess}
       date_of_note={date_of_note}
     />

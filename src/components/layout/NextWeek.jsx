@@ -11,14 +11,12 @@ import { capitalizeFirstLetter, getText } from "@utils/helpers/interface";
 import XIcon from "@assets/x.svg?react";
 
 export default function NextWeek({
-  tags,
   editingNote,
   onEdit,
   onCloseEdit,
   onSubmitSuccess,
   onDelete,
   onArchivedSuccess,
-  refreshTags,
 }) {
   const { headers } = useAuth();
   const { timezone } = useTimezone();
@@ -181,7 +179,6 @@ export default function NextWeek({
                   <NoteCard
                     key={note.id}
                     note={note}
-                    tags={tags}
                     isEditing={editingNote?.id === note.id}
                     onEdit={onEdit}
                     onCloseEdit={onCloseEdit}
@@ -197,7 +194,6 @@ export default function NextWeek({
                       await onArchivedSuccess?.();
                       await refreshAllDays();
                     }}
-                    refreshTags={refreshTags}
                   />
                 ))
               ) : (
@@ -211,7 +207,6 @@ export default function NextWeek({
               {creatingDates[day.dateStr] ? (
                 <NoteForm
                   compact={true}
-                  tags={tags}
                   date_of_note={day.date}
                   onSubmitSuccess={() => {
                     onSubmitSuccess?.();
@@ -219,7 +214,6 @@ export default function NextWeek({
                     handleCloseForm(day.dateStr);
                   }}
                   onClose={() => handleCloseForm(day.dateStr)}
-                  refreshTags={refreshTags}
                   day={day}
                 />
               ) : (
