@@ -11,14 +11,11 @@ import useAutoResizeTextarea from "@hooks/useAutoResizeTextarea";
 import CalendarForNoteForm from "@components/notes/NoteForm/Calendar";
 import CalendarIcon from "@assets/calendar.svg?react";
 import { useToastHook } from "@/utils/hooks/useToast";
+import { useNotes } from "@/utils/hooks/useNotes";
 
-export default function NoteFormCreate({
-  onClose,
-  onSubmitSuccess,
-  date_of_note,
-  fixedStyle,
-}) {
+export default function NoteFormCreate({ onClose, date_of_note, fixedStyle }) {
   const [selectedTags, setSelectedTags] = useState([]);
+  const { createNoteMutation } = useNotes();
 
   const [tagDropdownOpen, setTagDropdownOpen] = useState(false);
   const { headers } = useAuth();
@@ -82,29 +79,8 @@ export default function NoteFormCreate({
     if (noteDate) {
       content.date_of_note = formatDate(noteDate);
     }
-    try {
-      try {
-        await createNote(headers, content);
-        showToast(
-          chooseTextByLang("Заметка создана!", "Note created!", lang),
-          "success"
-        );
-        await onSubmitSuccess();
-        onClose();
-      } catch (e) {
-        console.log(e);
-        showToast(
-          chooseTextByLang(
-            "Произошла ошибка! Пожалуйста, повторите попытку",
-            "Error occurred! Please try again ",
-            lang
-          ),
-          "warning"
-        );
-      }
-    } catch (error) {
-      console.error("Ошибка отправки заметки:", error);
-    }
+    await createNoteMutation.mutateAsync({ content });
+    onClose();
   };
 
   useEffect(() => {

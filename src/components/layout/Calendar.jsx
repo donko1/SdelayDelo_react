@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { chooseTextByLang } from "@utils/helpers/locale";
 import { useAuth } from "@context/AuthContext";
-import { getNotesByDate } from "@utils/api/notes";
 import NoteForm from "@components/notes/NoteForm/NoteForm";
 import NoteCard from "@components/ui/NoteCard";
 import TitleForBlock from "../ui/Title";
@@ -10,42 +9,26 @@ import { useTimezone } from "@context/TimezoneContext";
 import SendIcon from "@assets/send.svg?react";
 import AddNoteButton from "@components/ui/AddNoteButton";
 import { capitalizeFirstLetter } from "@utils/helpers/interface";
+import { useNotes } from "@utils/hooks/useNotes";
 
-export default function Calendar({
-  tags,
-  editingNote,
-  onEdit,
-  onCloseEdit,
-  onSubmitSuccess,
-  onDelete,
-  onArchivedSuccess,
-}) {
-  const { headers } = useAuth();
+export default function Calendar({ editingNote, onEdit, onCloseEdit }) {
   const { timezone } = useTimezone();
   const { lang } = useLang();
-  const [activeDate, setActiveDate] = useState(null);
-  const [notes, setNotes] = useState([]);
-  const [creating, setCreating] = useState(false);
 
+  const [activeDate, setActiveDate] = useState(null);
+  const [creating, setCreating] = useState(false);
   const [offsetWeeks, setOffsetWeeks] = useState(0);
   const [days, setDays] = useState([]);
+
+  const { data: notes, isLoading } = useNotes("calendar", {
+    activeDate,
+    timezone,
+    lang,
+  });
 
   const handleDayClick = (date) => {
     setActiveDate(date);
   };
-
-  const fetchNotes = async () => {
-    try {
-      const results = await getNotesByDate(headers, activeDate);
-      setNotes(results);
-    } catch (error) {
-      console.error("Ошибка при загрузке заметок моего дня:", error);
-    }
-  };
-
-  useEffect(() => {
-    fetchNotes();
-  }, [activeDate]);
 
   const isSameDay = (date1, date2) => {
     if (!date1 || !date2) return false;
@@ -164,6 +147,7 @@ export default function Calendar({
       days[days.length - 1].month
     )} ${days[0].year}-${days[days.length - 1].year}`;
   };
+
   return (
     <div className="max-w-6xl mx-auto p-4">
       <TitleForBlock text={chooseTextByLang("Календарь", "Calendar", lang)} />
@@ -224,31 +208,33 @@ export default function Calendar({
         })}
         <div className="col-span-8 outline outline-1 w-full outline-offset-[-0.50px] outline-black mt-auto" />
       </div>
-      <div className="flex flex-wrap gap-5 mt-[44px]">
-        {notes?.length > 0 &&
-          notes.map((note) => (
-            <NoteCard
-              key={note.id}
-              note={note}
-              tags={tags}
-              isEditing={editingNote?.id === note.id}
-              onEdit={onEdit}
-              onCloseEdit={onCloseEdit}
-              onSubmitSuccess={async () => {
-                onSubmitSuccess();
-                fetchNotes();
-              }}
-              onDelete={async (deletedId) => {
-                await onDelete(deletedId);
-                fetchNotes();
-              }}
-              onArchivedSuccess={async () => {
-                onArchivedSuccess();
-                fetchNotes();
-              }}
-            />
-          ))}
-      </div>
+
+      {isLoading ? (
+        <div className="text-center py-4">Loading...</div>
+      ) : (
+        <div className="flex flex-wrap gap-5 mt-[44px]">
+          {notes?.length > 0 ? (
+            notes.map((note) => (
+              <NoteCard
+                key={note.id}
+                note={note}
+                isEditing={editingNote?.id === note.id}
+                onEdit={onEdit}
+                onCloseEdit={onCloseEdit}
+              />
+            ))
+          ) : (
+            <p className="text-center w-full text-gray-500">
+              {chooseTextByLang(
+                "Нет заметок на этот день",
+                "No notes for this day",
+                lang
+              )}
+            </p>
+          )}
+        </div>
+      )}
+
       <AddNoteButton
         style={1}
         editingNote={creating}
@@ -257,18 +243,7 @@ export default function Calendar({
 
       {creating && (
         <NoteForm
-          tags={tags}
-          onSubmitSuccess={() => {
-            fetchNotes();
-            onSubmitSuccess();
-            setCreating(false);
-          }}
-          onDeleteSuccess={() => {
-            fetchNotes();
-            onDeleteSuccess();
-          }}
           onClose={() => setCreating(false)}
-          onArchivedSuccess={onArchivedSuccess}
           date_of_note={activeDate}
         />
       )}

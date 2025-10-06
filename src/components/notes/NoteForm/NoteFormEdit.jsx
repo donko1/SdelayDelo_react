@@ -3,20 +3,15 @@ import HashtagIcon from "@assets/Hashtag.svg?react";
 import { chooseTextByLang } from "@utils/helpers/locale";
 import { useLang } from "@context/LangContext";
 import TagDropdown from "@components/notes/NoteForm/TagDropdown";
-import { addNoteToArchive, editNote, setNewDate } from "@utils/api/notes";
 import { useAuth } from "@context/AuthContext";
 import useAutoResizeTextarea from "@hooks/useAutoResizeTextarea";
 import NoteFormEditNavbar from "@components/notes/NoteForm/NoteFormEditNavbar";
-import { useToastHook } from "@/utils/hooks/useToast";
+import { useNotes } from "@/utils/hooks/useNotes";
 
-export default function NoteFormEdit({
-  note,
-  onClose,
-  onSubmitSuccess,
-  onArchivedSuccess,
-}) {
+export default function NoteFormEdit({ note, onClose }) {
   const { lang } = useLang();
-  const { showToast } = useToastHook();
+  const { archiveNoteMutation, editNoteMutation, setNewDateNoteMutation } =
+    useNotes();
 
   const [selectedTags, setSelectedTags] = useState(note?.tags || []);
   const selectedTagsRef = useRef(selectedTags);
@@ -71,26 +66,6 @@ export default function NoteFormEdit({
     date: note?.date_of_note || null,
   });
 
-  const [isNoteChanged, setIsNoteChanged] = useState(false);
-  const isNoteChangedRef = useRef(isNoteChanged);
-
-  useEffect(() => {
-    isNoteChangedRef.current = isNoteChanged;
-  }, [isNoteChanged]);
-
-  useEffect(() => {
-    const isTitleChanged = title !== initialValuesRef.current.title;
-    const isDescChanged = description !== initialValuesRef.current.description;
-    const isTagsChanged =
-      JSON.stringify(selectedTags.sort()) !==
-      JSON.stringify(initialValuesRef.current.tags.sort());
-    const isDateChanged = currentNoteDate !== initialValuesRef.current.date;
-
-    setIsNoteChanged(
-      isTitleChanged || isDescChanged || isTagsChanged || isDateChanged
-    );
-  }, [title, description, selectedTags, currentNoteDate]);
-
   useEffect(() => {
     updateTitleHeight();
     updateDescriptionHeight();
@@ -99,7 +74,7 @@ export default function NoteFormEdit({
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (e.key === "Escape") {
-        onCloseEdit();
+        handleClose();
       }
     };
 
@@ -108,47 +83,28 @@ export default function NoteFormEdit({
   }, [onClose]);
 
   const handleAddToArchive = async () => {
-    try {
-      await addNoteToArchive(note.id, headers);
-      if (onArchivedSuccess) {
-        await onArchivedSuccess();
-      }
-
-      onCloseEdit();
-    } catch (error) {
-      console.error("Ошибка при архивировании:", error);
-    }
+    await archiveNoteMutation.mutateAsync({ noteId: note.id });
   };
 
-  const handleSubmit = async (e) => {
-    e?.preventDefault();
+  const handleClose = async (source = "unknown") => {
     const content = {
       title: titleRef.current,
       description: descriptionRef.current,
       tags: selectedTagsRef.current,
     };
+    await editNoteMutation.mutateAsync({ noteId: note.id, content });
 
-    try {
-      if (isNoteChangedRef.current) {
-        await editNote(headers, note.id, content);
-        showToast(
-          chooseTextByLang("Изменения сохранены!", "Changes saved!", lang),
-          "success"
-        );
-      }
-      await onSubmitSuccess();
-      await onClose();
-    } catch (error) {
-      console.error("Ошибка отправки заметки:", error);
-      showToast(
-        chooseTextByLang(
-          "Произошла ошибка! Пожалуйста, повторите попытку",
-          "Error occurred! Please try again ",
-          lang
-        ),
-        "warning"
-      );
+    const currentFormattedDate = currentNoteDateRef.current;
+    const originalFormattedDate = note?.date_of_note || null;
+
+    if (currentFormattedDate !== originalFormattedDate) {
+      await setNewDateNoteMutation.mutateAsync({
+        noteId: note.id,
+        newDate: currentFormattedDate,
+      });
     }
+
+    onClose();
   };
 
   const handleDateSelect = (selectedDate) => {
@@ -158,7 +114,6 @@ export default function NoteFormEdit({
 
     setCurrentNoteDate(formattedDate);
     setCalendarDate(selectedDate);
-
     setShowCalendar(false);
   };
 
@@ -170,20 +125,9 @@ export default function NoteFormEdit({
     );
   };
 
-  const onCloseEdit = async () => {
-    const currentFormattedDate = currentNoteDateRef.current;
-
-    const originalFormattedDate = note?.date_of_note || null;
-
-    if (currentFormattedDate !== originalFormattedDate) {
-      await setNewDate(headers, note.id, currentFormattedDate);
-    }
-    await handleSubmit();
-  };
-
   return (
     <div
-      onClick={onCloseEdit}
+      onClick={handleClose}
       className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50"
     >
       <div
@@ -200,10 +144,10 @@ export default function NoteFormEdit({
           handleDateSelect={handleDateSelect}
           onClose={onClose}
           handleAddToArchive={handleAddToArchive}
-          onCloseEdit={onCloseEdit}
+          onCloseEdit={handleClose}
         />
         <div className="mt-[17px] ml-[30px] mr-[40px] mb-[100px]">
-          <form onSubmit={handleSubmit} className="relative">
+          <form onSubmit={handleClose} className="relative">
             <textarea
               value={title}
               ref={titleTextareaRef}

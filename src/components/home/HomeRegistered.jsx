@@ -6,7 +6,6 @@ import NoteForm from "@components/notes/NoteForm/NoteForm";
 import ArchivedNotes from "@components/notes/ArchivedNotes";
 import { useAuth } from "@context/AuthContext";
 import {
-  getMyDayByUser,
   getAllNotesByUser,
   hideNote,
   deleteNoteById,
@@ -24,14 +23,15 @@ import NoteFormCreate from "@components/notes/NoteForm/NoteFormCreate";
 import { useTimezone } from "@/context/TimezoneContext";
 import { useToastHook } from "@hooks/useToast";
 import { SearchWindow } from "@components/layout/Search";
+import { useNotes } from "@utils/hooks/useNotes";
 
 export default function HomeRegistered() {
   const { headers } = useAuth();
   const { lang } = useLang();
+  const { notes } = useNotes();
 
   const { showToast } = useToastHook();
 
-  const [notes, setNotes] = useState({ results: [], next: null });
   const [allNotes, setAllNotes] = useState({ result: [], next: null });
 
   const [openArchived, setOpenArchived] = useState(false);
@@ -44,53 +44,14 @@ export default function HomeRegistered() {
   const calendarKey = useMemo(() => refreshTrigger, [refreshTrigger]);
   const nextWeekKey = useMemo(() => refreshTrigger, [refreshTrigger]);
 
-  const [notesRef, notesInView] = useInView({
-    triggerOnce: false,
-    rootMargin: "100px",
-  });
-
   const [allNotesRef, allNotesInView] = useInView({
     triggerOnce: false,
     rootMargin: "100px",
   });
 
-  const fetchNextPage = useCallback(
-    async (url, setter) => {
-      try {
-        const response = await fetch(url, { headers });
-        const newData = await response.json();
-        setter((prev) => ({
-          results: [...prev.results, ...newData.results],
-          next: newData.next,
-        }));
-      } catch (err) {
-        console.error("Ошибка при загрузке следующей страницы:", err);
-      }
-    },
-    [headers]
-  );
-
   const greeting = useMemo(() => {
     return generateGreetingByTime();
   }, [timezone, lang]);
-
-  useEffect(() => {
-    if (notesInView && notes.next && actelem === "myDay") {
-      const timer = setTimeout(() => {
-        fetchNextPage(notes.next, setNotes);
-      }, 300);
-      return () => clearTimeout(timer);
-    }
-  }, [notesInView, notes.next, actelem, fetchNextPage]);
-
-  useEffect(() => {
-    if (allNotesInView && allNotes.next && actelem === "allNotes") {
-      const timer = setTimeout(() => {
-        fetchNextPage(allNotes.next, setAllNotes);
-      }, 300);
-      return () => clearTimeout(timer);
-    }
-  }, [allNotesInView, allNotes.next, actelem, fetchNextPage]);
 
   const getStyleByNotes = (notes) => {
     if (notes?.results?.length > 0) {
@@ -103,15 +64,6 @@ export default function HomeRegistered() {
     setRefreshTrigger((prev) => prev + 1);
     setEditingNote(null);
   }, []);
-
-  const fetchNotes = async () => {
-    try {
-      const result = await getMyDayByUser(headers);
-      setNotes(result);
-    } catch (error) {
-      console.error("Ошибка при загрузке заметок моего дня:", error);
-    }
-  };
 
   const fetchAllNotes = async () => {
     try {
@@ -148,7 +100,6 @@ export default function HomeRegistered() {
   };
 
   useEffect(() => {
-    fetchNotes();
     fetchAllNotes();
   }, [refreshTrigger]);
 
@@ -173,21 +124,13 @@ export default function HomeRegistered() {
         />
       </div>
 
-      {openArchived && (
-        <ArchivedNotes
-          onClose={() => setOpenArchived(false)}
-          onRefresh={handleRefresh}
-        />
-      )}
+      {openArchived && <ArchivedNotes onClose={() => setOpenArchived(false)} />}
       {actelem === "Calendar" && (
         <Calendar
           key={`calendar_${calendarKey}`}
           editingNote={editingNote}
           onEdit={setEditingNote}
           onCloseEdit={() => setEditingNote(null)}
-          onArchivedSuccess={handleRefresh}
-          onSubmitSuccess={handleRefresh}
-          onDelete={onDelete}
         />
       )}
       {openSearch && (
@@ -211,23 +154,17 @@ export default function HomeRegistered() {
             editingNote={editingNote}
             onEdit={setEditingNote}
             onCloseEdit={() => setEditingNote(null)}
-            onArchivedSuccess={handleRefresh}
-            onSubmitSuccess={handleRefresh}
-            onDelete={onDelete}
           />
         </div>
       )}
       {actelem === "allNotes" && (
         <div className="ml-96 p-4">
           <ContentNotes
-            notes={allNotes}
             editingNote={editingNote}
             onEdit={setEditingNote}
             onCloseEdit={() => setEditingNote(null)}
-            onArchivedSuccess={handleRefresh}
-            onSubmitSuccess={handleRefresh}
-            onDelete={onDelete}
             text={chooseTextByLang("Все заметки", "All notes", lang)}
+            mode="allNotes"
           />
           {allNotes.next && <div ref={allNotesRef} className="h-2" />}
         </div>
@@ -248,15 +185,11 @@ export default function HomeRegistered() {
 
           <div className="mt-[40px]">
             <ContentNotes
-              notes={notes}
               editingNote={editingNote}
               onEdit={setEditingNote}
               onCloseEdit={() => setEditingNote(null)}
-              onArchivedSuccess={handleRefresh}
-              onSubmitSuccess={handleRefresh}
-              onDelete={onDelete}
+              mode="myDay"
             />
-            {notes.next && <div ref={notesRef} className="h-2" />}
           </div>
 
           <AddNoteButton

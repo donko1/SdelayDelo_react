@@ -6,37 +6,25 @@ import { useAuth } from "@context/AuthContext";
 import { createNoteCompact } from "@/utils/api/notes";
 import { chooseTextByLang } from "@/utils/helpers/locale";
 import { useToastHook } from "@/utils/hooks/useToast";
+import { useNotes } from "@/utils/hooks/useNotes";
 
-export default function NoteFormCompact({ onClose, onSubmitSuccess, day }) {
+export default function NoteFormCompact({ onClose, day }) {
   const [noteTitle, SetNoteTitle] = useState();
   const { lang } = useLang();
-  const { headers } = useAuth();
-  const { showToast } = useToastHook();
+  const { createNoteCompactMutation } = useNotes();
 
   const handleSubmit = async () => {
-    try {
-      await createNoteCompact(headers, noteTitle, day.dateStr);
-      showToast(
-        chooseTextByLang("Заметка создана!", "Note created!", lang),
-        "success"
-      );
-      await onSubmitSuccess();
-    } catch (e) {
-      showToast(
-        chooseTextByLang(
-          "Произошла ошибка! Пожалуйста, повторите попытку",
-          "Error occurred! Please try again ",
-          lang
-        ),
-        "warning"
-      );
-    }
+    createNoteCompactMutation.mutateAsync({
+      title: noteTitle,
+      day: day.dateStr,
+    });
   };
 
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (e.key === "Enter") {
         handleSubmit();
+        onClose();
       } else if (e.key === "Escape") {
         onClose();
       }

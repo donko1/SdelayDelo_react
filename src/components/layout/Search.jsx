@@ -3,25 +3,22 @@ import SearchIcon from "@assets/search.svg?react";
 import CrossIcon from "@assets/cross.svg?react";
 import { chooseTextByLang } from "@/utils/helpers/locale";
 import { useLang } from "@/context/LangContext";
-import { search } from "@/utils/api/notes";
 import { useAuth } from "@/context/AuthContext";
 import NoteCard from "../ui/NoteCard";
+import { useNotes } from "@/utils/hooks/useNotes";
+import { useDebounce } from "@hooks/useDebounce";
 
-export function SearchWindow({
-  onClose,
-  editingNote,
-  onEdit,
-  onCloseEdit,
-  onSubmitSuccess,
-  onDelete,
-  onArchivedSuccess,
-  refreshTrigger,
-}) {
+export function SearchWindow({ onClose, editingNote, onEdit, onCloseEdit }) {
   const { lang } = useLang();
-  const { headers } = useAuth();
   const [query, setQuery] = useState("");
-  const [notes, setNotes] = useState({ results: [] });
-  const [isLoading, setIsLoading] = useState(false);
+  const debouncedQuery = useDebounce(query, 300);
+
+  const {
+    data: notes,
+    isLoading,
+    deleteNoteMutation,
+    archiveNoteMutation,
+  } = useNotes("search", { query: debouncedQuery });
 
   useEffect(() => {
     if (editingNote?.id) return;
@@ -38,27 +35,6 @@ export function SearchWindow({
       document.removeEventListener("keydown", handleKeyDown);
     };
   }, [onClose]);
-
-  const fetchNotes = async (query) => {
-    if (query === "") {
-      setNotes({ count: 0, results: [] });
-      setIsLoading(false);
-      return;
-    }
-    try {
-      setIsLoading(true);
-      const result = await search(headers, query);
-      setNotes(result);
-    } catch (error) {
-      console.error("Ошибка при загрузке заметок:", error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchNotes(query);
-  }, [query, refreshTrigger]);
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
@@ -102,32 +78,25 @@ export function SearchWindow({
           </div>
         )}
         {notes?.results?.map((note) => (
-          <div className="mx-[20px] my-[15px]">
+          <div className="mx-[20px] my-[15px]" key={note.id}>
             <NoteCard
-              key={note.id}
               note={note}
               wFull={true}
               isEditing={editingNote?.id === note.id}
               onEdit={onEdit}
-              onCloseEdit={async () => {
-                await onCloseEdit?.();
-                fetchNotes(query);
-              }}
-              onSubmitSuccess={async () => {
-                await onSubmitSuccess?.();
-                fetchNotes(query);
-              }}
-              onDelete={async (noteId) => {
-                await onDelete?.(noteId, () => fetchNotes(query));
-                fetchNotes(query);
-              }}
-              onArchivedSuccess={async () => {
-                await onArchivedSuccess?.();
-                fetchNotes(query);
-              }}
+              onCloseEdit={onCloseEdit}
+              onDelete={() => deleteNoteMutation.mutate({ noteId: note.id })}
+              onArchivedSuccess={() =>
+                archiveNoteMutation.mutate({ noteId: note.id })
+              }
             />
           </div>
         ))}
+        {debouncedQuery && !isLoading && notes?.results?.length === 0 && (
+          <div className="flex-1 flex justify-center items-center text-gray-500">
+            {chooseTextByLang("Ничего не найдено", "No results found", lang)}
+          </div>
+        )}
       </div>
     </div>
   );

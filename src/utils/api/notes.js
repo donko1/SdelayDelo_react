@@ -21,7 +21,7 @@ export async function clearArchive(headers) {
   }
 }
 
-export async function addNoteToArchive(id, headers) {
+export async function addNoteToArchive(headers, id) {
   const baseUrl = isParallel()
     ? "/api/v3/note/"
     : "http://localhost:8000/api/v3/note/";
@@ -45,7 +45,7 @@ export async function addNoteToArchive(id, headers) {
   }
 }
 
-export async function togglePin(note, headers) {
+export async function togglePin(headers, note) {
   const baseUrl = isParallel()
     ? "/api/v3/note/"
     : "http://localhost:8000/api/v3/note/";
@@ -144,7 +144,7 @@ export async function getNotesByDate(headers, day) {
   }
 }
 
-export async function deleteNoteById(noteId, headers) {
+export async function deleteNoteById(headers, noteId) {
   try {
     const baseUrl = isParallel()
       ? "/api/v3/note/"

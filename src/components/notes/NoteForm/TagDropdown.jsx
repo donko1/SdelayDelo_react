@@ -1,4 +1,3 @@
-import { useAuth } from "@context/AuthContext";
 import { chooseTextByLang } from "@utils/helpers/locale";
 import { useState } from "react";
 import { useLang } from "@context/LangContext";
@@ -9,12 +8,11 @@ export default function TagDropdown({
   handleTagToggle,
   variant,
 }) {
-  const { headers } = useAuth();
   const { tags, createTagMutation } = useTags();
 
   const handleAddTag = async (e) => {
     e.preventDefault();
-    await createTagMutation.mutateAsync(newTag);
+    await createTagMutation.mutateAsync({ newTagTitle: newTag });
     setNewTag("");
   };
 

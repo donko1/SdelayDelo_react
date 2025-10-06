@@ -8,20 +8,12 @@ import { useAuth } from "@context/AuthContext";
 import { useToastHook } from "@/utils/hooks/useToast";
 import { useLang } from "@/context/LangContext";
 import { chooseTextByLang } from "@/utils/helpers/locale";
+import { useNotes } from "@/utils/hooks/useNotes";
+import { useTags } from "@/utils/hooks/useTags";
 
-const NoteCard = ({
-  note,
-  onEdit,
-  isEditing,
-  onCloseEdit,
-  onSubmitSuccess,
-  onDelete,
-  onArchivedSuccess,
-  wFull = false,
-}) => {
-  const { headers } = useAuth();
-  const { lang } = useLang();
-  const { showToast } = useToastHook();
+const NoteCard = ({ note, onEdit, isEditing, onCloseEdit, wFull = false }) => {
+  const { archiveNoteMutation, deleteNoteMutation, pinNoteMutation } =
+    useNotes();
   const { tags } = useTags();
 
   return (
@@ -33,10 +25,9 @@ const NoteCard = ({
     >
       <div className="p-[17px] flex">
         <div
-          onClick={(e) => {
+          onClick={async (e) => {
             e.stopPropagation();
-            addNoteToArchive(note.id, headers);
-            onArchivedSuccess();
+            await archiveNoteMutation.mutateAsync({ noteId: note.id });
           }}
           className="relative z-3 w-7 h-7 left-0 top-0 opacity-70 rounded-full border-2 border-zinc-950 hover:opacity-100 group/archive"
         >
@@ -66,25 +57,14 @@ const NoteCard = ({
           <CrossIcon
             onClick={async (e) => {
               e.stopPropagation();
-              await onDelete(note.id);
+              await deleteNoteMutation.mutateAsync({ noteId: note.id });
             }}
             className="m-1 transition-all duration-500 ease-in-out transform opacity-0 group-hover/card:opacity-100 hover:rotate-[360deg] hover:text-red-500"
           />
           <PinIcon
             onClick={async (e) => {
               e.stopPropagation();
-              await togglePin(note, headers);
-              showToast(
-                chooseTextByLang(
-                  note.is_pinned
-                    ? "Заметка откреплена!"
-                    : "Заметка закреплена!",
-                  note.is_pinned ? "Note unpinned!" : "Note pinned!",
-                  lang
-                ),
-                "success"
-              );
-              onSubmitSuccess();
+              await pinNoteMutation.mutateAsync({ note });
             }}
             className={`m-1 transition-all duration-300transform ${
               note.is_pinned
@@ -94,15 +74,7 @@ const NoteCard = ({
           />
         </div>
       </div>
-      {isEditing && (
-        <NoteForm
-          note={note}
-          onClose={onCloseEdit}
-          onSubmitSuccess={onSubmitSuccess}
-          onDeleteSuccess={onDelete}
-          onArchivedSuccess={onArchivedSuccess}
-        />
-      )}
+      {isEditing && <NoteForm note={note} onClose={onCloseEdit} />}
     </div>
   );
 };

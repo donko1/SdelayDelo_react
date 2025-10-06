@@ -1,87 +1,60 @@
-import React, { useState, useEffect, useRef, useCallback } from "react";
-import { useAuth } from "@context/AuthContext";
-import { getNotesByDate } from "@utils/api/notes";
+import React, { useState, useRef, useCallback, useEffect } from "react";
 import NoteForm from "@components/notes/NoteForm/NoteForm";
 import NoteCard from "@components/ui/NoteCard";
 import TitleForBlock from "@components/ui/Title";
 import { useLang } from "@context/LangContext";
 import { useTimezone } from "@context/TimezoneContext";
-import { calculateDays, formatDateToApi } from "@utils/helpers/date";
 import { capitalizeFirstLetter, getText } from "@utils/helpers/interface";
 import XIcon from "@assets/x.svg?react";
+import { useNotes } from "@/utils/hooks/useNotes";
 
-export default function NextWeek({
-  editingNote,
-  onEdit,
-  onCloseEdit,
-  onSubmitSuccess,
-  onDelete,
-  onArchivedSuccess,
-}) {
-  const { headers } = useAuth();
+export default function NextWeek({ editingNote, onEdit, onCloseEdit }) {
   const { timezone } = useTimezone();
   const { lang } = useLang();
-  const [days, setDays] = useState([]);
-  const [notesByDate, setNotesByDate] = useState({});
-  const [loadingDates, setLoadingDates] = useState({});
+
+  const { data, isLoading } = useNotes("next7Days", { timezone, lang });
+
+  const days = data?.days || [];
+
   const [creatingDates, setCreatingDates] = useState({});
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isHovered, setIsHovered] = useState(false);
 
   const containerRef = useRef(null);
-  const wrapperRef = useRef(null);
   const isDragging = useRef(false);
   const startX = useRef(0);
   const scrollLeft = useRef(0);
-  const daysRef = useRef(days);
+
+  const handleCreateClick = (dateStr) => {
+    setCreatingDates((prev) => ({ ...prev, [dateStr]: true }));
+  };
+
+  const handleCloseForm = (dateStr) => {
+    setCreatingDates((prev) => ({ ...prev, [dateStr]: false }));
+  };
+
+  const scrollToIndex = (index) => {
+    if (index < 0 || index >= days.length) return;
+    setCurrentIndex(index);
+    const container = containerRef.current;
+    if (container) {
+      const scrollAmount = container.clientWidth * index;
+      container.scrollTo({ left: scrollAmount, behavior: "smooth" });
+    }
+  };
+
+  const getDayTitle = (index) => {
+    if (index === 0) return getText("today", lang);
+    if (index === 1) return getText("tomorrow", lang);
+    return capitalizeFirstLetter(days[index]?.weekday || "");
+  };
+
+  const canScrollLeft = currentIndex > 0;
+  const canScrollRight = currentIndex < days.length - 1;
 
   useEffect(() => {
-    daysRef.current = days;
-  }, [days]);
+    if (isLoading || days.length === 0) return;
 
-  const fetchNotesForDate = useCallback(
-    async (date) => {
-      const dateStr = formatDateToApi(date);
-      setLoadingDates((prev) => ({ ...prev, [dateStr]: true }));
-
-      try {
-        const results = await getNotesByDate(headers, date);
-        setNotesByDate((prev) => ({
-          ...prev,
-          [dateStr]: results?.detail ? [] : results,
-        }));
-      } catch (error) {
-        setNotesByDate((prev) => ({ ...prev, [dateStr]: [] }));
-      } finally {
-        setLoadingDates((prev) => ({ ...prev, [dateStr]: false }));
-      }
-    },
-    [headers]
-  );
-
-  const refreshAllDays = useCallback(async () => {
-    if (daysRef.current.length === 0) return;
-    const promises = daysRef.current.map((day) => fetchNotesForDate(day.date));
-    await Promise.all(promises);
-  }, [fetchNotesForDate]);
-
-  useEffect(() => {
-    const loadDaysAndNotes = async () => {
-      const now = new Date();
-      const newDays = calculateDays(now, 7, lang, timezone);
-      setDays(newDays);
-
-      for (const day of newDays) {
-        if (!notesByDate[day.dateStr]) {
-          await fetchNotesForDate(day.date);
-        }
-      }
-    };
-
-    loadDaysAndNotes();
-  }, [timezone, lang, fetchNotesForDate]);
-
-  useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
 
@@ -118,38 +91,14 @@ export default function NextWeek({
       container.removeEventListener("mouseup", handleMouseUp);
       container.removeEventListener("mouseleave", handleMouseUp);
     };
-  }, []);
+  }, [isLoading, days.length]);
 
-  const handleCreateClick = (dateStr) => {
-    setCreatingDates((prev) => ({ ...prev, [dateStr]: true }));
-  };
-
-  const handleCloseForm = (dateStr) => {
-    setCreatingDates((prev) => ({ ...prev, [dateStr]: false }));
-  };
-
-  const scrollToIndex = (index) => {
-    if (index < 0 || index >= days.length) return;
-    setCurrentIndex(index);
-    const container = containerRef.current;
-    if (container) {
-      const scrollAmount = container.clientWidth * index;
-      container.scrollTo({ left: scrollAmount, behavior: "smooth" });
-    }
-  };
-
-  const getDayTitle = (index) => {
-    if (index === 0) return getText("today", lang);
-    if (index === 1) return getText("tomorrow", lang);
-    return capitalizeFirstLetter(days[index]?.weekday || "");
-  };
-
-  const canScrollLeft = currentIndex > 0;
-  const canScrollRight = currentIndex < days.length - 1;
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <div
-      ref={wrapperRef}
       className="max-w-full mx-auto p-4 relative"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
@@ -158,7 +107,7 @@ export default function NextWeek({
 
       <div
         ref={containerRef}
-        className="flex overflow-x-hidden space-x-4 relative  p-2 mt-[35px]"
+        className="flex overflow-x-hidden space-x-4 relative p-2 mt-[35px]"
       >
         {days.map((day, index) => (
           <div
@@ -170,30 +119,14 @@ export default function NextWeek({
             </div>
 
             <div className="flex-grow mt-[20px] mb-4 space-y-[20px]">
-              {loadingDates[day.dateStr] ? (
-                <p className="text-center text-gray-500">
-                  {getText("loading", lang)}
-                </p>
-              ) : notesByDate[day.dateStr]?.length > 0 ? (
-                notesByDate[day.dateStr].map((note) => (
+              {day.notes?.length > 0 ? (
+                day.notes.map((note) => (
                   <NoteCard
                     key={note.id}
                     note={note}
                     isEditing={editingNote?.id === note.id}
                     onEdit={onEdit}
                     onCloseEdit={onCloseEdit}
-                    onSubmitSuccess={() => {
-                      onSubmitSuccess?.();
-                      refreshAllDays();
-                    }}
-                    onDelete={async () => {
-                      await onDelete(note.id);
-                      refreshAllDays();
-                    }}
-                    onArchivedSuccess={async () => {
-                      await onArchivedSuccess?.();
-                      await refreshAllDays();
-                    }}
                   />
                 ))
               ) : (
@@ -208,21 +141,16 @@ export default function NextWeek({
                 <NoteForm
                   compact={true}
                   date_of_note={day.date}
-                  onSubmitSuccess={() => {
-                    onSubmitSuccess?.();
-                    refreshAllDays();
-                    handleCloseForm(day.dateStr);
-                  }}
                   onClose={() => handleCloseForm(day.dateStr)}
                   day={day}
                 />
               ) : (
                 <div className="flex h-full items-center justify-center">
                   <button
-                    className="text-stone-700 rounded-[10px]  flex items-center justify-center text-base font-medium px-[26px] py-[9px] font-['Inter'] leading-normal outline outline-1"
+                    className="text-stone-700 rounded-[10px] flex items-center justify-center text-base font-medium px-[26px] py-[9px] font-['Inter'] leading-normal outline outline-1"
                     onClick={() => handleCreateClick(day.dateStr)}
                   >
-                    <XIcon className="w-7 h-7 " />
+                    <XIcon className="w-7 h-7" />
                     {getText("add_note", lang)}
                   </button>
                 </div>

@@ -16,7 +16,7 @@ export function useTags() {
   };
 
   const createTagMutation = useMutation({
-    mutationFn: (newTagTitle) => addNewTag(newTagTitle, headers),
+    mutationFn: ({ newTagTitle }) => addNewTag(newTagTitle, headers),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["tags"] });
     },

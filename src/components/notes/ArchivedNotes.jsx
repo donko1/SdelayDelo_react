@@ -1,57 +1,42 @@
 import { useEffect, useRef, useState, useMemo } from "react";
 import { chooseTextByLang } from "@utils/helpers/locale";
-import {
-  getArchivedNotesByUser,
-  getTagsForNote,
-  removeFromArchive,
-  clearArchive,
-} from "@utils/api/notes";
+import { getTagsForNote } from "@utils/api/notes";
 import { useLang } from "@context/LangContext";
-import { useAuth } from "@context/AuthContext";
 import { isInThisWeek, isTodayOrYesterday } from "@utils/helpers/date";
 import { useTimezone } from "@context/TimezoneContext";
 import ReturnIcon from "@assets/return.svg?react";
 import TrashIcon from "@assets/trash.svg?react";
 import { useToast } from "@/context/ToastContext";
 import { useTags } from "@/utils/hooks/useTags";
+import { useNotes } from "@/utils/hooks/useNotes";
 
-export default function ArchivedNotes({ onClose, onRefresh }) {
-  const [archivedNotes, setArchivedNotes] = useState({
-    results: [],
-    next: null,
-  });
+export default function ArchivedNotes({ onClose }) {
   const { lang } = useLang();
-  const { headers } = useAuth();
-  const { tags } = useTags();
   const { timezone } = useTimezone();
-  const { showToast } = useToast();
-  const [step, setStep] = useState(1);
-  const [actELem, setActElem] = useState("all");
-  const [isLoading, setIsLoading] = useState(false);
+  const { tags } = useTags();
 
-  const isLoadingRef = useRef(false);
-  const stepRef = useRef(1);
-  const hasNextRef = useRef(false);
+  const {
+    data,
+    fetchNextPage,
+    hasNextPage,
+    isLoading,
+    removeFromArchiveMutation,
+    clearArchiveMutation,
+    invalidateNotes,
+  } = useNotes("archive");
+
+  const [actELem, setActElem] = useState("all");
   const scrollContainerRef = useRef();
 
-  useEffect(() => {
-    isLoadingRef.current = isLoading;
-  }, [isLoading]);
-
-  useEffect(() => {
-    stepRef.current = step;
-  }, [step]);
-
-  useEffect(() => {
-    hasNextRef.current = archivedNotes.next;
-  }, [archivedNotes.next]);
+  const archivedNotes = data?.pages?.[0] || { results: [], next: null };
+  const allArchivedNotes = data?.pages?.flatMap((page) => page.results) || [];
 
   const filteredNotes = useMemo(() => {
-    if (!archivedNotes.results) return [];
+    if (!allArchivedNotes) return [];
 
-    if (actELem === "all") return archivedNotes.results;
+    if (actELem === "all") return allArchivedNotes;
 
-    return archivedNotes.results.filter((note) => {
+    return allArchivedNotes.filter((note) => {
       try {
         const [day, month, year] = note.date_of_note.split("/").map(Number);
         const noteDate = new Date(year, month - 1, day);
@@ -63,28 +48,7 @@ export default function ArchivedNotes({ onClose, onRefresh }) {
         return false;
       }
     });
-  }, [actELem, archivedNotes]);
-
-  const fetchArchivedNotes = async () => {
-    try {
-      setIsLoading(true);
-      const result = await getArchivedNotesByUser(headers, 1);
-      if (result !== 1) {
-        setArchivedNotes(result);
-        setStep(1);
-      } else {
-        console.error("Ошибка при загрузке архивных заметок");
-      }
-    } catch (error) {
-      console.error("Ошибка при загрузке архивных заметок:", error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchArchivedNotes();
-  }, [headers]);
+  }, [actELem, allArchivedNotes, timezone]);
 
   const handleScroll = (e) => {
     const container = e.target;
@@ -94,31 +58,9 @@ export default function ArchivedNotes({ onClose, onRefresh }) {
       container.scrollHeight - container.scrollTop <=
       container.clientHeight + scrollThreshold
     ) {
-      if (!isLoadingRef.current && hasNextRef.current) {
-        loadMore();
+      if (hasNextPage && !isLoading) {
+        fetchNextPage();
       }
-    }
-  };
-
-  const loadMore = async () => {
-    isLoadingRef.current = true;
-    setIsLoading(true);
-    try {
-      const nextStep = stepRef.current + 1;
-      const result = await getArchivedNotesByUser(headers, nextStep);
-
-      if (result !== 1) {
-        setArchivedNotes((prev) => ({
-          ...result,
-          results: [...prev.results, ...result.results],
-        }));
-        setStep(nextStep);
-      }
-    } catch (error) {
-      console.error("Ошибка при подгрузке заметок:", error);
-    } finally {
-      setIsLoading(false);
-      isLoadingRef.current = false;
     }
   };
 
@@ -132,7 +74,7 @@ export default function ArchivedNotes({ onClose, onRefresh }) {
         container.removeEventListener("scroll", handleScroll);
       }
     };
-  }, []);
+  }, [hasNextPage, isLoading]);
 
   useEffect(() => {
     const handleKeyDown = (e) => {
@@ -148,6 +90,10 @@ export default function ArchivedNotes({ onClose, onRefresh }) {
     };
   }, [onClose]);
 
+  const handleRestoreNote = async (noteId) => {
+    await removeFromArchiveMutation.mutateAsync({ noteId });
+  };
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div
@@ -162,7 +108,7 @@ export default function ArchivedNotes({ onClose, onRefresh }) {
           </h3>
           <button
             onClick={onClose}
-            className="text-gray-500 w-8 h-8  hover:text-gray-700 transition-all duration-300"
+            className="text-gray-500 w-8 h-8 hover:text-gray-700 transition-all duration-300"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -197,7 +143,7 @@ export default function ArchivedNotes({ onClose, onRefresh }) {
               {chooseTextByLang("Все заметки", "All notes", lang)}
             </h1>
             <h1
-              className={`text-2xl font-semibold  duration-300font-['Inter'] cursor-pointer ${
+              className={`text-2xl font-semibold duration-300 font-['Inter'] cursor-pointer ${
                 actELem === "today"
                   ? "text-neutral-700"
                   : "text-neutral-400 hover:text-neutral-700"
@@ -217,30 +163,11 @@ export default function ArchivedNotes({ onClose, onRefresh }) {
               {chooseTextByLang("За неделю", "This week", lang)}
             </h1>
           </div>
-          <div className="mt-[50px] px-[35px] ">
+          <div className="mt-[50px] px-[35px]">
             {filteredNotes.map((note) => (
               <div
                 key={note.id}
-                onClick={async () => {
-                  try {
-                    await removeFromArchive(note.id, headers);
-                    onRefresh();
-                    setArchivedNotes((prev) => ({
-                      ...prev,
-                      results: prev.results.filter((n) => n.id !== note.id),
-                    }));
-                  } catch (error) {
-                    console.error("Ошибка при удалении из архива:", error);
-                    showToast(
-                      chooseTextByLang(
-                        "Произошла ошибка! Пожалуйста, повторите попытку",
-                        "Error occurred! Please try again ",
-                        lang
-                      ),
-                      "warning"
-                    );
-                  }
-                }}
+                onClick={() => handleRestoreNote(note.id)}
                 className="relative group/archive flex items-center p-3 mb-2 bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow border border-gray-100"
               >
                 <div className="flex items-center justify-center mr-[9px]">
@@ -275,25 +202,7 @@ export default function ArchivedNotes({ onClose, onRefresh }) {
         </div>
         <div
           className="cursor-pointer absolute bottom-0 left-0 w-full h-24 bg-black flex items-center justify-center rounded-bl-3xl rounded-br-3xl"
-          onClick={async () => {
-            try {
-              await clearArchive(headers);
-              showToast(
-                chooseTextByLang("Архив очищен!", "Archive cleared!", lang),
-                "success"
-              );
-              await fetchArchivedNotes();
-            } catch (e) {
-              showToast(
-                chooseTextByLang(
-                  "Произошла ошибка! Пожалуйста, повторите попытку",
-                  "Error occurred! Please try again ",
-                  lang
-                ),
-                "warning"
-              );
-            }
-          }}
+          onClick={async () => await clearArchiveMutation.mutateAsync()}
         >
           <TrashIcon className="text-white" />
         </div>

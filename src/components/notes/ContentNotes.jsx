@@ -1,19 +1,29 @@
 import { useLang } from "@/context/LangContext";
 import { chooseTextByLang } from "@/utils/helpers/locale";
+import { useInView } from "react-intersection-observer";
+import { useNotes } from "@/utils/hooks/useNotes";
 import NoteCard from "@components/ui/NoteCard";
 import TitleForBlock from "@components/ui/Title";
+import { useEffect } from "react";
 
-function ContentNotes({
-  notes,
-  editingNote,
-  onEdit,
-  onCloseEdit,
-  onSubmitSuccess,
-  onDelete,
-  onArchivedSuccess,
-  text,
-}) {
+function ContentNotes({ editingNote, onEdit, onCloseEdit, text, mode }) {
+  const { notes, hasNextPage, fetchNextPage } = useNotes(mode);
   const { lang } = useLang();
+
+  const [notesRef, notesInView] = useInView({
+    triggerOnce: false,
+    rootMargin: "100px",
+  });
+
+  useEffect(() => {
+    if (notesInView && hasNextPage) {
+      const timer = setTimeout(() => {
+        fetchNextPage();
+      }, 300);
+      return () => clearTimeout(timer);
+    }
+  }, [notesInView, hasNextPage, fetchNextPage]);
+
   return (
     <div className="h-full">
       {text && <TitleForBlock text={text} />}
@@ -26,9 +36,6 @@ function ContentNotes({
               isEditing={editingNote?.id === note.id}
               onEdit={onEdit}
               onCloseEdit={onCloseEdit}
-              onSubmitSuccess={onSubmitSuccess}
-              onDelete={(noteId) => onDelete(noteId)}
-              onArchivedSuccess={onArchivedSuccess}
             />
           ))}
         </div>
