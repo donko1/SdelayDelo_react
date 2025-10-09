@@ -1,17 +1,8 @@
-import { useEffect, useState, useCallback, useMemo } from "react";
-import { useInView } from "react-intersection-observer";
+import { useState } from "react";
 import Header from "@components/layout/Header";
 import ContentNotes from "@components/notes/ContentNotes";
 import NoteForm from "@components/notes/NoteForm/NoteForm";
 import ArchivedNotes from "@components/notes/ArchivedNotes";
-import { useAuth } from "@context/AuthContext";
-import {
-  getAllNotesByUser,
-  hideNote,
-  deleteNoteById,
-  undoHideNote,
-} from "@utils/api/notes";
-import { getAllTagsByUser } from "@utils/api/tags";
 import { generateGreetingByTime } from "@utils/helpers/interface";
 import { chooseTextByLang } from "@utils/helpers/locale";
 import Calendar from "@components/layout/Calendar";
@@ -20,38 +11,14 @@ import AddNoteButton from "@components/ui/AddNoteButton";
 import { useActElemContext } from "@context/ActElemContext";
 import { useLang } from "@context/LangContext";
 import NoteFormCreate from "@components/notes/NoteForm/NoteFormCreate";
-import { useTimezone } from "@/context/TimezoneContext";
-import { useToastHook } from "@hooks/useToast";
 import { SearchWindow } from "@components/layout/Search";
 import { useNotes } from "@utils/hooks/useNotes";
+import { useEditing } from "@/context/EditingContext";
 
 export default function HomeRegistered() {
-  const { headers } = useAuth();
   const { lang } = useLang();
   const { notes } = useNotes();
-
-  const { showToast } = useToastHook();
-
-  const [allNotes, setAllNotes] = useState({ result: [], next: null });
-
-  const [openArchived, setOpenArchived] = useState(false);
-  const [openSearch, setOpenSearch] = useState(false);
-  const [editingNote, setEditingNote] = useState(null);
-  const { actelem, setAct } = useActElemContext();
-  const [isCreating, setIsCreating] = useState(false);
-  const { timezone } = useTimezone();
-  const [refreshTrigger, setRefreshTrigger] = useState(0);
-  const calendarKey = useMemo(() => refreshTrigger, [refreshTrigger]);
-  const nextWeekKey = useMemo(() => refreshTrigger, [refreshTrigger]);
-
-  const [allNotesRef, allNotesInView] = useInView({
-    triggerOnce: false,
-    rootMargin: "100px",
-  });
-
-  const greeting = useMemo(() => {
-    return generateGreetingByTime();
-  }, [timezone, lang]);
+  const { editingNote } = useEditing();
 
   const getStyleByNotes = (notes) => {
     if (notes?.results?.length > 0) {
@@ -60,48 +27,12 @@ export default function HomeRegistered() {
     return 2;
   };
 
-  const handleRefresh = useCallback(() => {
-    setRefreshTrigger((prev) => prev + 1);
-    setEditingNote(null);
-  }, []);
+  const [openArchived, setOpenArchived] = useState(false);
+  const [openSearch, setOpenSearch] = useState(false);
+  const { actelem, setAct } = useActElemContext();
+  const [isCreating, setIsCreating] = useState(false);
 
-  const fetchAllNotes = async () => {
-    try {
-      const result = await getAllNotesByUser(headers);
-      setAllNotes(result);
-    } catch (error) {
-      console.log("Ошибка при загрузке всех заметок:", error);
-    }
-  };
-
-  const onDelete = async (noteId, update) => {
-    await hideNote(headers, noteId);
-    handleRefresh();
-    showToast(
-      chooseTextByLang("Заметка была удалена", "The note was deleted", lang),
-      "delete",
-      {
-        onClose: async () => {
-          try {
-            await deleteNoteById(noteId, headers);
-          } catch (e) {
-            console.error(e);
-          }
-        },
-        onUndo: async () => {
-          await undoHideNote(headers, noteId);
-          if (update) {
-            await update();
-          }
-          handleRefresh();
-        },
-      }
-    );
-  };
-
-  useEffect(() => {
-    fetchAllNotes();
-  }, [refreshTrigger]);
+  const greeting = generateGreetingByTime();
 
   return (
     <div className="relative">
@@ -110,7 +41,6 @@ export default function HomeRegistered() {
           onClose={() => {
             setIsCreating(false);
           }}
-          onSubmitSuccess={handleRefresh}
           fixedStyle={true}
         />
       )}
@@ -125,48 +55,20 @@ export default function HomeRegistered() {
       </div>
 
       {openArchived && <ArchivedNotes onClose={() => setOpenArchived(false)} />}
-      {actelem === "Calendar" && (
-        <Calendar
-          key={`calendar_${calendarKey}`}
-          editingNote={editingNote}
-          onEdit={setEditingNote}
-          onCloseEdit={() => setEditingNote(null)}
-        />
-      )}
-      {openSearch && (
-        <SearchWindow
-          onClose={() => setOpenSearch(false)}
-          refreshTrigger={refreshTrigger}
-          editingNote={editingNote}
-          onEdit={setEditingNote}
-          onCloseEdit={() => {
-            setEditingNote(null);
-          }}
-          onArchivedSuccess={handleRefresh}
-          onSubmitSuccess={handleRefresh}
-          onDelete={onDelete}
-        />
-      )}
+      {actelem === "Calendar" && <Calendar />}
+      {openSearch && <SearchWindow onClose={() => setOpenSearch(false)} />}
       {actelem === "next7Days" && (
         <div className="ml-96 p-4">
-          <NextWeek
-            key={`nextweek_${nextWeekKey}`}
-            editingNote={editingNote}
-            onEdit={setEditingNote}
-            onCloseEdit={() => setEditingNote(null)}
-          />
+          <NextWeek />
         </div>
       )}
       {actelem === "allNotes" && (
         <div className="ml-96 p-4">
           <ContentNotes
-            editingNote={editingNote}
-            onEdit={setEditingNote}
-            onCloseEdit={() => setEditingNote(null)}
             text={chooseTextByLang("Все заметки", "All notes", lang)}
             mode="allNotes"
           />
-          {allNotes.next && <div ref={allNotesRef} className="h-2" />}
+          <div className="h-2" />
         </div>
       )}
 
@@ -184,28 +86,12 @@ export default function HomeRegistered() {
           </div>
 
           <div className="mt-[40px]">
-            <ContentNotes
-              editingNote={editingNote}
-              onEdit={setEditingNote}
-              onCloseEdit={() => setEditingNote(null)}
-              mode="myDay"
-            />
+            <ContentNotes mode="myDay" />
           </div>
 
-          <AddNoteButton
-            style={getStyleByNotes(notes)}
-            editingNote={editingNote}
-            setEditingNote={setEditingNote}
-          />
+          <AddNoteButton style={getStyleByNotes(notes)} />
 
-          {editingNote && !editingNote.id && (
-            <NoteForm
-              note={null}
-              onClose={() => setEditingNote(null)}
-              onSubmitSuccess={handleRefresh}
-              onDeleteSuccess={handleRefresh}
-            />
-          )}
+          {editingNote?.id === "new" && <NoteForm note={null} />}
         </div>
       )}
     </div>

@@ -1,24 +1,21 @@
 import React from "react";
 import NoteForm from "@components/notes/NoteForm/NoteForm";
-import { addNoteToArchive, deleteNoteById, togglePin } from "@utils/api/notes";
 import CheckIcon from "@assets/check.svg?react";
 import CrossIcon from "@assets/cross.svg?react";
 import PinIcon from "@assets/pin.svg?react";
-import { useAuth } from "@context/AuthContext";
-import { useToastHook } from "@/utils/hooks/useToast";
-import { useLang } from "@/context/LangContext";
-import { chooseTextByLang } from "@/utils/helpers/locale";
 import { useNotes } from "@/utils/hooks/useNotes";
 import { useTags } from "@/utils/hooks/useTags";
+import { useEditing } from "@/context/EditingContext";
 
-const NoteCard = ({ note, onEdit, isEditing, onCloseEdit, wFull = false }) => {
+const NoteCard = ({ note, wFull = false }) => {
   const { archiveNoteMutation, deleteNoteMutation, pinNoteMutation } =
     useNotes();
   const { tags } = useTags();
+  const { startEditing, isEditing, editingNote } = useEditing();
 
   return (
     <div
-      onClick={() => onEdit(note)}
+      onClick={() => startEditing(note)}
       className={`min-w-[295px] group/card left-0 top-[-0.11px] bg-Frame-color rounded-[10px] shadow-[0px_0px_20px_0px_rgba(0,0,0,0.05)] border border-stone-300 cursor-pointer ${
         wFull && "w-full"
       }`}
@@ -74,7 +71,7 @@ const NoteCard = ({ note, onEdit, isEditing, onCloseEdit, wFull = false }) => {
           />
         </div>
       </div>
-      {isEditing && <NoteForm note={note} onClose={onCloseEdit} />}
+      {isEditing && editingNote.id === note.id && <NoteForm note={note} />}
     </div>
   );
 };

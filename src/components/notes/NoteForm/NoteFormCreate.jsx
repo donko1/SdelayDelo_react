@@ -12,15 +12,15 @@ import CalendarForNoteForm from "@components/notes/NoteForm/Calendar";
 import CalendarIcon from "@assets/calendar.svg?react";
 import { useToastHook } from "@/utils/hooks/useToast";
 import { useNotes } from "@/utils/hooks/useNotes";
+import { useEditing } from "@/context/EditingContext";
 
-export default function NoteFormCreate({ onClose, date_of_note, fixedStyle }) {
+export default function NoteFormCreate({ date_of_note, fixedStyle, onClose }) {
   const [selectedTags, setSelectedTags] = useState([]);
   const { createNoteMutation } = useNotes();
 
   const [tagDropdownOpen, setTagDropdownOpen] = useState(false);
-  const { headers } = useAuth();
+  const { stopEditing } = useEditing();
   const { lang } = useLang();
-  const { showToast } = useToastHook();
   const [calendarDate, setCalendarDate] = useState(() => {
     if (date_of_note) {
       return date_of_note;
@@ -66,6 +66,14 @@ export default function NoteFormCreate({ onClose, date_of_note, fixedStyle }) {
     updateDescriptionHeight();
   }, [title, description]);
 
+  const handleClose = () => {
+    if (onClose) {
+      onClose();
+    } else {
+      stopEditing();
+    }
+  };
+
   const handleSubmit = async (e) => {
     try {
       e.preventDefault();
@@ -80,13 +88,13 @@ export default function NoteFormCreate({ onClose, date_of_note, fixedStyle }) {
       content.date_of_note = formatDate(noteDate);
     }
     await createNoteMutation.mutateAsync({ content });
-    onClose();
+    handleClose();
   };
 
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (e.key === "Escape") {
-        onClose();
+        handleClose();
       }
     };
 
@@ -95,7 +103,7 @@ export default function NoteFormCreate({ onClose, date_of_note, fixedStyle }) {
     return () => {
       document.removeEventListener("keydown", handleKeyDown);
     };
-  }, [onClose]);
+  }, [handleClose]);
 
   return (
     <div
@@ -142,7 +150,7 @@ export default function NoteFormCreate({ onClose, date_of_note, fixedStyle }) {
           <div className="mt-[16px] flex justify-between items-center -mb-[12px] p-[12px]">
             <button
               type="button"
-              onClick={onClose}
+              onClick={handleClose}
               className="flex items-center justify-center w-8 h-8"
             >
               <CrossIcon className="text-zinc-600/75 transition-all duration-300 hover:rotate-90 hover:text-red-500" />

@@ -8,7 +8,7 @@ import { capitalizeFirstLetter, getText } from "@utils/helpers/interface";
 import XIcon from "@assets/x.svg?react";
 import { useNotes } from "@/utils/hooks/useNotes";
 
-export default function NextWeek({ editingNote, onEdit, onCloseEdit }) {
+export default function NextWeek({}) {
   const { timezone } = useTimezone();
   const { lang } = useLang();
 
@@ -120,15 +120,7 @@ export default function NextWeek({ editingNote, onEdit, onCloseEdit }) {
 
             <div className="flex-grow mt-[20px] mb-4 space-y-[20px]">
               {day.notes?.length > 0 ? (
-                day.notes.map((note) => (
-                  <NoteCard
-                    key={note.id}
-                    note={note}
-                    isEditing={editingNote?.id === note.id}
-                    onEdit={onEdit}
-                    onCloseEdit={onCloseEdit}
-                  />
-                ))
+                day.notes.map((note) => <NoteCard key={note.id} note={note} />)
               ) : (
                 <p className="text-center mt-10 text-gray-500">
                   {getText("no_notes", lang)}

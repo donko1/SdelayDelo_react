@@ -6,7 +6,7 @@ import NoteCard from "@components/ui/NoteCard";
 import TitleForBlock from "@components/ui/Title";
 import { useEffect } from "react";
 
-function ContentNotes({ editingNote, onEdit, onCloseEdit, text, mode }) {
+function ContentNotes({ text, mode }) {
   const { notes, hasNextPage, fetchNextPage } = useNotes(mode);
   const { lang } = useLang();
 
@@ -30,13 +30,7 @@ function ContentNotes({ editingNote, onEdit, onCloseEdit, text, mode }) {
       {notes.count > 0 && (
         <div className="flex flex-wrap gap-5 mt-[40px]">
           {notes?.results?.map((note) => (
-            <NoteCard
-              key={note.id}
-              note={note}
-              isEditing={editingNote?.id === note.id}
-              onEdit={onEdit}
-              onCloseEdit={onCloseEdit}
-            />
+            <NoteCard key={note.id} note={note} />
           ))}
         </div>
       )}

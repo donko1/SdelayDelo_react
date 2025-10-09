@@ -7,21 +7,20 @@ import { useAuth } from "@/context/AuthContext";
 import NoteCard from "../ui/NoteCard";
 import { useNotes } from "@/utils/hooks/useNotes";
 import { useDebounce } from "@hooks/useDebounce";
+import { useEditing } from "@/context/EditingContext";
 
-export function SearchWindow({ onClose, editingNote, onEdit, onCloseEdit }) {
+export function SearchWindow({ onClose }) {
   const { lang } = useLang();
   const [query, setQuery] = useState("");
   const debouncedQuery = useDebounce(query, 300);
+  const { isEditing } = useEditing();
 
-  const {
-    data: notes,
-    isLoading,
-    deleteNoteMutation,
-    archiveNoteMutation,
-  } = useNotes("search", { query: debouncedQuery });
+  const { data: notes, isLoading } = useNotes("search", {
+    query: debouncedQuery,
+  });
 
   useEffect(() => {
-    if (editingNote?.id) return;
+    if (isEditing) return;
 
     const handleKeyDown = (e) => {
       if (e.key === "Escape") {
@@ -79,17 +78,7 @@ export function SearchWindow({ onClose, editingNote, onEdit, onCloseEdit }) {
         )}
         {notes?.results?.map((note) => (
           <div className="mx-[20px] my-[15px]" key={note.id}>
-            <NoteCard
-              note={note}
-              wFull={true}
-              isEditing={editingNote?.id === note.id}
-              onEdit={onEdit}
-              onCloseEdit={onCloseEdit}
-              onDelete={() => deleteNoteMutation.mutate({ noteId: note.id })}
-              onArchivedSuccess={() =>
-                archiveNoteMutation.mutate({ noteId: note.id })
-              }
-            />
+            <NoteCard note={note} wFull={true} />
           </div>
         ))}
         {debouncedQuery && !isLoading && notes?.results?.length === 0 && (

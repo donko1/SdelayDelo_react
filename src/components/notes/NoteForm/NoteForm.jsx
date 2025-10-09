@@ -2,16 +2,16 @@ import NoteFormCreate from "@components/notes/NoteForm/NoteFormCreate";
 import NoteFormEdit from "@components/notes/NoteForm/NoteFormEdit";
 import NoteFormCompact from "@components/notes/NoteForm/NoteFormCompact";
 
-function NoteForm({ note, onClose, date_of_note, compact, day }) {
+function NoteForm({ note, date_of_note, onClose, compact, day }) {
   const isEditing = !(note == null);
 
   if (compact) {
-    return <NoteFormCompact onClose={onClose} day={day} />;
+    return <NoteFormCompact day={day} onClose={onClose} />;
   }
   if (isEditing) {
-    return <NoteFormEdit note={note} onClose={onClose} />;
+    return <NoteFormEdit note={note} />;
   }
-  return <NoteFormCreate onClose={onClose} date_of_note={date_of_note} />;
+  return <NoteFormCreate date_of_note={date_of_note} />;
 }
 
 export default NoteForm;

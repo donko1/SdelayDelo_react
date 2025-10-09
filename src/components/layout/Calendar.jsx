@@ -10,13 +10,14 @@ import SendIcon from "@assets/send.svg?react";
 import AddNoteButton from "@components/ui/AddNoteButton";
 import { capitalizeFirstLetter } from "@utils/helpers/interface";
 import { useNotes } from "@utils/hooks/useNotes";
+import { useEditing } from "@/context/EditingContext";
 
-export default function Calendar({ editingNote, onEdit, onCloseEdit }) {
+export default function Calendar({}) {
   const { timezone } = useTimezone();
   const { lang } = useLang();
 
   const [activeDate, setActiveDate] = useState(null);
-  const [creating, setCreating] = useState(false);
+  const { isEditing } = useEditing();
   const [offsetWeeks, setOffsetWeeks] = useState(0);
   const [days, setDays] = useState([]);
 
@@ -214,15 +215,7 @@ export default function Calendar({ editingNote, onEdit, onCloseEdit }) {
       ) : (
         <div className="flex flex-wrap gap-5 mt-[44px]">
           {notes?.length > 0 ? (
-            notes.map((note) => (
-              <NoteCard
-                key={note.id}
-                note={note}
-                isEditing={editingNote?.id === note.id}
-                onEdit={onEdit}
-                onCloseEdit={onCloseEdit}
-              />
-            ))
+            notes.map((note) => <NoteCard key={note.id} note={note} />)
           ) : (
             <p className="text-center w-full text-gray-500">
               {chooseTextByLang(
@@ -235,18 +228,9 @@ export default function Calendar({ editingNote, onEdit, onCloseEdit }) {
         </div>
       )}
 
-      <AddNoteButton
-        style={1}
-        editingNote={creating}
-        setEditingNote={setCreating}
-      />
+      <AddNoteButton style={1} />
 
-      {creating && (
-        <NoteForm
-          onClose={() => setCreating(false)}
-          date_of_note={activeDate}
-        />
-      )}
+      {isEditing && <NoteForm date_of_note={activeDate} />}
     </div>
   );
 }

@@ -7,9 +7,11 @@ import { useAuth } from "@context/AuthContext";
 import useAutoResizeTextarea from "@hooks/useAutoResizeTextarea";
 import NoteFormEditNavbar from "@components/notes/NoteForm/NoteFormEditNavbar";
 import { useNotes } from "@/utils/hooks/useNotes";
+import { useEditing } from "@/context/EditingContext";
 
-export default function NoteFormEdit({ note, onClose }) {
+export default function NoteFormEdit({ note }) {
   const { lang } = useLang();
+  const { stopEditing } = useEditing();
   const { archiveNoteMutation, editNoteMutation, setNewDateNoteMutation } =
     useNotes();
 
@@ -80,7 +82,7 @@ export default function NoteFormEdit({ note, onClose }) {
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [onClose]);
+  }, [stopEditing]);
 
   const handleAddToArchive = async () => {
     await archiveNoteMutation.mutateAsync({ noteId: note.id });
@@ -104,7 +106,7 @@ export default function NoteFormEdit({ note, onClose }) {
       });
     }
 
-    onClose();
+    stopEditing();
   };
 
   const handleDateSelect = (selectedDate) => {
@@ -142,9 +144,9 @@ export default function NoteFormEdit({ note, onClose }) {
           setCalendarDate={setCalendarDate}
           note={note}
           handleDateSelect={handleDateSelect}
-          onClose={onClose}
+          stopEditing={stopEditing}
           handleAddToArchive={handleAddToArchive}
-          onCloseEdit={handleClose}
+          stopEditingEdit={handleClose}
         />
         <div className="mt-[17px] ml-[30px] mr-[40px] mb-[100px]">
           <form onSubmit={handleClose} className="relative">
@@ -193,7 +195,7 @@ export default function NoteFormEdit({ note, onClose }) {
                 ref={descriptionTextareaRef}
                 rows={1}
                 onKeyDown={(e) => e.key === "Enter" && e.preventDefault()}
-                className="mt-[15px] bg-transparent  text-zinc-400 text-xl font-normal font-['Inter'] outline-none"
+                className="mt-[15px] bg-transparent text-black placeholder:text-zinc-400 text-xl font-normal font-['Inter'] outline-none w-full"
                 type="text"
                 value={description}
                 onChange={(e) => {

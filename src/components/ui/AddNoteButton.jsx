@@ -1,12 +1,14 @@
 import { chooseTextByLang } from "@utils/helpers/locale";
 import { useLang } from "@context/LangContext";
 import XIcon from "@assets/x.svg?react";
+import { useEditing } from "@/context/EditingContext";
 
-export default function AddNoteButton({ style, editingNote, setEditingNote }) {
+export default function AddNoteButton({ style }) {
+  const { editingNote, startEditing } = useEditing();
   const { lang } = useLang();
   const buttonText = chooseTextByLang("Добавить заметку", "Add note", lang);
-  const onClick = () => !editingNote && setEditingNote({});
-  if (!!editingNote) {
+  const onClick = () => !editingNote && startEditing({ id: "new" });
+  if (editingNote?.id === "new") {
     return;
   }
   if (style === 2) {
