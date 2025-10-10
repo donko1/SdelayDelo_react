@@ -10,13 +10,12 @@ Frontend part of **SdelayDelo** - an open-source project designed for practical 
 - **React Router v7.5.0** (navigation)
 - **ESLint 9.21.0** (linting)
 
-
 ## 🚧 In Development
 
 - **Mobile-friendly layout** – Improving responsiveness for smaller screens.
 - **Better adaptive design** – Transitioning from `px` to relative units (`rem`, `%`).
 - **Touch-friendly interactions** – Optimizing hover effects for mobile devices
-- **Some features**: search, some parts of design, demo page, etc
+- **Some features**: tags-filter, notifications, etc.
 
 ## Prerequisites
 
@@ -24,47 +23,57 @@ Frontend part of **SdelayDelo** - an open-source project designed for practical 
 - **npm 9+**
 - **git**
 
-
 ## ⚙️ Installation & Setup
 
 ### Linux (Debian/Ubuntu)
+
 ```bash
 sudo apt update
 sudo apt install nodejs git npm
 ```
 
 ### Windows
+
 1. Install [Node.js](https://nodejs.org/) (includes npm)
 2. Install [Git for Windows](https://git-scm.com/downloads/win)
 
 ### Project Setup
+
 1. Clone repository:
+
 ```bash
 git clone https://github.com/donko1/SdelayDelo_react.git
 cd SdelayDelo_react
 ```
 
 2. Install dependencies:
+
 ```bash
 npm install
 ```
 
 3. Configure environment (use .env.example as template):
+
 - Linux/Mac:
+
 ```bash
 cp .env.example .env
 ```
+
 - Windows:
+
 ```cmd
 copy .env.example .env
 ```
 
 4. Start development server:
+
 ```bash
 npm run dev
 ```
 
 5. Build for production:
+
 ```bash
 npm run build
 ```
