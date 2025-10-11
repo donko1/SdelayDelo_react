@@ -798,14 +798,22 @@ function Header({
             </span>
           </div>
         ))}
-        {tagsOpened &&
-          tags.map((item) => (
-            <div key={item.id} className="h-12 w-full cursor-pointer">
-              <span className="text-[25px] text-left block pl-4">
-                #{item.title}
-              </span>
-            </div>
-          ))}
+        {tagsOpened && (
+          // tags.map((item) => (
+          //   <div key={item.id} className="h-12 w-full cursor-pointer">
+          //     <span className="text-[25px] text-left block pl-4">
+          //       #{item.title}
+          //     </span>
+          //   </div>
+          // ))
+          <h1 className="h-12 w-full text-[25px] ">
+            {chooseTextByLang(
+              "Данная функция в разработке...",
+              "This feature in development",
+              lang
+            )}
+          </h1>
+        )}
       </div>
     </div>
   );

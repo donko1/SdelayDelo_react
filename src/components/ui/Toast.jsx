@@ -5,7 +5,13 @@ import WarningIcon from "@assets/toast_warning.svg?react";
 import { useLang } from "@context/LangContext";
 import { chooseTextByLang } from "@/utils/helpers/locale";
 
-export const Toast = ({ toast, onUndo, onMouseEnter, onMouseLeave }) => {
+export const Toast = ({
+  toast,
+  isVisible,
+  onUndo,
+  onMouseEnter,
+  onMouseLeave,
+}) => {
   const { lang } = useLang();
 
   const toastIcons = {
@@ -20,9 +26,11 @@ export const Toast = ({ toast, onUndo, onMouseEnter, onMouseLeave }) => {
     <AnimatePresence>
       {toast && (
         <motion.div
+          key={toast.id}
           initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: 20, transition: { duration: 0.3 } }}
+          animate={isVisible ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+          exit={{ opacity: 0, y: 20, transition: { duration: 0.2 } }}
+          transition={{ duration: 0.3 }}
           className="fixed z-50 inset-x-0 bottom-4 flex justify-center"
           onMouseEnter={onMouseEnter}
           onMouseLeave={onMouseLeave}

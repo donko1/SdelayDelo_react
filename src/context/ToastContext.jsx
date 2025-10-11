@@ -1,4 +1,11 @@
-import { createContext, useContext, useState, useRef, useEffect } from "react";
+import {
+  createContext,
+  useContext,
+  useState,
+  useRef,
+  useEffect,
+  useCallback,
+} from "react";
 import { Toast } from "@components/ui/Toast";
 
 const ToastContext = createContext();
@@ -8,50 +15,79 @@ export const ToastProvider = ({ children }) => {
   const [isVisible, setIsVisible] = useState(false);
   const timerRef = useRef(null);
   const savedCallbacks = useRef({ onClose: null, onUndo: null });
-  const [isPaused, setIsPaused] = useState(false);
 
-  const showToast = (message, type = "success", callbacks = {}) => {
+  const clearAllTimers = useCallback(() => {
+    if (timerRef.current) {
+      clearTimeout(timerRef.current);
+      timerRef.current = null;
+    }
+  }, []);
+
+  const showToast = useCallback(
+    (message, type = "success", callbacks = {}) => {
+      // Немедленно закрываем предыдущий тост
+      setIsVisible(false);
+      clearAllTimers();
+
+      // Устанавливаем новый тост после небольшой задержки для анимации
+      setTimeout(() => {
+        savedCallbacks.current = {
+          onClose: callbacks.onClose || null,
+          onUndo: callbacks.onUndo || null,
+        };
+
+        setToast({ message, type, id: Date.now() });
+        setIsVisible(true);
+
+        // Запускаем таймер автоматического закрытия
+        timerRef.current = setTimeout(() => {
+          handleClose(true);
+        }, 3000);
+      }, 50); // Минимальная задержка для плавного перехода
+    },
+    [clearAllTimers]
+  );
+
+  const handleClose = useCallback(
+    (shouldCallOnClose = true) => {
+      setIsVisible(false);
+      clearAllTimers();
+
+      setTimeout(() => {
+        if (shouldCallOnClose && savedCallbacks.current.onClose) {
+          savedCallbacks.current.onClose();
+        }
+        setToast(null);
+        savedCallbacks.current = { onClose: null, onUndo: null };
+      }, 300);
+    },
+    [clearAllTimers]
+  );
+
+  const handleUndo = useCallback(() => {
+    if (savedCallbacks.current.onUndo) savedCallbacks.current.onUndo();
+    handleClose(false);
+  }, [handleClose]);
+
+  const pauseTimer = useCallback(() => {
     if (timerRef.current) {
       clearTimeout(timerRef.current);
     }
+  }, []);
 
-    savedCallbacks.current = {
-      onClose: callbacks.onClose || null,
-      onUndo: callbacks.onUndo || null,
-    };
-
-    setToast({ message, type });
-    setIsVisible(true);
-    setIsPaused(false);
-  };
-
-  const handleClose = (shouldCallOnClose = true) => {
-    setIsVisible(false);
-
-    setTimeout(() => {
-      if (shouldCallOnClose && savedCallbacks.current.onClose) {
-        savedCallbacks.current.onClose();
-      }
-      setToast(null);
-      savedCallbacks.current = { onClose: null, onUndo: null };
-      setIsPaused(false);
-    }, 300);
-  };
-
-  const handleUndo = () => {
-    if (savedCallbacks.current.onUndo) savedCallbacks.current.onUndo();
-    handleClose(false);
-  };
-
-  const pauseTimer = () => setIsPaused(true);
-  const resumeTimer = () => setIsPaused(false);
+  const resumeTimer = useCallback(() => {
+    if (isVisible && toast) {
+      timerRef.current = setTimeout(() => {
+        handleClose(true);
+      }, 3000);
+    }
+  }, [isVisible, toast, handleClose]);
 
   useEffect(() => {
-    if (isVisible && !isPaused) {
-      timerRef.current = setTimeout(() => handleClose(true), 3000);
-    }
-    return () => clearTimeout(timerRef.current);
-  }, [isVisible, isPaused]);
+    return () => {
+      clearAllTimers();
+    };
+  }, [clearAllTimers]);
 
   return (
     <ToastContext.Provider value={{ showToast }}>
@@ -59,6 +95,7 @@ export const ToastProvider = ({ children }) => {
       {toast && (
         <Toast
           toast={toast}
+          isVisible={isVisible}
           onUndo={savedCallbacks.current.onUndo ? handleUndo : null}
           onMouseEnter={pauseTimer}
           onMouseLeave={resumeTimer}
