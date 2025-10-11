@@ -5,7 +5,7 @@ export default function SubmitButton({ text, disabled }) {
     <button
       type="submit"
       disabled={disabled}
-      className="mt-[20px] group/button-submit-code relative text-zinc-950 text-xl font-medium font-['Inter'] px-12 py-3.5 rounded-3xl outline outline-1 outline-offset-[-1px] outline-black inline-flex"
+      className="mt-[20px] group/button-submit-code relative text-zinc-950 text-xl font-medium font-['Inter'] px-12 py-3.5 rounded-3xl outline outline-1 outline-offset-[-1px] outline-black inline-flex overflow-hidden"
     >
       <span className="relative z-10 group-hover/button-submit-code:text-white whitespace-nowrap transition-colors duration-500">
         {!disabled ? (
