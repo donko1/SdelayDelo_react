@@ -32,6 +32,7 @@ function ContentNotes({ text, mode }) {
           {notes?.results?.map((note) => (
             <NoteCard key={note.id} note={note} />
           ))}
+          <div ref={notesRef} className="w-full h-10" />
         </div>
       )}
 

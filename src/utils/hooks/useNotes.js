@@ -288,18 +288,23 @@ export function useNotes(mode = "mutations", options = {}) {
     Object.assign(result, activeQuery);
 
     if (mode === "myDay" || mode === "allNotes" || mode === "archive") {
-      result.notes = activeQuery.data?.pages?.[0] || {
-        results: [],
-        next: null,
+      const allPages = activeQuery.data?.pages || [];
+      const allNotes = allPages.flatMap((page) => page.results || []);
+      const totalCount = allPages[0]?.count || 0;
+
+      result.notes = {
+        results: allNotes,
+        count: totalCount,
+        next: allPages[allPages.length - 1]?.next || null,
       };
+      result.allNotes = allNotes;
+    } else if (mode === "next7Days") {
+      result.notes = activeQuery.data;
       result.allNotes =
-        activeQuery.data?.pages?.flatMap((page) => page.results) || [];
-    } else if (
-      mode === "next7Days" ||
-      mode === "calendar" ||
-      mode === "search"
-    ) {
-      result.data = activeQuery.data;
+        activeQuery.data?.days?.flatMap((day) => day.notes) || [];
+    } else if (mode === "calendar" || mode === "search") {
+      result.notes = activeQuery.data;
+      result.allNotes = activeQuery.data || [];
     }
   }
 
