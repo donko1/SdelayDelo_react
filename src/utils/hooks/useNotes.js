@@ -41,7 +41,7 @@ export function useNotes(mode = "mutations", options = {}) {
         "An error occurred. Please try again",
         lang
       ),
-      "error"
+      "warning"
     );
   };
 

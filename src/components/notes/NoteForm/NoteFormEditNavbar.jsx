@@ -9,7 +9,6 @@ import NextWeekIcon from "@assets/nextWeek.svg?react";
 import ArchiveIcon from "@assets/archive.svg?react";
 import CalendarIcon from "@assets/calendar.svg?react";
 import CrossIcon from "@assets/cross.svg?react";
-import { useEditing } from "@/context/EditingContext";
 
 export default function NoteFormEditNavbar({
   currentNoteDate,
@@ -23,7 +22,6 @@ export default function NoteFormEditNavbar({
   stopEditingEdit,
   handleAddToArchive,
 }) {
-  const { stopEditing } = useEditing();
   const { setAct } = useActElemContext();
   const { timezone } = useTimezone();
 
@@ -121,7 +119,6 @@ export default function NoteFormEditNavbar({
         />
         <CrossIcon
           onClick={() => {
-            stopEditing();
             stopEditingEdit();
           }}
           className="h-[32px] cursor-pointer text-zinc-500 w-[32px] transition-all duration-300 hover:text-black"

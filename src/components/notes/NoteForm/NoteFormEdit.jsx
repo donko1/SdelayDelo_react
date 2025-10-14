@@ -94,19 +94,20 @@ export default function NoteFormEdit({ note }) {
       description: descriptionRef.current,
       tags: selectedTagsRef.current,
     };
-    await editNoteMutation.mutateAsync({ noteId: note.id, content });
+    try {
+      await editNoteMutation.mutateAsync({ noteId: note.id, content });
 
-    const currentFormattedDate = currentNoteDateRef.current;
-    const originalFormattedDate = note?.date_of_note || null;
+      const currentFormattedDate = currentNoteDateRef.current;
+      const originalFormattedDate = note?.date_of_note || null;
 
-    if (currentFormattedDate !== originalFormattedDate) {
-      await setNewDateNoteMutation.mutateAsync({
-        noteId: note.id,
-        newDate: currentFormattedDate,
-      });
-    }
-
-    stopEditing();
+      if (currentFormattedDate !== originalFormattedDate) {
+        await setNewDateNoteMutation.mutateAsync({
+          noteId: note.id,
+          newDate: currentFormattedDate,
+        });
+      }
+      stopEditing();
+    } catch (e) {}
   };
 
   const handleDateSelect = (selectedDate) => {
@@ -144,7 +145,6 @@ export default function NoteFormEdit({ note }) {
           setCalendarDate={setCalendarDate}
           note={note}
           handleDateSelect={handleDateSelect}
-          stopEditing={stopEditing}
           handleAddToArchive={handleAddToArchive}
           stopEditingEdit={handleClose}
         />
