@@ -29,11 +29,22 @@ import { useLang } from "@context/LangContext";
 import { calculateDays } from "../helpers/date";
 
 // TODO: сделай оптимистичные обновления без ре-фетчинга
-// TODO: сделай onError и т.п.
 export function useNotes(mode = "mutations", options = {}) {
   const { headers } = useAuth();
   const { showToast } = useToastHook();
   const { lang } = useLang();
+
+  const handleError = () => {
+    showToast(
+      chooseTextByLang(
+        "Произошла ошибка. Попробуйте еще раз",
+        "An error occurred. Please try again",
+        lang
+      ),
+      "error"
+    );
+  };
+
   const queryClient = useQueryClient();
 
   const queryConfigs = {
@@ -45,6 +56,7 @@ export function useNotes(mode = "mutations", options = {}) {
           : getMyDayByUser(headers),
       getNextPageParam: (lastPage) => lastPage.next || undefined,
       initialPageParam: null,
+      onError: handleError,
     },
     allNotes: {
       queryKey: ["notes", "allNotes"],
@@ -54,6 +66,7 @@ export function useNotes(mode = "mutations", options = {}) {
           : getAllNotesByUser(headers),
       getNextPageParam: (lastPage) => lastPage.next || undefined,
       initialPageParam: null,
+      onError: handleError,
     },
 
     next7Days: {
@@ -76,6 +89,7 @@ export function useNotes(mode = "mutations", options = {}) {
         };
       },
       staleTime: 2 * 60 * 1000,
+      onError: handleError,
     },
     calendar: {
       queryKey: ["notes", "calendar", options?.activeDate],
@@ -91,6 +105,7 @@ export function useNotes(mode = "mutations", options = {}) {
       },
       enabled: !!options?.activeDate,
       staleTime: 2 * 60 * 1000,
+      onError: handleError,
     },
     archive: {
       queryKey: ["notes", "archive"],
@@ -100,6 +115,7 @@ export function useNotes(mode = "mutations", options = {}) {
           : getArchivedNotesByUser(headers, 1),
       getNextPageParam: (lastPage) => lastPage.next || undefined,
       initialPageParam: null,
+      onError: handleError,
     },
     search: {
       queryKey: ["notes", "search", options?.query],
@@ -110,6 +126,7 @@ export function useNotes(mode = "mutations", options = {}) {
       },
       enabled: !!options?.query,
       staleTime: 2 * 60 * 1000,
+      onError: handleError,
     },
   };
 
@@ -164,6 +181,7 @@ export function useNotes(mode = "mutations", options = {}) {
       );
       invalidateNotes();
     },
+    onError: handleError,
   });
 
   const pinNoteMutation = useMutation({
@@ -179,21 +197,25 @@ export function useNotes(mode = "mutations", options = {}) {
       );
       invalidateNotes();
     },
+    onError: handleError,
   });
 
   const archiveNoteMutation = useMutation({
     mutationFn: ({ noteId }) => addNoteToArchive(headers, noteId),
     onSuccess: invalidateNotes,
+    onError: handleError,
   });
 
   const undoHideNoteMutation = useMutation({
     mutationFn: ({ noteId }) => undoHideNote(headers, noteId),
     onSuccess: invalidateNotes,
+    onError: handleError,
   });
 
   const deleteNoteFinalMutation = useMutation({
     mutationFn: ({ noteId }) => deleteNoteById(headers, noteId),
     onSuccess: invalidateNotes,
+    onError: handleError,
   });
 
   const deleteNoteMutation = useMutation({
@@ -215,6 +237,7 @@ export function useNotes(mode = "mutations", options = {}) {
         }
       );
     },
+    onError: handleError,
   });
 
   const editNoteMutation = useMutation({
@@ -229,6 +252,7 @@ export function useNotes(mode = "mutations", options = {}) {
       );
       invalidateNotes();
     },
+    onError: handleError,
   });
 
   const createNoteCompactMutation = useMutation({
@@ -240,11 +264,13 @@ export function useNotes(mode = "mutations", options = {}) {
       );
       invalidateNotes();
     },
+    onError: handleError,
   });
 
   const setNewDateNoteMutation = useMutation({
     mutationFn: ({ noteId, newDate }) => setNewDate(headers, noteId, newDate),
     onSuccess: invalidateNotes,
+    onError: handleError,
   });
 
   const removeFromArchiveMutation = useMutation({
@@ -256,6 +282,7 @@ export function useNotes(mode = "mutations", options = {}) {
       );
       invalidateNotes();
     },
+    onError: handleError,
   });
 
   const clearArchiveMutation = useMutation({
@@ -267,6 +294,7 @@ export function useNotes(mode = "mutations", options = {}) {
       );
       invalidateNotes();
     },
+    onError: handleError,
   });
 
   const result = {
