@@ -220,12 +220,29 @@ function ProfileSettings({ onClose }) {
     <div className="fixed min-w-[340px] min-h-[420px] top-0 left-0 p-[15px] rounded-br-[20px] shadow-2xl shadow-gray-500/20 bg-white">
       {step === "general" && (
         <>
-          <h2
-            className="pt-[35px] pl-[100px] p-[40px] text-xl font-bold font-['Inter'] text-black cursor-pointer"
-            onClick={onClose}
-          >
-            {username}
-          </h2>
+          {username ? (
+            <h2
+              className="pt-[35px] pl-[100px] p-[40px] text-xl font-bold font-['Inter'] text-black cursor-pointer"
+              onClick={onClose}
+            >
+              {username}
+            </h2>
+          ) : (
+            <h2 onClick={onClose}>
+              <div className="flex-1 flex justify-center items-center">
+                <div className="text-black lds-roller ">
+                  <div></div>
+                  <div></div>
+                  <div></div>
+                  <div></div>
+                  <div></div>
+                  <div></div>
+                  <div></div>
+                  <div></div>
+                </div>
+              </div>
+            </h2>
+          )}
           <div className="mt-[10px] px-[52px] flex flex-col items-center gap-5">
             <div
               onClick={() => setStep("account")}
@@ -369,9 +386,24 @@ function ProfileSettings({ onClose }) {
             onClose={() => setStep(step === "account" ? "general" : "account")}
             title={"Account"}
           />
-          <h2 className="text-xl font-bold font-['Inter'] text-black cursor-pointer">
-            {username}
-          </h2>
+          {username ? (
+            <h2 className="text-xl font-bold font-['Inter'] text-black cursor-pointer">
+              {username}
+            </h2>
+          ) : (
+            <div className="flex-1 flex justify-center items-center">
+              <div className="text-black lds-roller ">
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+              </div>
+            </div>
+          )}
           <div className="relative">
             <div className="my-[25px]">
               {step === "reset" && (
@@ -741,9 +773,24 @@ function Header({
           className="h-24 flex items-center justify-center cursor-pointer"
           onClick={() => setProfileSettingsOpened(!ProfileSettingsOpened)}
         >
-          <h1 className="justify-start text-stone-50 text-xl font-bold font-['Inter']">
-            {username}
-          </h1>
+          {username ? (
+            <h1 className="justify-start text-stone-50 text-xl font-bold font-['Inter']">
+              {username}
+            </h1>
+          ) : (
+            <div className="flex-1 flex justify-center items-center">
+              <div className="text-white lds-roller ">
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+              </div>
+            </div>
+          )}
         </div>
         {dataForElems.map((item) => (
           <div
