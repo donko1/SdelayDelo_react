@@ -7,7 +7,7 @@ import TitleForBlock from "@components/ui/Title";
 import { useEffect } from "react";
 
 function ContentNotes({ text, mode }) {
-  const { notes, hasNextPage, fetchNextPage } = useNotes(mode);
+  const { notes, hasNextPage, fetchNextPage, isError } = useNotes(mode);
   const { lang } = useLang();
 
   const [notesRef, notesInView] = useInView({
@@ -24,6 +24,32 @@ function ContentNotes({ text, mode }) {
     }
   }, [notesInView, hasNextPage, fetchNextPage]);
 
+  if (isError) {
+    return (
+      <div>
+        <div className="flex-1 flex justify-center items-center">
+          <div className="text-black lds-roller ">
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+          </div>
+        </div>
+        <h1 className="text-center text-4xl ">
+          {chooseTextByLang(
+            "Упс, произошла ошибка... Проверьте подключение к сети",
+            "Oops, an error has occurred... Please check your network connection",
+            lang
+          )}
+        </h1>
+      </div>
+    );
+  }
+
   return (
     <div className="h-full">
       {text && <TitleForBlock text={text} />}
@@ -35,7 +61,6 @@ function ContentNotes({ text, mode }) {
           <div ref={notesRef} className="w-full h-10" />
         </div>
       )}
-
       {notes.count === 0 && (
         <div className="fixed inset-0 ml-[300px] mt-[100px] flex justify-center items-center pointer-events-none">
           <div className="pointer-events-auto">

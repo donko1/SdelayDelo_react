@@ -105,7 +105,7 @@ export async function getMyDayByUser(headers) {
     return resp.data;
   } catch (error) {
     console.log(`Error! ${error}`);
-    return 1;
+    throw error;
   }
 }
 

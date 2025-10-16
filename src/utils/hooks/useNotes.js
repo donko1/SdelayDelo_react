@@ -161,12 +161,32 @@ export function useNotes(mode = "mutations", options = {}) {
   });
 
   let activeQuery = null;
-  if (mode === "myDay") activeQuery = infiniteQueryMyDay;
-  if (mode === "allNotes") activeQuery = infiniteQueryAllNotes;
-  if (mode === "next7Days") activeQuery = queryNext7Days;
-  if (mode === "calendar") activeQuery = queryCalendar;
-  if (mode === "archive") activeQuery = infiniteQueryArchive;
-  if (mode === "search") activeQuery = querySearch;
+  let isError = false;
+
+  if (mode === "myDay") {
+    activeQuery = infiniteQueryMyDay;
+    isError = infiniteQueryMyDay.isError;
+  }
+  if (mode === "allNotes") {
+    activeQuery = infiniteQueryAllNotes;
+    isError = infiniteQueryAllNotes.isError;
+  }
+  if (mode === "next7Days") {
+    activeQuery = queryNext7Days;
+    isError = queryNext7Days.isError;
+  }
+  if (mode === "calendar") {
+    activeQuery = queryCalendar;
+    isError = queryCalendar.isError;
+  }
+  if (mode === "archive") {
+    activeQuery = infiniteQueryArchive;
+    isError = infiniteQueryArchive.isError;
+  }
+  if (mode === "search") {
+    activeQuery = querySearch;
+    isError = querySearch.isError;
+  }
 
   const invalidateNotes = () => {
     queryClient.invalidateQueries({ queryKey: ["notes"] });
@@ -310,6 +330,7 @@ export function useNotes(mode = "mutations", options = {}) {
     removeFromArchiveMutation,
     clearArchiveMutation,
     invalidateNotes,
+    isError,
   };
 
   if (activeQuery) {
