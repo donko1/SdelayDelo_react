@@ -254,7 +254,40 @@ export default function HomeNotRegistered() {
           </h1>
         </FadeInRight>
         <SliderOfReviews />
+        <img
+          src="/svg/home-not-registered/wave.svg"
+          alt="wave"
+          className="absolute w-full left-0 bottom-[-300px]"
+        />
       </div>
+      <div className="relative mt-[220px]">
+        <div className="mt-[530px] justify-center gap-[180px] items-center flex">
+          <img src="/svg/home-not-registered/star_full.svg" alt="" />
+          <div className="max-w-[60%]">
+            <h1 className="text-center justify-start text-black text-[50px] font-bold font-['Inter']">
+              Stay calm and focused with one of the most comfortable and
+              feature-rich productivity tools!
+            </h1>
+            <div className="flex justify-center mt-[40px]">
+              <Link
+                to="/login"
+                className="px-12 py-3.5 rounded-2xl outline outline-1 outline-offset-[-1px] outline-black duration-300 transition-all group/get-started justify-center hover:bg-black hover:shadow-[0px_2px_10px_0px_rgba(151,71,255,1.00)] inline-flex items-center gap-2.5"
+              >
+                <div className="justify-start text-black text-3xl group-hover/get-started:text-white duration-300 transition-all font-medium font-['Inter'] ">
+                  Get started
+                </div>
+              </Link>
+            </div>
+          </div>
+          <img src="/svg/home-not-registered/star_transparent.svg" alt="" />
+        </div>
+        <img
+          src="/svg/home-not-registered/wave.svg"
+          alt="wave"
+          className="absolute w-full left-0 bottom-[-300px]"
+        />
+      </div>
+      <div className="mt-[700px] py-[50px] px-[150px] bg-[#211d1d]"> </div>
     </div>
   );
 }
