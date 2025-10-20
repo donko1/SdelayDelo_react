@@ -287,7 +287,45 @@ export default function HomeNotRegistered() {
           className="absolute w-full left-0 bottom-[-300px]"
         />
       </div>
-      <div className="mt-[700px] py-[50px] px-[150px] bg-[#211d1d]"> </div>
+      <div className="mt-[700px] py-[50px] px-[150px] bg-[#211d1d]">
+        <div className="flex justify-between items-center">
+          <div>
+            <h1 className="text-white text-[26px] font-normal font-['Inter']">
+              Privacy policy
+            </h1>
+            <img
+              src="/svg/home-not-registered/vk.svg"
+              className="mt-[20px]"
+              alt="vk"
+            />
+            <img
+              src="/svg/home-not-registered/telegram.svg"
+              className="mt-[20px]"
+              alt="telegram"
+            />
+          </div>
+          <div className="absolute left-1/2 transform -translate-x-1/2">
+            <h1 className="font-['Jockey_One'] text-white text-8xl font-normal">
+              Sdelay delo
+            </h1>
+          </div>
+          <div>
+            <h1 className="text-white text-3xl font-semibold font-['Inter'] leading-[35px] max-w-[25vw]">
+              Big changes start with a single note! Join those who take action
+            </h1>
+            <div className="flex justify-center mt-[30px]">
+              <Link
+                to="/login"
+                className="px-[20px] py-[8px] rounded-[26px]  outline outline-1 outline-offset-[-1px] outline-white duration-300 transition-all group/get-started justify-center hover:bg-white hover:shadow-[0px_2px_10px_0px_rgba(151,71,255,1.00)] inline-flex items-center gap-2.5"
+              >
+                <div className="justify-start text-white text-xl group-hover/get-started:text-black duration-300 transition-all font-normal font-['Inter'] ">
+                  Start now
+                </div>
+              </Link>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
