@@ -2,9 +2,12 @@ import { useState, useEffect, useRef } from "react";
 import QuotesIcon from "@assets/quotes.svg?react";
 import { useInView } from "react-intersection-observer";
 import { ButtonNext, ButtonPrev } from "@components/ui/CustomButtonsSwiper";
+import { useLang } from "@context/LangContext";
+import { chooseTextByLang } from "@/utils/helpers/locale";
 
 export default function SliderOfReviews() {
   const [sliderN, setSliderN] = useState(1);
+  const { lang } = useLang();
   const [displayText, setDisplayText] = useState("");
   const [targetText, setTargetText] = useState("");
   const [direction, setDirection] = useState("forward");
@@ -19,38 +22,54 @@ export default function SliderOfReviews() {
   const slides = [
     {
       id: 1,
-      text: "I started using the tags feature to organize my notes, and wow — it makes everything so much easier to find. It’s such a small thing, but it saves me so much time",
+      text: chooseTextByLang(
+        "Начал использовать теги для заметок — и это невероятно упростило поиск! Казалось бы, мелочь, но экономит кучу времени.",
+        "I started using the tags feature to organize my notes, and wow — it makes everything so much easier to find. It’s such a small thing, but it saves me so much time",
+        lang
+      ),
       colorBG: "white-review",
       color: "black",
       secondColor: "white",
-      authorNick: "Ben Smith",
+      authorNick: chooseTextByLang("Иван Смирнов", "Ben Smith", lang),
       AreQuotesTop: true,
     },
     {
       id: 2,
-      text: "I didn’t think I’d use the search that much, but now I can’t imagine the site without it. I just type a word and boom — the task I was looking for pops up. Super handy when you have lots of notes.",
+      text: chooseTextByLang(
+        "Раньше не думал, что буду так часто использовать поиск, но теперь сайт без него — как без рук! Просто ввожу слово — и бац! Нужная задача сразу перед глазами. Незаменимо, когда заметок много!",
+        "I didn’t think I’d use the search that much, but now I can’t imagine the site without it. I just type a word and boom — the task I was looking for pops up. Super handy when you have lots of notes.",
+        lang
+      ),
       colorBG: "black-review",
       color: "white",
       secondColor: "black",
-      authorNick: "Justin Mathew",
+      authorNick: chooseTextByLang("Степан Лунёв", "Justin Mathew", lang),
       AreQuotesTop: false,
     },
     {
       id: 3,
-      text: "I’ve tried a bunch of planners before, but the calendar here feels different. It’s not overwhelming, and it actually helps me plan without overthinking. I like that it looks clean but still shows everything I need",
+      text: chooseTextByLang(
+        "Сайт невероятно интуитивный! Никаких инструкций не понадобилось — всё понятно с первого взгляда. Минималистичный дизайн без лишних деталей!",
+        "I’ve tried a bunch of planners before, but the calendar here feels different. It’s not overwhelming, and it actually helps me plan without overthinking. I like that it looks clean but still shows everything I need",
+        lang
+      ),
       colorBG: "white-review",
       color: "black",
       secondColor: "white",
-      authorNick: "Vin Donaldson",
+      authorNick: chooseTextByLang("Роман Степаненко", "Vin Donaldson", lang),
       AreQuotesTop: true,
     },
     {
       id: 4,
-      text: "The whole site just feels easy to use. I didn’t need a tutorial or anything — everything made sense from the start. It’s clean, not distracting, and somehow it makes me want to come back and keep using it",
+      text: chooseTextByLang(
+        "Перепробовал кучу планировщиков, но ваш календарь — другое дело. Ничего лишнего, но всё необходимое под рукой. Просто и эффективно!",
+        "The whole site just feels easy to use. I didn’t need a tutorial or anything — everything made sense from the start. It’s clean, not distracting, and somehow it makes me want to come back and keep using it",
+        lang
+      ),
       colorBG: "black-review",
       color: "white",
       secondColor: "black",
-      authorNick: "Mike Brown",
+      authorNick: chooseTextByLang("Альберт Эйнштейн", "Mike Brown", lang),
       AreQuotesTop: false,
     },
   ];

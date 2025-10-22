@@ -19,34 +19,54 @@ export default function HomeNotRegistered() {
   const { lang } = useLang();
 
   const slides = [
-    { id: 1, text: "Organize your\nstudy", img_style: "mx-[50px] my-[6px]" },
+    {
+      id: 1,
+      text: chooseTextByLang("Учись без хаоса", "Organize your\nstudy", lang),
+      img_style: "mx-[50px] my-[6px]",
+    },
     {
       id: 2,
-      text: "Take control of\nyour day",
+      text: chooseTextByLang(
+        "Возьми день под контроль",
+        "Take control of\nyour day",
+        lang
+      ),
       img_style: "my-[7px] ml-[83px] mr-[54px]",
       text_style: "top-[5px]",
     },
     {
       id: 3,
-      text: "Plan join\nevents",
+      text: chooseTextByLang("Планируй события", "Plan join\nevents", lang),
       img_style: "my-[8px] mx-[50px]",
       text_style: "top-[0px]",
     },
     {
       id: 4,
-      text: "Boost your\nProductivity",
+      text: chooseTextByLang(
+        "Повысь свою\nпродуктивность",
+        "Boost your\nProductivity",
+        lang
+      ),
       img_style: "mx-[75px] my-[18px]",
       text_style: "ml-[40px]",
     },
     {
       id: 5,
-      text: "Accelerate your\ngrowth",
+      text: chooseTextByLang(
+        "Развивайся\nбыстрее",
+        "Accelerate your\ngrowth",
+        lang
+      ),
       img_style: "mx-[60px] my-[9px]",
       text_style: "top-[10px]",
     },
     {
       id: 6,
-      text: "Plan smarter, achieve\nfaster",
+      text: chooseTextByLang(
+        "С умом к цели\nбез промедления",
+        "Plan smarter, achieve\nfaster",
+        lang
+      ),
       img_style: "mx-[30px] my-[0px]",
       text_style: "top-[35px]",
     },
@@ -81,7 +101,7 @@ export default function HomeNotRegistered() {
           className="h-10 px-10 py-3.5 group/navbar-login hover:bg-black transition-all duration-300 rounded-3xl outline outline-1 outline-offset-[-1px] outline-black inline-flex justify-center items-center gap-2.5"
         >
           <div className="justify-start group-hover/navbar-login:text-white duration-300 transition-all text-black text-xl font-normal font-['Inter']">
-            Log in
+            {chooseTextByLang("Войти", "Log in", lang)}
           </div>
         </Link>
       </div>
@@ -96,13 +116,20 @@ export default function HomeNotRegistered() {
           </FadeInRight>
           <FadeInUp className="h-full mx-4 flex-1">
             <h1 className="text-center text-black text-7xl font-bold font-['Inter']">
-              A simple to do list
+              {chooseTextByLang(
+                "Возьми свою жизнь",
+                "A simple to do list",
+                lang
+              )}
               <br />
-              to manage it all
+              {chooseTextByLang("под контроль", "to manage it all", lang)}
             </h1>
             <h2 className=" mt-[33px] text-center justify-start text-zinc-500 text-3xl font-normal font-['Inter']">
-              Plan your day, manage tasks, and focus on the matters - all in one
-              place
+              {chooseTextByLang(
+                "Планируй день, управляй задачами и фокусируйся на проблемах - все в одном месте!",
+                "Plan your day, manage tasks, and focus on the matters - all in one place",
+                lang
+              )}
             </h2>
             <div className="flex justify-center items-center mt-[50px] gap-[28px]">
               <Link
@@ -110,7 +137,7 @@ export default function HomeNotRegistered() {
                 className="px-12 py-3.5 rounded-2xl outline outline-1 outline-offset-[-1px] outline-black duration-300 transition-all group/get-started justify-center hover:bg-black hover:shadow-[0px_2px_10px_0px_rgba(151,71,255,1.00)] inline-flex items-center gap-2.5"
               >
                 <div className="justify-start text-black text-3xl group-hover/get-started:text-white duration-300 transition-all font-medium font-['Inter'] ">
-                  Get started
+                  {chooseTextByLang("Начни сейчас!", "Get started!", lang)}
                 </div>
               </Link>
               <button
@@ -121,7 +148,7 @@ export default function HomeNotRegistered() {
                 className="px-12 py-3.5 rounded-2xl outline outline-1 outline-offset-[-1px] outline-black  duration-300 transition-all group/login  hover:bg-black hover:shadow-[0px_2px_10px_0px_rgba(151,71,255,1.00)] inline-flex justify-center items-center gap-2.5"
               >
                 <div className="justify-start text-black text-3xl group-hover/login:text-white duration-300 transition-all font-medium font-['Inter']">
-                  View demo
+                  {chooseTextByLang("Запустить демо", "View demo", lang)}
                 </div>
               </button>
             </div>
@@ -145,7 +172,7 @@ export default function HomeNotRegistered() {
         <div className="mx-[50px]">
           <SlideRight>
             <h1 className="text-black ml-[90px] text-5xl font-bold font-['Inter']">
-              Where we fit
+              {chooseTextByLang("Где мы можем помочь", "Where we fit", lang)}
             </h1>
           </SlideRight>
           <Swiper
@@ -209,7 +236,7 @@ export default function HomeNotRegistered() {
         <div className="mx-[50px]">
           <FadeInRight>
             <h1 className="text-black text-5xl ml-[90px] font-bold font-['Inter']">
-              What we offer
+              {chooseTextByLang("Мы предлагаем", "What we offer", lang)}
             </h1>
           </FadeInRight>
           <div className="mt-[200px] flex justify-between items-center ml-[85px] gap-[284px]">
@@ -250,7 +277,11 @@ export default function HomeNotRegistered() {
       <div className="mt-[475px] relative">
         <FadeInRight>
           <h1 className="ml-[140px] text-black text-5xl font-bold font-['Inter'] mb-[100px]">
-            Voices from our users
+            {chooseTextByLang(
+              "Голоса наших пользователей",
+              "Voices from our users",
+              lang
+            )}
           </h1>
         </FadeInRight>
         <SliderOfReviews />
@@ -265,8 +296,11 @@ export default function HomeNotRegistered() {
           <img src="/svg/home-not-registered/star_full.svg" alt="" />
           <div className="max-w-[60%]">
             <h1 className="text-center justify-start text-black text-[50px] font-bold font-['Inter']">
-              Stay calm and focused with one of the most comfortable and
-              feature-rich productivity tools!
+              {chooseTextByLang(
+                "Стань лучшей версией себя: Планируй, успевай, контролируй время вместе с нами!",
+                "Stay calm and focused with one of the most comfortable and feature-rich productivity tools!",
+                lang
+              )}
             </h1>
             <div className="flex justify-center mt-[40px]">
               <Link
@@ -274,7 +308,7 @@ export default function HomeNotRegistered() {
                 className="px-12 py-3.5 rounded-2xl outline outline-1 outline-offset-[-1px] outline-black duration-300 transition-all group/get-started justify-center hover:bg-black hover:shadow-[0px_2px_10px_0px_rgba(151,71,255,1.00)] inline-flex items-center gap-2.5"
               >
                 <div className="justify-start text-black text-3xl group-hover/get-started:text-white duration-300 transition-all font-medium font-['Inter'] ">
-                  Get started
+                  {chooseTextByLang("Начни сейчас!", "Get started!", lang)}
                 </div>
               </Link>
             </div>
@@ -291,7 +325,11 @@ export default function HomeNotRegistered() {
         <div className="flex justify-between items-center">
           <div>
             <h1 className="text-white text-[26px] font-normal font-['Inter']">
-              Privacy policy
+              {chooseTextByLang(
+                "Политика конфиденциальности",
+                "Privacy policy",
+                lang
+              )}
             </h1>
             <img
               src="/svg/home-not-registered/vk.svg"
@@ -311,7 +349,11 @@ export default function HomeNotRegistered() {
           </div>
           <div>
             <h1 className="text-white text-3xl font-semibold font-['Inter'] leading-[35px] max-w-[25vw]">
-              Big changes start with a single note! Join those who take action
+              {chooseTextByLang(
+                "Большие изменения начинаются с одной заметки! Присоединяйся к тем, кто действует",
+                "Big changes start with a single note! Join those who take action",
+                lang
+              )}
             </h1>
             <div className="flex justify-center mt-[30px]">
               <Link
@@ -319,7 +361,7 @@ export default function HomeNotRegistered() {
                 className="px-[20px] py-[8px] rounded-[26px]  outline outline-1 outline-offset-[-1px] outline-white duration-300 transition-all group/get-started justify-center hover:bg-white hover:shadow-[0px_2px_10px_0px_rgba(151,71,255,1.00)] inline-flex items-center gap-2.5"
               >
                 <div className="justify-start text-white text-xl group-hover/get-started:text-black duration-300 transition-all font-normal font-['Inter'] ">
-                  Start now
+                  {chooseTextByLang("Начни сейчас", "Start now", lang)}
                 </div>
               </Link>
             </div>
