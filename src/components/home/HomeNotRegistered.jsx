@@ -74,18 +74,42 @@ export default function HomeNotRegistered() {
   const offers = [
     {
       id: 1,
-      title: "Plan your week with calendar",
-      text: "See your tasks organized by day and drag them around to fit your schedule.",
+      title: chooseTextByLang(
+        "Планируйте неделю с календарем",
+        "Plan your week with calendar",
+        lang
+      ),
+      text: chooseTextByLang(
+        "Просматривайте свои задачи, организованные по дням, и перетаскивайте их так, чтобы они вписывались в ваш график.",
+        "See your tasks organized by day and drag them around to fit your schedule.",
+        lang
+      ),
     },
     {
       id: 2,
-      title: "Find anything instantly with Smart Search",
-      text: "Just type a word, tag, or feeling — and boom, it’s there",
+      title: chooseTextByLang(
+        "Найдите что угодно с помощью интеллектуального поиска",
+        "Find anything instantly with Smart Search",
+        lang
+      ),
+      text: chooseTextByLang(
+        "Просто введите слово, тег или чувство — и вуаля, оно там.",
+        "Just type a word, tag, or feeling — and boom, it’s there",
+        lang
+      ),
     },
     {
       id: 3,
-      title: "Add structure with custom tags",
-      text: "Color-coded and totally personal — keep your chaos in check",
+      title: chooseTextByLang(
+        "Добавьте структуру с помощью пользовательских тегов",
+        "Add structure with custom tags",
+        lang
+      ),
+      text: chooseTextByLang(
+        "Цветовая кодировка и полная индивидуальность — держите хаос под контролем",
+        "Color-coded and totally personal — keep your chaos in check",
+        lang
+      ),
     },
   ];
 
