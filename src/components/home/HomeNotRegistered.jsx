@@ -16,7 +16,7 @@ export default function HomeNotRegistered() {
   const { userToken, logout, login } = useAuth();
   const [isAuthenticated, setIsAuthenticated] = useState(userToken != null);
   const { refreshUser } = useUser();
-  const { lang } = useLang();
+  const { lang, changeLanguage } = useLang();
 
   const slides = [
     {
@@ -355,6 +355,35 @@ export default function HomeNotRegistered() {
                 lang
               )}
             </h1>
+            <div className="flex mt-[20px] items-center">
+              <img
+                src="/svg/home-not-registered/lang.svg"
+                className=""
+                alt="vk"
+              />
+              <div className="justify-start">
+                <span
+                  onClick={() => {
+                    changeLanguage("en");
+                  }}
+                  className={`text-white text-[25px] ${
+                    lang === "en" ? "font-black" : "font-normal"
+                  } font-['Inter']`}
+                >
+                  Eng
+                </span>
+                <span
+                  onClick={() => {
+                    changeLanguage("ru");
+                  }}
+                  className={`text-white text-[25px] ${
+                    lang !== "en" ? "font-black" : "font-normal"
+                  } font-['Inter']`}
+                >
+                  /Rus
+                </span>
+              </div>
+            </div>
             <img
               src="/svg/home-not-registered/vk.svg"
               className="mt-[20px]"
