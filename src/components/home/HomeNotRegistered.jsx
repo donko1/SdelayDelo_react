@@ -36,9 +36,9 @@ export default function HomeNotRegistered() {
     },
     {
       id: 3,
-      text: chooseTextByLang("Планируй события", "Plan join\nevents", lang),
+      text: chooseTextByLang("Планируй\nсобытия", "Plan join\nevents", lang),
       img_style: "my-[8px] mx-[50px]",
-      text_style: "top-[0px]",
+      text_style: chooseTextByLang("top-[-1px]", "top-[0px]", lang),
     },
     {
       id: 4,
@@ -58,7 +58,7 @@ export default function HomeNotRegistered() {
         lang
       ),
       img_style: "mx-[60px] my-[9px]",
-      text_style: "top-[10px]",
+      text_style: chooseTextByLang("top-[-0px]", "top-[10px]", lang),
     },
     {
       id: 6,
