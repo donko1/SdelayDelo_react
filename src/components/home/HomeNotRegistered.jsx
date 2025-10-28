@@ -366,7 +366,7 @@ export default function HomeNotRegistered() {
                   onClick={() => {
                     changeLanguage("en");
                   }}
-                  className={`text-white text-[25px] ${
+                  className={`text-white cursor-pointer text-[25px] ${
                     lang === "en" ? "font-black" : "font-normal"
                   } font-['Inter']`}
                 >
@@ -376,7 +376,7 @@ export default function HomeNotRegistered() {
                   onClick={() => {
                     changeLanguage("ru");
                   }}
-                  className={`text-white text-[25px] ${
+                  className={`text-white cursor-pointer text-[25px] ${
                     lang !== "en" ? "font-black" : "font-normal"
                   } font-['Inter']`}
                 >
