@@ -359,7 +359,7 @@ export default function HomeNotRegistered() {
               <img
                 src="/svg/home-not-registered/lang.svg"
                 className=""
-                alt="vk"
+                alt="language"
               />
               <div className="justify-start">
                 <span
@@ -386,12 +386,12 @@ export default function HomeNotRegistered() {
             </div>
             <img
               src="/svg/home-not-registered/vk.svg"
-              className="mt-[20px]"
+              className="mt-[20px] hover:scale-125 transition-all duration-300"
               alt="vk"
             />
             <img
               src="/svg/home-not-registered/telegram.svg"
-              className="mt-[20px]"
+              className="mt-[20px] hover:scale-125 transition-all duration-300"
               alt="telegram"
             />
           </div>
